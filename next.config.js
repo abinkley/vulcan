@@ -3,9 +3,12 @@ const nextConfig = {
   /* config options here */
   images: {
     domains: ['hebbkx1anhila5yf.public.blob.vercel-storage.com'],
+    unoptimized: true,
   },
-  output: 'standalone',
+  output: 'export',
   distDir: '.next',
+  trailingSlash: true,
+  basePath: '',
   experimental: {
     outputFileTracingExcludes: {
       '*': ['app/(main)/**/*']
