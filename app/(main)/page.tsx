@@ -12,7 +12,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">FORGING CHAMPIONS</h1>
             <p className="text-xl text-gray-300 mb-8">
-              Developing the next generation of cycling talent with passion, dedication, and cutting-edge training.
+              Building the future of cycling with elite training, passionate coaches, and a commitment to excellence.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button className="bg-pink-500 hover:bg-pink-600 text-white">
