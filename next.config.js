@@ -6,13 +6,10 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
-  distDir: '.next',
   trailingSlash: true,
   basePath: '',
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': ['app/(main)/**/*']
-    }
+  outputFileTracingExcludes: {
+    '*': ['app/(main)/**/*']
   }
 };
 
