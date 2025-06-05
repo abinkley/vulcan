@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vulcan Cycling Club | Junior Cycling in New Jersey and New York</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Mobile Navigation Script -->
+  <script src="js/mobile-nav.js" defer></script>
+  <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #000;
+      line-height: 1.6;
+    }
+
+    /* Full-screen background image */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+      background-image: url('images/vulcan-screenshot-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #000;
+    }
+    
+    /* Content container to appear above background */
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    /* Header */
+    header {
+      padding: 1.5rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo h1 {
+      margin-left: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav li {
+      margin-left: 2rem;
+    }
+    
+    nav a {
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: white;
+      color: black;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 6rem 0;
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .hero h2 {
+      font-size: 4rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+    
+    .hero p {
+      font-size: 1.25rem;
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
+    }
+    
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .primary-button {
+      display: inline-block;
+      padding: 0.875rem 2rem;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .primary-button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    .secondary-button {
+      display: inline-block;
+      padding: 0.875rem 2rem;
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .secondary-button:hover {
+      background-color: white;
+      color: black;
+    }
+    
+    /* Featured Riders Section */
+    .featured-riders {
+      padding: 6rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .section-title {
+      font-size: 3rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+    }
+    
+    .riders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .rider-card {
+      background-color: rgba(34, 34, 34, 0.7);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    
+    .rider-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .rider-image {
+      height: 300px;
+      background-color: #333;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .rider-info {
+      padding: 1.5rem;
+    }
+    
+    .rider-info h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .rider-info p {
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+    
+    .category {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background-color: var(--primary);
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    /* View All Button Styles */
+    .view-all-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .view-all-button {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .view-all-button:hover {
+      background-color: white;
+      color: black;
+    }
+    
+    /* Latest News Section */
+    .latest-news {
+      padding: 6rem 0;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+    }
+    
+    .news-card {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .news-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .news-image {
+      height: 200px;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .news-info {
+      padding: 1.5rem;
+      background-color: #1a1f2b;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .news-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .news-info h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: white;
+    }
+    
+    .news-info p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    
+    .read-more {
+      color: var(--primary);
+      font-weight: 600;
+      transition: opacity 0.3s ease;
+      align-self: flex-start;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+    }
+    
+    .read-more::after {
+      content: "→";
+      margin-left: 5px;
+      transition: transform 0.2s ease;
+    }
+    
+    .read-more:hover {
+      opacity: 0.8;
+    }
+    
+    .read-more:hover::after {
+      transform: translateX(3px);
+    }
+    
+    /* Responsive news cards for mobile */
+    @media (max-width: 1024px) {
+      .news-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Upcoming Races Section */
+    .upcoming-races {
+      padding: 6rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .races-list {
+      max-width: 800px;
+      margin: 0 auto 3rem;
+    }
+    
+    .race-card {
+      background-color: rgba(34, 34, 34, 0.7);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .race-info {
+      flex: 1;
+    }
+    
+    .race-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .race-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .race-location {
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    .race-details-button {
+      padding: 0.5rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    
+    .race-details-button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    /* Loading Animation */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      grid-column: 1 / -1;
+    }
+    
+    .loading p {
+      color: #ccc;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-logo p {
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background-color: #333;
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+    }
+    
+    .social-links a:hover {
+      background-color: var(--primary);
+    }
+    
+    .footer-links h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      margin-top: 4rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.875rem;
+    }
+    
+    /* Admin Link (Hidden) */
+    .admin-link {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #666;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      transition: color 0.3s ease;
+    }
+    
+    .admin-link:hover {
+      color: var(--primary);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h2 {
+        font-size: 3rem;
+      }
+      
+      .header-container {
+        flex-direction: column;
+      }
+      
+      nav ul {
+        margin-top: 1.5rem;
+      }
+      
+      nav li {
+        margin: 0 1rem;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Image -->
+  <div class="bg-image"></div>
+  
+  <!-- Content Container -->
+  <div class="content">
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <h1>VULCAN CYCLING</h1>
+        </div>
+        
+        <nav>
+          <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="results/index.html">Results</a></li>
+            <li><a href="news/index.html">News</a></li>
+            <li><a href="races/index.html">Races</a></li>
+            <li><a href="about/index.html">About</a></li>
+            <li><a href="contact/index.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h2>FORGING CHAMPIONS</h2>
+        <p>Junior cycling in New Jersey and New York</p>
+        <div class="hero-buttons">
+          <a href="team.html" class="primary-button">Meet Our Team</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Featured Riders Section -->
+    <section class="featured-riders">
+      <div class="container">
+        <h2 class="section-title">Featured Riders</h2>
+        
+        <div class="riders-grid">
+          <!-- Riders will be loaded from Firebase -->
+          <div class="loading">
+            <p>Loading featured riders...</p>
+          </div>
+        </div>
+        
+        <div class="view-all-container">
+          <a href="team.html" class="view-all-button">View All Riders</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Latest News Section -->
+    <section class="latest-news">
+      <div class="container">
+        <h2 class="section-title">Latest News</h2>
+        
+        <div class="news-grid">
+          <!-- News will be loaded from Firebase -->
+          <div class="loading">
+            <p>Loading latest news...</p>
+          </div>
+        </div>
+        
+        <div class="view-all-container">
+          <a href="news/index.html" class="view-all-button">View All News</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Upcoming Races Section -->
+    <section class="upcoming-races">
+      <div class="container">
+        <h2 class="section-title">Upcoming Races</h2>
+        
+        <div class="races-list">
+          <!-- Races will be loaded from Firebase -->
+          <div class="loading">
+            <p>Loading upcoming races...</p>
+          </div>
+        </div>
+        
+        <div class="view-all-container">
+          <a href="races/index.html" class="view-all-button">View All Races</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3>VULCAN CYCLING</h3>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="news/index.html">News</a></li>
+              <li><a href="results/index.html">Results</a></li>
+              <li><a href="grasshopper.html">Grasshopper Kids Race</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Contact Us</h3>
+            <ul>
+              <li><a href="about/index.html">About Us</a></li>
+              <li><a href="contact/index.html">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="copyright">
+          &copy; 2025 Vulcan Cycling. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    
+    <!-- Hidden Admin Link -->
+    <a href="admin/index.html" class="admin-link">Admin</a>
+  </div>
+  
+  <!-- Firebase Loader Script -->
+  <script src="js/firebase-loader.js"></script>
+  
+  <!-- Load content -->
+  <script>
+    window.addEventListener('load', function() {
+      console.log('Homepage window load event triggered');
+      
+      // Wait for Firebase to initialize
+      setTimeout(function() {
+        console.log('Loading homepage content...');
+        
+        // Load featured riders
+        if (typeof loadFeaturedRiders === 'function') {
+          console.log('Loading featured riders...');
+          loadFeaturedRiders();
+        } else {
+          console.error('loadFeaturedRiders function not found');
+        }
+        
+        // Load latest news
+        if (typeof loadLatestNews === 'function') {
+          console.log('Loading latest news...');
+          loadLatestNews();
+        } else {
+          console.error('loadLatestNews function not found');
+        }
+        
+        // Load upcoming races
+        if (typeof loadUpcomingRaces === 'function') {
+          console.log('Loading upcoming races...');
+          loadUpcomingRaces();
+        } else {
+          console.error('loadUpcomingRaces function not found');
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+</html> 

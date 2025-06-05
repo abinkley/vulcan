@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Race Results - Vulcan Cycling</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=1.0.1">
+    <style>
+        :root {
+            --primary: #ff3e82;
+            --primary-hover: #e62e72;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            background-color: #000;
+            line-height: 1.6;
+        }
+
+        /* Full-screen background image */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+            background-image: url('../images/vulcan-screenshot-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #000;
+        }
+        
+        /* Content container to appear above background */
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Header */
+        header {
+            padding: 1.5rem 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            margin-left: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav li {
+            margin-left: 2rem;
+        }
+        
+        nav a {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            color: black;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Page Header */
+        .page-header {
+            padding: 4rem 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .page-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .page-header p {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Results Section */
+        .results-section {
+            padding: 4rem 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .results-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Season Navigation */
+        .season-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .season-btn {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .season-btn:hover {
+            background-color: rgba(50, 50, 50, 0.8);
+        }
+        
+        .season-btn.active {
+            background-color: var(--primary);
+        }
+        
+        /* Race Result Cards */
+        .race-result-card {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .race-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .results-table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+        
+        .results-table tbody tr:hover {
+            background-color: rgba(60, 60, 60, 0.5);
+        }
+        
+        .results-table td:nth-child(3) {
+            font-weight: 700;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: rgba(30, 30, 30, 0.5);
+            border-radius: 8px;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 4rem 0;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-logo h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            margin-top: 4rem;
+            text-align: center;
+            color: #999;
+            font-size: 0.875rem;
+        }
+    </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+    <!-- Background image -->
+    <div class="bg-image"></div>
+    
+    <!-- Content -->
+    <div class="content">
+        <!-- Header -->
+        <header>
+            <div class="container header-container">
+                <div class="logo">
+                    <h1>VULCAN CYCLING</h1>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="index.html" class="active">Results</a></li>
+                        <li><a href="../news/index.html">News</a></li>
+                        <li><a href="../races/index.html">Races</a></li>
+                        <li><a href="../about/index.html">About</a></li>
+                        <li><a href="../contact/index.html">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h2>Race Results</h2>
+                <p>View the latest race results and achievements from Vulcan Cycling team members</p>
+            </div>
+        </section>
+        
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="container">
+                <div class="results-container">
+                    <!-- Loading state (will be replaced by results) -->
+                    <div class="loading">
+                        <p>Loading race results...</p>
+                    </div>
+                    
+                    <!-- Results will be loaded here dynamically -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <h3>VULCAN CYCLING</h3>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="../index.html">Home</a></li>
+                            <li><a href="../team.html">Our Team</a></li>
+                            <li><a href="../results/index.html">Results</a></li>
+                            <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Contact Us</h3>
+                        <ul>
+                            <li><a href="../about/index.html">About Us</a></li>
+                            <li><a href="../contact/index.html">Contact</a></li>
+                            <li><a href="../races/index.html">Races</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="copyright">
+                    &copy; 2023 Vulcan Cycling. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Firebase Loader Script -->
+    <script src="../js/firebase-loader.js?v=1.0.1"></script>
+    
+    <!-- Direct script call to ensure results load properly -->
+    <script>
+        // Ensure we load results even if path detection fails
+        window.addEventListener('load', function() {
+            console.log('Results page window load event triggered');
+            
+            // Try to debug Firestore content - check what's available
+            setTimeout(function() {
+                console.log('Checking Firestore for any result entries...');
+                
+                // Query for any result documents
+                db.collection('content')
+                    .where('type', '==', 'result')
+                    .limit(10)
+                    .get()
+                    .then(snapshot => {
+                        console.log(`Found ${snapshot.size} result documents in Firestore`);
+                        if (snapshot.size > 0) {
+                            console.log('First result document:');
+                            console.log(snapshot.docs[0].data());
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking for results:', error);
+                    });
+            }, 1000);
+            
+            // Wait a longer time to ensure Firebase is fully initialized
+            setTimeout(function() {
+                console.log('Direct script call to load results (1500ms timeout)');
+                if (typeof loadAllResults === 'function') {
+                    console.log('loadAllResults function found, calling it directly');
+                    loadAllResults();
+                } else {
+                    console.error('loadAllResults function not found in direct call');
+                    
+                    // As a last resort, try to manually fetch and display results
+                    console.log('Manually fetching results as last resort');
+                    const resultsContainer = document.querySelector('.results-container');
+                    
+                    if (resultsContainer) {
+                        resultsContainer.innerHTML = '<div class="loading"><p>Attempting to load results manually...</p></div>';
+                        
+                        db.collection('content')
+                            .where('type', '==', 'result')
+                            .get()
+                            .then(snapshot => {
+                                if (snapshot.empty) {
+                                    resultsContainer.innerHTML = '<div class="empty-state"><h3>No Results Found</h3><p>No race results have been added yet.</p></div>';
+                                    return;
+                                }
+                                
+                                // Group results by race title and date
+                                const resultsByRace = {};
+                                
+                                snapshot.forEach((doc) => {
+                                    const result = doc.data();
+                                    let resultDate;
+                                    
+                                    // Parse the date properly
+                                    if (result.date) {
+                                        if (result.date.toDate) {
+                                            // Firestore timestamp
+                                            resultDate = result.date.toDate();
+                                        } else if (typeof result.date === 'string') {
+                                            // ISO string or other string format
+                                            resultDate = new Date(result.date);
+                                        } else if (result.date.seconds) {
+                                            // Firestore timestamp in serialized form
+                                            resultDate = new Date(result.date.seconds * 1000);
+                                        } else {
+                                            // Default to now
+                                            resultDate = new Date();
+                                        }
+                                    } else {
+                                        // If no date, use a recent date
+                                        resultDate = new Date();
+                                    }
+                                    
+                                    // Format date for display
+                                    const formattedDate = resultDate.toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    });
+                                    
+                                    // Create a key for grouping (title + date)
+                                    const raceKey = `${result.title || 'Untitled Race'}-${resultDate.getTime()}`;
+                                    
+                                    // Initialize the race group if it doesn't exist
+                                    if (!resultsByRace[raceKey]) {
+                                        resultsByRace[raceKey] = {
+                                            title: result.title || 'Untitled Race',
+                                            date: resultDate,
+                                            formattedDate: formattedDate,
+                                            results: []
+                                        };
+                                    }
+                                    
+                                    // Add the result to the race group
+                                    resultsByRace[raceKey].results.push({
+                                        rider: result.rider || 'Unknown Rider',
+                                        category: result.category || '',
+                                        position: result.placement || '',
+                                        time: result.time || '',
+                                        notes: result.notes || ''
+                                    });
+                                });
+                                
+                                // Convert to array for sorting
+                                const races = Object.values(resultsByRace);
+                                
+                                // Sort races by date (newest first)
+                                races.sort((a, b) => b.date - a.date);
+                                
+                                console.log(`Displaying ${races.length} grouped race results`);
+                                
+                                // Clear results container
+                                resultsContainer.innerHTML = '';
+                                
+                                // Get unique years from races
+                                const years = [...new Set(races.map(r => r.date.getFullYear()))];
+                                years.sort((a, b) => b - a); // Sort newest first
+                                
+                                // Create season navigation if we have multiple years
+                                if (years.length > 1) {
+                                    const seasonNav = document.createElement('div');
+                                    seasonNav.className = 'season-navigation';
+                                    
+                                    // Add buttons for each year
+                                    years.forEach(year => {
+                                        const seasonBtn = document.createElement('button');
+                                        seasonBtn.className = 'season-btn';
+                                        seasonBtn.textContent = `${year} Season`;
+                                        seasonBtn.onclick = function() {
+                                            // Hide all seasons
+                                            document.querySelectorAll('.season-container').forEach(el => {
+                                                el.style.display = 'none';
+                                            });
+                                            // Show selected season
+                                            document.getElementById(`season-${year}`).style.display = 'block';
+                                            // Update active button
+                                            document.querySelectorAll('.season-btn').forEach(btn => {
+                                                btn.classList.remove('active');
+                                            });
+                                            this.classList.add('active');
+                                        };
+                                        seasonNav.appendChild(seasonBtn);
+                                    });
+                                    
+                                    resultsContainer.appendChild(seasonNav);
+                                    
+                                    // Make first button active
+                                    seasonNav.querySelector('.season-btn').classList.add('active');
+                                }
+                                
+                                // Create containers for each season
+                                let currentYear = null;
+                                let seasonContainer = null;
+                                
+                                // Loop through sorted races
+                                races.forEach((race) => {
+                                    const raceYear = race.date.getFullYear();
+                                    
+                                    // Create new season container if this is a different year
+                                    if (raceYear !== currentYear) {
+                                        currentYear = raceYear;
+                                        
+                                        // Create new season container
+                                        seasonContainer = document.createElement('div');
+                                        seasonContainer.className = 'season-container';
+                                        seasonContainer.id = `season-${raceYear}`;
+                                        
+                                        // Only show the current season by default (if we have multiple years)
+                                        if (years.length > 1 && raceYear !== years[0]) {
+                                            seasonContainer.style.display = 'none';
+                                        }
+                                        
+                                        resultsContainer.appendChild(seasonContainer);
+                                    }
+                                    
+                                    // Create race result card
+                                    const raceCard = document.createElement('div');
+                                    raceCard.className = 'race-result-card';
+                                    
+                                    // Create race header
+                                    const raceHeader = document.createElement('div');
+                                    raceHeader.className = 'race-header';
+                                    raceHeader.textContent = `${race.title} - ${race.formattedDate.split(',')[0]} ${race.formattedDate.split(',')[1]}`;
+                                    
+                                    // Create table for rider results
+                                    const resultsTable = document.createElement('table');
+                                    resultsTable.className = 'results-table';
+                                    
+                                    // Create table header
+                                    const tableHeader = document.createElement('thead');
+                                    tableHeader.innerHTML = `
+                                        <tr>
+                                            <th>Rider</th>
+                                            <th>Category</th>
+                                            <th>Position</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    `;
+                                    
+                                    // Create table body
+                                    const tableBody = document.createElement('tbody');
+                                    
+                                    // Sort results by position if available
+                                    race.results.sort((a, b) => {
+                                        // Try to sort numerically if possible
+                                        const posA = parseInt(a.position);
+                                        const posB = parseInt(b.position);
+                                        
+                                        if (!isNaN(posA) && !isNaN(posB)) {
+                                            return posA - posB;
+                                        }
+                                        
+                                        // Fall back to string comparison
+                                        return (a.position || '').toString().localeCompare((b.position || '').toString());
+                                    });
+                                    
+                                    // Add each result to the table
+                                    race.results.forEach((result) => {
+                                        const row = document.createElement('tr');
+                                        row.innerHTML = `
+                                            <td>${result.rider}</td>
+                                            <td>${result.category}</td>
+                                            <td>${result.position}</td>
+                                            <td>${result.time}</td>
+                                        `;
+                                        tableBody.appendChild(row);
+                                    });
+                                    
+                                    // Assemble the table
+                                    resultsTable.appendChild(tableHeader);
+                                    resultsTable.appendChild(tableBody);
+                                    
+                                    // Assemble the card
+                                    raceCard.appendChild(raceHeader);
+                                    raceCard.appendChild(resultsTable);
+                                    
+                                    // Add the card to the season container
+                                    seasonContainer.appendChild(raceCard);
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error manually loading results:', error);
+                                resultsContainer.innerHTML = `
+                                    <div class="empty-state">
+                                        <h3>Error Loading Results</h3>
+                                        <p>There was a problem loading the race results. Please try again later.</p>
+                                        <small style="color: red;">${error.message}</small>
+                                    </div>
+                                `;
+                            });
+                    }
+                }
+            }, 1500);
+        });
+    </script>
+</body>
+</html> 

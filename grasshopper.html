@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grasshopper Kids Race - Vulcan Cycling</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Mobile Navigation Script -->
+  <script src="js/mobile-nav.js" defer></script>
+  <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #000;
+      line-height: 1.6;
+    }
+
+    /* Full-screen background image */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+      background-image: url('images/vulcan-screenshot-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #000;
+    }
+    
+    /* Content container to appear above background */
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    /* Header */
+    header {
+      padding: 1.5rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo h1 {
+      margin-left: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav li {
+      margin-left: 2rem;
+    }
+    
+    nav a {
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    /* Page Header */
+    .page-header {
+      text-align: center;
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .page-header h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    
+    .page-header p {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #ccc;
+    }
+    
+    /* Main Content Section */
+    .grasshopper-section {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .grasshopper-content {
+      background-color: rgba(34, 34, 34, 0.7);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .grasshopper-content h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+    
+    .grasshopper-content p {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      color: #eee;
+    }
+    
+    .grasshopper-content ul {
+      margin-bottom: 1.5rem;
+      padding-left: 2rem;
+    }
+    
+    .grasshopper-content li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .highlight-box {
+      background-color: rgba(255, 62, 130, 0.15);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .highlight-box h4 {
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    /* Info Card */
+    .info-card {
+      background-color: rgba(34, 34, 34, 0.7);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .info-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+    
+    .info-card p {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    
+    .info-label {
+      font-weight: 700;
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+    
+    .contact-email {
+      color: var(--primary);
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+    
+    .contact-email:hover {
+      color: var(--primary-hover);
+    }
+    
+    /* Footer */
+    footer {
+      padding: 3rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-logo h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-links h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Image -->
+  <div class="bg-image"></div>
+  
+  <!-- Content Container -->
+  <div class="content">
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <h1>VULCAN CYCLING</h1>
+        </div>
+        
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="results/index.html">Results</a></li>
+            <li><a href="news/index.html">News</a></li>
+            <li><a href="races/index.html">Races</a></li>
+            <li><a href="about/index.html">About</a></li>
+            <li><a href="contact/index.html">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="container">
+        <h2>Grasshopper Kids Race</h2>
+      </div>
+    </section>
+    
+    <!-- Main Content -->
+    <section class="grasshopper-section">
+      <div class="container">
+        <div class="grasshopper-content">
+          <h3>Welcome to the Grasshopper Kids Race!</h3>
+          <p>We're excited to give you all the information you will need for our upcoming events. The Grasshopper Kids Race is designed to introduce children to the joy of cycling in a safe, supportive environment.</p>
+          
+          <div class="info-card">
+            <h3>Event Information</h3>
+            <p><span class="info-label">Schedule:</span> Saturday September 6, 2025</p>
+            <p><span class="info-label">Location:</span> Kid's Korse Along Rail Trail below Cedar Grove Community Center, Fairview Avenue Cedar Grove, NJ</p>
+            <p><span class="info-label">Questions?</span> <a href="mailto:vulcankidsrace@gmail.com" class="contact-email">alex.binkley@gmail.com</a></p>
+          </div>
+          
+          <div class="highlight-box">
+            <h4>What to Expect</h4>
+            <p>Our Grasshopper Kids Race is a fun competitive race for young kids!</p>
+          </div>
+          
+          <h3>Age Groups</h3>
+          <ul>
+            <li><strong>Grades K-1</strong> 0.6 miles (no balance bikes)</li>
+            <li><strong>Grades 2-3:</strong> 0.9 miles</li>
+            <li><strong>Grades 4-5:</strong> 1.2 miles</li>
+          </ul>
+          
+          <div class="highlight-box">
+            <h4>Get Involved</h4>
+            <p>We're always looking for volunteers to help. If you're interested in supporting youth cycling in our community, please contact us!</p>
+            <a href="mailto:vulcankidsrace@gmail.com" class="cta-button">Email Us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3>VULCAN CYCLING</h3>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="news/index.html">News</a></li>
+              <li><a href="results/index.html">Results</a></li>
+              <li><a href="grasshopper.html">Grasshopper Kids Race</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Contact Us</h3>
+            <ul>
+              <li><a href="about/index.html">About Us</a></li>
+              <li><a href="contact/index.html">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="copyright">
+          &copy; 2025 Vulcan Cycling. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Firebase Loader Script -->
+  <script src="js/firebase-loader.js"></script>
+</body>
+</html> 
