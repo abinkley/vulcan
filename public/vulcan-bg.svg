@@ -1,0 +1,17 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" fill="black"/>
+  <polygon points="600,100 1100,700 100,700" fill="none" stroke="#ff0066" stroke-width="10" opacity="0.3"/>
+  <polygon points="600,200 1000,600 200,600" fill="none" stroke="white" stroke-width="8" opacity="0.2"/>
+  <polygon points="600,300 900,500 300,500" fill="none" stroke="#999999" stroke-width="6" opacity="0.1"/>
+  
+  <!-- Diagonal lines -->
+  <line x1="0" y1="0" x2="1200" y2="800" stroke="white" stroke-width="2" opacity="0.1"/>
+  <line x1="0" y1="200" x2="1200" y2="1000" stroke="white" stroke-width="2" opacity="0.1"/>
+  <line x1="0" y1="400" x2="1200" y2="1200" stroke="white" stroke-width="2" opacity="0.1"/>
+  <line x1="0" y1="600" x2="1200" y2="1400" stroke="white" stroke-width="2" opacity="0.1"/>
+  
+  <line x1="1200" y1="0" x2="0" y2="800" stroke="#ff0066" stroke-width="2" opacity="0.1"/>
+  <line x1="1200" y1="-200" x2="0" y2="600" stroke="#ff0066" stroke-width="2" opacity="0.1"/>
+  <line x1="1200" y1="-400" x2="0" y2="400" stroke="#ff0066" stroke-width="2" opacity="0.1"/>
+  <line x1="1200" y1="-600" x2="0" y2="200" stroke="#ff0066" stroke-width="2" opacity="0.1"/>
+</svg> 
