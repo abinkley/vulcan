@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
@@ -12,7 +11,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">FORGING CHAMPIONS</h1>
             <p className="text-xl text-gray-300 mb-8">
-              Building the future of cycling with elite training, passionate coaches, and a commitment to excellence.
+              Junior cycling in New Jersey and New York
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button className="bg-pink-500 hover:bg-pink-600 text-white">
@@ -35,11 +34,10 @@ export default function Home() {
             {[1, 2, 3].map((rider) => (
               <div key={rider} className="bg-gray-900 rounded-lg overflow-hidden group">
                 <div className="aspect-[3/4] relative">
-                  <Image
-                    src={`/placeholder.svg?height=400&width=300`}
+                  <img
+                    src="/placeholder.svg"
                     alt={`Rider ${rider}`}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
                   />
                 </div>
                 <div className="p-6">
@@ -71,11 +69,10 @@ export default function Home() {
             {[1, 2, 3].map((news) => (
               <div key={news} className="bg-gray-900 rounded-lg overflow-hidden">
                 <div className="aspect-video relative">
-                  <Image
-                    src={`/placeholder.svg?height=200&width=400`}
+                  <img
+                    src="/placeholder.svg"
                     alt={`News ${news}`}
-                    fill
-                    className="object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-6">
@@ -150,4 +147,3 @@ export default function Home() {
     </>
   )
 }
-

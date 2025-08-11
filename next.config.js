@@ -2,14 +2,18 @@
 const nextConfig = {
   /* config options here */
   images: {
-    domains: ['hebbkx1anhila5yf.public.blob.vercel-storage.com'],
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'hebbkx1anhila5yf.public.blob.vercel-storage.com',
+      },
+    ],
   },
   output: 'export',
   trailingSlash: true,
-  basePath: '',
   outputFileTracingExcludes: {
-    '*': ['app/(main)/**/*']
+    '*': ['node_modules/**/*']
   }
 };
 

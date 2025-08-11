@@ -1,16 +1,15 @@
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 export function SiteHeader() {
   return (
-    <header className="relative z-10">
+    <header className="relative z-20">
       <div className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-03-13%20at%208.57.29%E2%80%AFPM-TYSoRXg4uWHJl0CEX2Z2k3GBgwvqNf.png"
+              <img
+                src="/vulcan-logo.svg"
                 alt="Vulcan Cycling Logo"
                 width={50}
                 height={50}
@@ -23,16 +22,16 @@ export function SiteHeader() {
             <Link href="/" className="text-white hover:text-pink-500 transition-colors">
               Home
             </Link>
-            <Link href="/results" className="text-white hover:text-pink-500 transition-colors">
+            <Link href="/results/" className="text-white hover:text-pink-500 transition-colors">
               Results
             </Link>
-            <Link href="/news" className="text-white hover:text-pink-500 transition-colors">
+            <Link href="/news/" className="text-white hover:text-pink-500 transition-colors">
               News
             </Link>
-            <Link href="/about" className="text-white hover:text-pink-500 transition-colors">
+            <Link href="/about/" className="text-white hover:text-pink-500 transition-colors">
               About
             </Link>
-            <Link href="/contact" className="text-white hover:text-pink-500 transition-colors">
+            <Link href="/contact/" className="text-white hover:text-pink-500 transition-colors">
               Contact
             </Link>
           </div>

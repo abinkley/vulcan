@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Image from "next/image"
 import { Instagram, Facebook, Twitter } from "lucide-react"
 
 export function SiteFooter() {
@@ -8,15 +7,15 @@ export function SiteFooter() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div>
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-03-13%20at%208.57.29%E2%80%AFPM-TYSoRXg4uWHJl0CEX2Z2k3GBgwvqNf.png"
+            <img
+              src="/vulcan-logo.svg"
               alt="Vulcan Cycling Logo"
               width={80}
               height={80}
               className="mb-4"
             />
             <p className="text-gray-400 mb-4">
-              Developing the next generation of cycling champions through dedication, training, and passion.
+              Junior cycling in New Jersey and New York
             </p>
             <div className="flex space-x-4">
               <Link href="#" className="text-gray-400 hover:text-pink-500">
@@ -68,31 +67,10 @@ export function SiteFooter() {
                   Join the Team
                 </Link>
               </li>
-              <li>
-                <Link href="#" className="text-gray-400 hover:text-pink-500">
-                  Sponsorship
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-gray-400 hover:text-pink-500">
-                  Training Tips
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-gray-400 hover:text-pink-500">
-                  Equipment
-                </Link>
-              </li>
             </ul>
           </div>
           <div>
             <h3 className="text-white font-bold mb-4">Contact</h3>
-            <ul className="space-y-2">
-              <li className="text-gray-400">123 Cycling Way</li>
-              <li className="text-gray-400">San Francisco, CA 94103</li>
-              <li className="text-gray-400">info@vulcancycling.com</li>
-              <li className="text-gray-400">(555) 123-4567</li>
-            </ul>
           </div>
         </div>
         <div className="border-t border-gray-800 pt-8">
