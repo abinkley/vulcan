@@ -3,590 +3,300 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Content - Vulcan Cycling Admin</title>
-  <style>
-    :root {
-      --primary: #ff3e82;
-      --primary-hover: #e62e72;
-      --sidebar-width: 250px;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-    }
-    
-    .dashboard {
-      display: flex;
-      min-height: 100vh;
-    }
-    
-    /* Sidebar */
-    .sidebar {
-      width: var(--sidebar-width);
-      background-color: #1a1a1a;
-      color: white;
-      padding: 1.5rem;
-      position: fixed;
-      height: 100vh;
-      overflow-y: auto;
-    }
-    
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    
-    .sidebar-header img {
-      height: 40px;
-      width: auto;
-      margin-right: 0.75rem;
-    }
-    
-    .sidebar-header h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-    
-    .sidebar-nav {
-      margin-bottom: 2rem;
-    }
-    
-    .sidebar-nav h2 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      color: #999;
-      margin-bottom: 0.75rem;
-      letter-spacing: 1px;
-    }
-    
-    .sidebar-nav ul {
-      list-style: none;
-    }
-    
-    .sidebar-nav li {
-      margin-bottom: 0.5rem;
-    }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem;
-      border-radius: 0.25rem;
-      color: #ccc;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    
-    .sidebar-nav a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-    
-    .sidebar-nav a.active {
-      background-color: var(--primary);
-      color: white;
-    }
-    
-    .sidebar-nav svg {
-      margin-right: 0.75rem;
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-    
-    .sidebar-footer {
-      margin-top: auto;
-      padding-top: 1rem;
-      border-top: 1px solid #333;
-    }
-    
-    .sidebar-footer a {
-      display: flex;
-      align-items: center;
-      color: #999;
-      text-decoration: none;
-      padding: 0.75rem;
-      border-radius: 0.25rem;
-      transition: all 0.2s ease;
-    }
-    
-    .sidebar-footer a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-    
-    .sidebar-footer svg {
-      margin-right: 0.75rem;
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-    
-    /* Main content */
-    .main-content {
-      flex: 1;
-      margin-left: var(--sidebar-width);
-      padding: 2rem;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    
-    .page-header h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-    }
-    
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.625rem 1.25rem;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-    }
-    
-    .btn:hover {
-      background-color: var(--primary-hover);
-    }
-    
-    .btn svg {
-      margin-right: 0.5rem;
-      width: 1rem;
-      height: 1rem;
-    }
-    
-    .btn-secondary {
-      background-color: #6c757d;
-    }
-    
-    .btn-secondary:hover {
-      background-color: #5a6268;
-    }
-    
-    /* Filter controls */
-    .filter-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      padding: 1.5rem;
-      background-color: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-    
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 200px;
-    }
-    
-    .filter-group label {
-      font-size: 0.875rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      color: #555;
-    }
-    
-    .filter-group select,
-    .filter-group input {
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-    }
-    
-    .filter-group select:focus,
-    .filter-group input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(255, 62, 130, 0.2);
-    }
-    
-    .filter-actions {
-      display: flex;
-      align-items: flex-end;
-      gap: 0.5rem;
-    }
-    
-    /* Content table */
-    .content-table {
-      width: 100%;
-      background-color: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-    }
-    
-    .content-table table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    
-    .content-table th,
-    .content-table td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .content-table th {
-      background-color: #f9f9f9;
-      font-weight: 600;
-      color: #666;
-    }
-    
-    .content-table tr:last-child td {
-      border-bottom: none;
-    }
-    
-    .content-table .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    /* Pagination */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin-top: 2rem;
-    }
-    
-    .pagination-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.25rem;
-      margin: 0 0.25rem;
-      background-color: white;
-      color: #666;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    
-    .pagination-item:hover {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-    
-    .pagination-item.active {
-      background-color: var(--primary);
-      color: white;
-    }
-    
-    .pagination-item.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-  </style>
+  <title>Manage Content - Vulcan Cycling</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
 </head>
 <body>
-  <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <a href="../index.html">
-          <span>VULCAN CYCLING</span>
-        </a>
-      </div>
-      
-      <nav class="sidebar-nav">
-        <h2>Content</h2>
-        <ul>
-          <li>
-            <a href="dashboard.html">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="3" y1="9" x2="21" y2="9"></line>
-                <line x1="9" y1="21" x2="9" y2="9"></line>
-              </svg>
-              Dashboard
-            </a>
-          </li>
-          <li>
-            <a href="#" class="active">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              Content
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              Riders
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              Races
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-              </svg>
-              Results
-            </a>
-          </li>
-        </ul>
-        
-        <h2 style="margin-top: 2rem;">Settings</h2>
-        <ul>
-          <li>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-              Settings
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Users
-            </a>
-          </li>
-        </ul>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <a href="index.html">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
-          Log Out
-        </a>
-      </div>
-    </aside>
-    
-    <!-- Main content -->
-    <main class="main-content">
-      <div class="page-header">
-        <h1>Manage Content</h1>
-        <a href="add-content.html" class="btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add New Content
-        </a>
-      </div>
-      
-      <div class="filter-controls">
-        <div class="filter-group">
-          <label for="content-type">Content Type</label>
-          <select id="content-type">
-            <option value="all">All Types</option>
-            <option value="news">News</option>
-            <option value="rider">Riders</option>
-            <option value="race">Races</option>
-            <option value="result">Results</option>
-          </select>
+  <header class="admin-header">
+    <div class="container">
+      <div class="admin-header-content">
+        <div class="logo">
+          <a href="../index.html">
+            <span>VULCAN CYCLING</span>
+          </a>
+          <span>Admin</span>
         </div>
-        
-        <div class="filter-group">
-          <label for="content-status">Status</label>
-          <select id="content-status">
-            <option value="all">All Statuses</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="active">Active</option>
-          </select>
+        <nav>
+          <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="add-content.html">Add Content</a></li>
+            <li><a href="../index.html">View Site</a></li>
+            <li><a href="#" id="logout-btn">Logout</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="container">
+      <div class="admin-content">
+        <div class="admin-sidebar">
+          <h3>Content Types</h3>
+          <ul class="content-filters">
+            <li><a href="manage-content.html" data-filter="all">All Content</a></li>
+            <li><a href="manage-content.html?type=news" data-filter="news">News</a></li>
+            <li><a href="manage-content.html?type=rider" data-filter="rider">Riders</a></li>
+            <li><a href="manage-content.html?type=race" data-filter="race">Races</a></li>
+            <li><a href="manage-content.html?type=result" data-filter="result">Results</a></li>
+          </ul>
         </div>
-        
-        <div class="filter-group">
-          <label for="search-content">Search</label>
-          <input type="text" id="search-content" placeholder="Search by title or keyword">
-        </div>
-        
-        <div class="filter-actions">
-          <button class="btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            Filter
-          </button>
-          <button class="btn btn-secondary">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 12h20M2 12l5-5M2 12l5 5"></path>
-            </svg>
-            Reset
-          </button>
+        <div class="admin-main-content">
+          <div class="admin-header-actions">
+            <h2 id="content-type-header">Manage Content</h2>
+            <a href="add-content.html" class="btn primary-btn" id="add-content-btn">Add New</a>
+          </div>
+          
+          <div class="search-bar">
+            <input type="text" id="content-search" placeholder="Search content...">
+          </div>
+          
+          <div class="content-table-container">
+            <table class="content-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="content-table-body">
+                <tr>
+                  <td colspan="5" class="loading-cell">Loading content...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      
-      <div class="content-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Team Vulcan Dominates Regional Championships</td>
-              <td>News</td>
-              <td>March 10, 2025</td>
-              <td>Published</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-            <tr>
-              <td>Junior Regional Cup - Stage 1</td>
-              <td>Race</td>
-              <td>March 20, 2025</td>
-              <td>Upcoming</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-            <tr>
-              <td>Alex Johnson</td>
-              <td>Rider</td>
-              <td>March 5, 2025</td>
-              <td>Active</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-            <tr>
-              <td>New Equipment Sponsors Announced</td>
-              <td>News</td>
-              <td>March 1, 2025</td>
-              <td>Published</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-            <tr>
-              <td>Sarah Smith</td>
-              <td>Rider</td>
-              <td>February 28, 2025</td>
-              <td>Active</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-            <tr>
-              <td>Junior Regional Cup - Stage 2</td>
-              <td>Race</td>
-              <td>April 5, 2025</td>
-              <td>Upcoming</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-            <tr>
-              <td>Training Camp Highlights</td>
-              <td>News</td>
-              <td>February 15, 2025</td>
-              <td>Published</td>
-              <td class="actions">
-                <a href="#" class="btn">Edit</a>
-                <a href="#" class="btn btn-secondary">Delete</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <div class="pagination">
-        <a href="#" class="pagination-item disabled">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </a>
-        <a href="#" class="pagination-item active">1</a>
-        <a href="#" class="pagination-item">2</a>
-        <a href="#" class="pagination-item">3</a>
-        <a href="#" class="pagination-item">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </a>
-      </div>
-    </main>
-  </div>
-  
+    </div>
+  </main>
+
   <script>
-    // Filter functionality would be implemented here
-    document.querySelector('.filter-actions .btn').addEventListener('click', function() {
-      // Filter logic would go here
-      alert('Filter applied (demo only)');
-    });
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0hp0wbDPAG2Cbs_K1pi1jBDWtW4PMUuk",
+      authDomain: "vulcan-edfea.firebaseapp.com",
+      projectId: "vulcan-edfea",
+      storageBucket: "vulcan-edfea.firebasestorage.app",
+      messagingSenderId: "906189775089",
+      appId: "1:906189775089:web:7ce445936dfbc556778950",
+      measurementId: "G-5GZYY5YKTB"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Initialize Firestore
+    const db = firebase.firestore();
     
-    document.querySelector('.filter-actions .btn-secondary').addEventListener('click', function() {
-      // Reset form
-      document.getElementById('content-type').value = 'all';
-      document.getElementById('content-status').value = 'all';
-      document.getElementById('search-content').value = '';
-      alert('Filters reset (demo only)');
-    });
+    // Initialize Auth
+    const auth = firebase.auth();
     
-    // Pagination functionality would be implemented here
-    document.querySelectorAll('.pagination-item').forEach(item => {
-      if (!item.classList.contains('disabled') && !item.classList.contains('active')) {
-        item.addEventListener('click', function(e) {
-          e.preventDefault();
-          alert('Pagination clicked (demo only)');
-        });
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const contentType = urlParams.get('type') || 'all';
+    
+    // Update page title and button based on content type
+    function updatePageForContentType() {
+      const headerElement = document.getElementById('content-type-header');
+      const addButton = document.getElementById('add-content-btn');
+      
+      // Set active class on the correct sidebar link
+      document.querySelectorAll('.content-filters a').forEach(link => {
+        const linkFilter = link.getAttribute('data-filter');
+        if (linkFilter === contentType) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      
+      // Update header and button text
+      switch(contentType) {
+        case 'news':
+          headerElement.textContent = 'Manage News Articles';
+          addButton.textContent = 'Add News Article';
+          addButton.href = 'add-content.html?tab=news';
+          break;
+        case 'rider':
+          headerElement.textContent = 'Manage Riders';
+          addButton.textContent = 'Add Rider';
+          addButton.href = 'add-content.html?tab=rider';
+          break;
+        case 'race':
+          headerElement.textContent = 'Manage Races';
+          addButton.textContent = 'Add Race';
+          addButton.href = 'add-content.html?tab=race';
+          break;
+        case 'result':
+          headerElement.textContent = 'Manage Race Results';
+          addButton.textContent = 'Add Race Result';
+          addButton.href = 'add-content.html?tab=result';
+          break;
+        default:
+          headerElement.textContent = 'Manage All Content';
+          addButton.textContent = 'Add New Content';
+          addButton.href = 'add-content.html';
       }
+    }
+    
+    // Check authentication state
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        // Redirect to login page if not authenticated
+        window.location.href = 'index.html';
+      } else {
+        // Update page for content type
+        updatePageForContentType();
+        // Load content if authenticated
+        loadContent(contentType);
+      }
+    });
+    
+    // Logout function
+    document.getElementById('logout-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      auth.signOut().then(() => {
+        window.location.href = 'index.html';
+      }).catch(error => {
+        console.error('Error signing out:', error);
+      });
+    });
+    
+    // Load content from Firestore
+    async function loadContent(filter = 'all') {
+      const tableBody = document.getElementById('content-table-body');
+      tableBody.innerHTML = '<tr><td colspan="5" class="loading-cell">Loading content...</td></tr>';
+      
+      try {
+        let query = db.collection('content');
+        
+        // Apply filter if not 'all'
+        if (filter !== 'all') {
+          query = query.where('type', '==', filter);
+        }
+        
+        // Get content
+        const snapshot = await query.orderBy('createdAt', 'desc').get();
+        
+        // Clear loading message
+        tableBody.innerHTML = '';
+        
+        // If no content, show message
+        if (snapshot.empty) {
+          tableBody.innerHTML = '<tr><td colspan="5" class="empty-cell">No content found.</td></tr>';
+          return;
+        }
+        
+        // Add each content item to the table
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const row = document.createElement('tr');
+          row.setAttribute('data-type', data.type);
+          
+          // Format date correctly without timezone shifts
+          let formattedDate = 'N/A';
+          
+          if (data.date) {
+            if (typeof data.date === 'string' && data.date.includes('-')) {
+              // Parse YYYY-MM-DD directly without Date object conversion to avoid timezone issues
+              const parts = data.date.split('-');
+              if (parts.length === 3) {
+                formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; // MM/DD/YYYY format
+              } else {
+                formattedDate = data.date; // Use as-is if not in expected format
+              }
+            } else {
+              // Fallback for non-string dates
+              formattedDate = new Date(data.date).toLocaleDateString();
+            }
+          } else if (data.createdAt) {
+            formattedDate = new Date(data.createdAt.toDate()).toLocaleDateString();
+          }
+          
+          // Create row content
+          row.innerHTML = `
+            <td>${data.title || data.fullName || 'Untitled'}</td>
+            <td><span class="badge ${data.type}">${data.type}</span></td>
+            <td><span class="status ${data.status || 'draft'}">${data.status || 'draft'}</span></td>
+            <td>${formattedDate}</td>
+            <td class="actions">
+              <a href="add-content.html?edit=${doc.id}&tab=${data.type}" class="action-btn edit-btn">Edit</a>
+              <button class="action-btn delete-btn" data-id="${doc.id}">Delete</button>
+            </td>
+          `;
+          
+          // Add row to table
+          tableBody.appendChild(row);
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', handleDelete);
+        });
+      } catch (error) {
+        console.error('Error loading content:', error);
+        tableBody.innerHTML = '<tr><td colspan="5" class="error-cell">Error loading content. Please try again.</td></tr>';
+      }
+    }
+    
+    // Handle content deletion
+    async function handleDelete(e) {
+      const id = e.target.getAttribute('data-id');
+      
+      if (!id) return;
+      
+      if (confirm('Are you sure you want to delete this content? This action cannot be undone.')) {
+        try {
+          await db.collection('content').doc(id).delete();
+          
+          // Remove the row from the table
+          e.target.closest('tr').remove();
+          
+          // Show success message
+          alert('Content deleted successfully.');
+          
+          // Reload content if table is empty
+          const tableBody = document.getElementById('content-table-body');
+          if (tableBody.children.length === 0) {
+            loadContent(contentType);
+          }
+        } catch (error) {
+          console.error('Error deleting content:', error);
+          alert('Error deleting content. Please try again.');
+        }
+      }
+    }
+    
+    // Search content
+    document.getElementById('content-search').addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const rows = document.querySelectorAll('#content-table-body tr');
+      
+      rows.forEach(row => {
+        const title = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
+        
+        if (title.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
     });
   </script>
 </body>

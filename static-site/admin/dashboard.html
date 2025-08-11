@@ -11,6 +11,12 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
 </head>
 <body>
   <header class="admin-header">
@@ -36,23 +42,23 @@
 
   <main class="admin-main">
     <div class="container">
-      <div class="admin-content">
-        <div class="admin-sidebar">
-          <h3>Content Types</h3>
-          <ul class="content-filters">
-            <li><a href="#" class="active" data-filter="all">All Content</a></li>
-            <li><a href="#" data-filter="news">News</a></li>
-            <li><a href="#" data-filter="rider">Riders</a></li>
-            <li><a href="#" data-filter="race">Races</a></li>
-            <li><a href="#" data-filter="result">Results</a></li>
-          </ul>
-        </div>
+      <div class="admin-content" style="grid-template-columns: 1fr; gap: 0;">
         <div class="admin-main-content">
           <div class="admin-header-actions">
             <h2>Content Management</h2>
             <a href="add-content.html" class="btn primary-btn">Add New Content</a>
           </div>
           
+          <div style="margin-bottom: 20px;">
+            <ul class="content-filters" style="display: flex; gap: 15px; margin-bottom: 20px;">
+              <li><a href="#" class="active" data-filter="all">All Content</a></li>
+              <li><a href="#" data-filter="news">News</a></li>
+              <li><a href="#" data-filter="rider">Riders</a></li>
+              <li><a href="#" data-filter="race">Races</a></li>
+              <li><a href="#" data-filter="result">Results</a></li>
+            </ul>
+          </div>
+
           <div class="search-bar">
             <input type="text" id="content-search" placeholder="Search content...">
           </div>
@@ -153,18 +159,34 @@
           const row = document.createElement('tr');
           row.setAttribute('data-type', data.type);
           
-          // Format date
-          const date = data.date ? new Date(data.date).toLocaleDateString() : 
-                      data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : 'N/A';
+          // Format date correctly without timezone shifts
+          let formattedDate = 'N/A';
+          
+          if (data.date) {
+            if (typeof data.date === 'string' && data.date.includes('-')) {
+              // Parse YYYY-MM-DD directly without Date object conversion to avoid timezone issues
+              const parts = data.date.split('-');
+              if (parts.length === 3) {
+                formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; // MM/DD/YYYY format
+              } else {
+                formattedDate = data.date; // Use as-is if not in expected format
+              }
+            } else {
+              // Fallback for non-string dates
+              formattedDate = new Date(data.date).toLocaleDateString();
+            }
+          } else if (data.createdAt) {
+            formattedDate = new Date(data.createdAt.toDate()).toLocaleDateString();
+          }
           
           // Create row content
           row.innerHTML = `
             <td>${data.title || data.fullName || 'Untitled'}</td>
             <td><span class="badge ${data.type}">${data.type}</span></td>
             <td><span class="status ${data.status || 'draft'}">${data.status || 'draft'}</span></td>
-            <td>${date}</td>
+            <td>${formattedDate}</td>
             <td class="actions">
-              <a href="add-content.html?edit=${doc.id}" class="action-btn edit-btn">Edit</a>
+              <a href="add-content.html?edit=${doc.id}&tab=${data.type}" class="action-btn edit-btn">Edit</a>
               <button class="action-btn delete-btn" data-id="${doc.id}">Delete</button>
             </td>
           `;
@@ -242,7 +264,7 @@
       const rows = document.querySelectorAll('#content-table-body tr');
       
       rows.forEach(row => {
-        const title = row.querySelector('td:first-child').textContent.toLowerCase();
+        const title = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
         
         if (title.includes(searchTerm)) {
           row.style.display = '';
@@ -251,6 +273,78 @@
         }
       });
     });
+    
+    // Load recent content
+    function loadRecentContent() {
+      const contentList = document.getElementById('recent-content-list');
+      
+      // Show loading indicator
+      contentList.innerHTML = '<li class="loading">Loading recent content...</li>';
+      
+      // Query Firestore for most recent content
+      db.collection('content')
+        .orderBy('createdAt', 'desc')
+        .limit(5)
+        .get()
+        .then(snapshot => {
+          // Clear loading indicator
+          contentList.innerHTML = '';
+          
+          if (snapshot.empty) {
+            contentList.innerHTML = '<li class="empty">No content found.</li>';
+            return;
+          }
+          
+          // Loop through each document
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            
+            // Format date correctly without timezone shifts
+            let formattedDate = 'N/A';
+            
+            if (data.date) {
+              if (typeof data.date === 'string' && data.date.includes('-')) {
+                // Parse YYYY-MM-DD directly without Date object conversion to avoid timezone issues
+                const parts = data.date.split('-');
+                if (parts.length === 3) {
+                  formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; // MM/DD/YYYY format
+                } else {
+                  formattedDate = data.date; // Use as-is if not in expected format
+                }
+              } else {
+                // Fallback for non-string dates
+                formattedDate = new Date(data.date).toLocaleDateString();
+              }
+            } else if (data.createdAt) {
+              formattedDate = new Date(data.createdAt.toDate()).toLocaleDateString();
+            }
+            
+            // Create list item
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <div class="content-item">
+                <div class="content-info">
+                  <h3>${data.title || data.fullName || 'Untitled'}</h3>
+                  <div class="content-meta">
+                    <span class="badge ${data.type}">${data.type}</span>
+                    <span class="date">${formattedDate}</span>
+                  </div>
+                </div>
+                <div class="content-actions">
+                  <a href="add-content.html?edit=${doc.id}&tab=${data.type}" class="action-btn edit-btn">Edit</a>
+                </div>
+              </div>
+            `;
+            
+            // Add to list
+            contentList.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading recent content:', error);
+          contentList.innerHTML = '<li class="error">Error loading content.</li>';
+        });
+    }
   </script>
 </body>
 </html> 

@@ -665,4 +665,107 @@ footer {
   nav li {
     margin: 0 1rem;
   }
+}
+
+/* Results Page Styles */
+.results-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.year-toggle {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.year-toggle button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.year-toggle button:hover {
+  background-color: #555;
+  transform: translateY(-2px);
+}
+
+.year-toggle button.active {
+  background-color: #ff3b8b;
+  box-shadow: 0 4px 8px rgba(255, 59, 139, 0.3);
+}
+
+.race-results-section {
+  background-color: rgba(30, 30, 30, 0.85);
+  border-radius: 12px;
+  margin-bottom: 30px;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.race-header {
+  background-color: #ff3b8b;
+  color: white;
+  padding: 15px 20px;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 12px 12px 0 0;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  color: #ff3b8b;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.results-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 16px;
+}
+
+.results-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.results-table td:nth-child(1) {
+  font-weight: bold;
+  color: #fff;
+}
+
+.results-table td:nth-child(2) {
+  color: #8ce4ff;
+  font-weight: 600;
+}
+
+.results-table td:nth-child(3) {
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+.results-table td:nth-child(4) {
+  color: #00ffaa;
+  font-weight: 600;
+}
+
+.results-table tr:last-child td {
+  border-bottom: none;
 } 

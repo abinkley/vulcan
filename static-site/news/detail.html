@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Article - Vulcan Cycling</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #000;
+      line-height: 1.6;
+    }
+
+    /* Full-screen background image */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+      background-image: url('../images/vulcan-screenshot-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #000;
+    }
+    
+    /* Content container to appear above background */
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    /* Header */
+    header {
+      padding: 1.5rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo h1 {
+      margin-left: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav li {
+      margin-left: 2rem;
+    }
+    
+    nav a {
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: white;
+      color: black;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      color: var(--primary);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .back-button:hover {
+      color: var(--primary-hover);
+    }
+    
+    .back-button svg {
+      margin-right: 0.5rem;
+    }
+    
+    /* News Detail Section */
+    .news-detail-section {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .news-detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .news-article {
+      background-color: rgba(34, 34, 34, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .article-header {
+      padding: 2rem 2rem 1rem;
+    }
+    
+    .article-metadata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .article-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .article-author {
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-featured-image {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    
+    .article-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .article-content {
+      padding: 0 2rem 2rem;
+      font-size: 1.125rem;
+      line-height: 1.8;
+    }
+    
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .article-footer {
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Loading Animation */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .loading p {
+      color: #ccc;
+    }
+    
+    /* Error state */
+    .error-message {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .error-message h3 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-logo p {
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      margin-top: 4rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.875rem;
+    }
+    
+    /* Admin Link (Hidden) */
+    .admin-link {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .admin-link:hover {
+      opacity: 1;
+    }
+  </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+  <!-- Background image -->
+  <div class="bg-image"></div>
+  
+  <!-- Content -->
+  <div class="content">
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <h1>VULCAN CYCLING</h1>
+        </div>
+        
+        <nav>
+          <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../results/index.html">Results</a></li>
+            <li><a href="index.html" class="active">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
+            <li><a href="../about/index.html">About</a></li>
+            <li><a href="../contact/index.html">Contact</a></li>
+          </ul>
+        </nav>
+        
+        <a href="#" class="cta-button">Join the Team</a>
+      </div>
+    </header>
+    
+    <!-- News Detail Section -->
+    <section class="news-detail-section">
+      <div class="container">
+        <a href="index.html" class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to News
+        </a>
+        
+        <div class="news-detail-container">
+          <!-- Loading spinner -->
+          <div class="loading">
+            <p>Loading article...</p>
+          </div>
+          
+          <!-- Article content will be loaded here dynamically -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3>VULCAN CYCLING</h3>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../team.html">Our Team</a></li>
+              <li><a href="../results/index.html">Results</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Contact Us</h3>
+            <ul>
+              <li><a href="../about/index.html">About Us</a></li>
+              <li><a href="../contact/index.html">Contact</a></li>
+              <li><a href="../races/index.html">Races</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="copyright">
+          &copy; 2023 Vulcan Cycling. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    
+    <!-- Hidden Admin Link -->
+    <a href="../admin/index.html" class="admin-link">Admin</a>
+  </div>
+  
+  <!-- Firebase Loader Script -->
+  <script src="../js/firebase-loader.js"></script>
+  
+  <!-- Direct script call to ensure news detail loads -->
+  <script>
+    // Ensure we load news details even if path detection fails
+    window.addEventListener('load', function() {
+      // Wait a short time to ensure Firebase is initialized
+      setTimeout(function() {
+        console.log('Direct script call to load news details');
+        if (typeof loadNewsDetails === 'function') {
+          loadNewsDetails();
+        } else {
+          console.error('loadNewsDetails function not found in direct call');
+          document.querySelector('.news-detail-container').innerHTML = `
+            <div class="error-message">
+              <h3>Error Loading Article</h3>
+              <p>There was a problem loading the article functionality. Please try again later.</p>
+            </div>
+            <a href="index.html" class="back-button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to News
+            </a>
+          `;
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html> 

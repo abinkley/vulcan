@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Vulcan Cycling Club</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .about-section {
+            padding: 4rem 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+        
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .about-content {
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .about-content p {
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        .vulcan-name {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 2.5rem 0;
+            letter-spacing: 2px;
+        }
+        
+        .staff-section {
+            margin-top: 4rem;
+        }
+        
+        .staff-section h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        
+        .staff-section p {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+    <!-- Background Image -->
+    <div class="bg-image"></div>
+    
+    <!-- Content Container -->
+    <div class="content">
+        <!-- Header -->
+        <header>
+            <div class="container header-container">
+                <div class="logo">
+                    <h1>VULCAN CYCLING</h1>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="../results/index.html">Results</a></li>
+                        <li><a href="../news/index.html">News</a></li>
+                        <li><a href="../races/index.html">Races</a></li>
+                        <li><a href="index.html" class="active">About</a></li>
+                        <li><a href="../contact/index.html">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- About Section -->
+        <section class="about-section">
+            <div class="container">
+                <div class="vulcan-name">VULCAN CYCLING</div>
+                <div class="about-content">
+                    <p>Vulcan Cycling is dedicated to developing junior cyclists in New Jersey and New York. Our mission is to forge champions through dedication, fun, and a supportive community.</p>
+
+                    <p>Founded with the vision of nurturing young talent, we provide a structured environment where junior cyclists can develop their skills, build confidence, and achieve their competitive goals.</p>
+
+                    <div class="staff-section">
+                        <h2>OUR STAFF</h2>
+                        <p>A dedicated group of parents</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <h3>VULCAN CYCLING</h3>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="../index.html">Home</a></li>
+                            <li><a href="../news/index.html">News</a></li>
+                            <li><a href="../results/index.html">Results</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Contact Us</h3>
+                        <ul>
+                            <li><a href="index.html">About Us</a></li>
+                            <li><a href="../contact/index.html">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="copyright">
+                    &copy; 2025 Vulcan Cycling. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Firebase Loader Script -->
+    <script src="../js/firebase-loader.js"></script>
+</body>
+</html> 

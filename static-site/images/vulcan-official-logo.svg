@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Black background with dot pattern -->
+  <rect width="200" height="200" fill="#111" />
+  <pattern id="dotPattern" width="10" height="10" patternUnits="userSpaceOnUse">
+    <circle cx="5" cy="5" r="1.5" fill="#333" />
+  </pattern>
+  <rect width="200" height="200" fill="url(#dotPattern)" />
+  
+  <!-- Gray V shape -->
+  <path d="M50,40 L100,140 L150,40" stroke="#888" stroke-width="20" fill="none" stroke-linejoin="round" />
+  
+  <!-- Pink flame elements -->
+  <path d="M120,40 C140,60 150,80 130,110 C160,70 140,30 120,40" fill="#ff3e82" />
+  <path d="M110,50 C125,65 130,85 115,105 C135,75 125,40 110,50" fill="#ff3e82" />
+</svg> 

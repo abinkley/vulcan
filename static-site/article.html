@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - Vulcan Cycling</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/article.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="./css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="./js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html">
+                    <h1>VULCAN CYCLING</h1>
+                </a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="news/index.html">News</a></li>
+                    <li><a href="results/index.html">Results</a></li>
+                    <li><a href="about/index.html">About</a></li>
+                    <li><a href="contact/index.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="article-section">
+            <div class="container">
+                <div class="article-container">
+                    <div class="loading">
+                        <p>Loading article...</p>
+                    </div>
+                </div>
+                <div class="back-link">
+                    <a href="news/index.html">&larr; Back to News</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h3>VULCAN CYCLING</h3>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="news/index.html">News</a></li>
+                    <li><a href="results/index.html">Results</a></li>
+                    <li><a href="about/index.html">About</a></li>
+                    <li><a href="contact/index.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <p>Email: info@vulcancycling.com</p>
+                <p>Phone: (555) 123-4567</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">Instagram</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Vulcan Cycling. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/firebase-loader.js"></script>
+</body>
+</html> 
