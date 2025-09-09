@@ -1,1 +1,6 @@
 node_modules
+.next/
+out/
+static-site/
+next-env.d.ts
+*.log
