@@ -727,6 +727,10 @@
         }
         
         // Load latest news with mobile optimization
+        console.log('Checking mobile optimizer...');
+        console.log('Mobile optimizer available:', typeof window.mobileNewsOptimizer !== 'undefined');
+        console.log('Is mobile device:', window.innerWidth <= 768);
+        
         if (typeof window.mobileNewsOptimizer !== 'undefined' && window.mobileNewsOptimizer.isMobile()) {
           console.log('Loading latest news with mobile optimization...');
           try {
@@ -738,7 +742,7 @@
             }
           }
         } else if (typeof loadLatestNews === 'function') {
-          console.log('Loading latest news...');
+          console.log('Loading latest news with regular method...');
           loadLatestNews();
         } else {
           console.error('loadLatestNews function not found');
