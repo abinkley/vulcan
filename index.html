@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <title>Vulcan Cycling Club | Junior Cycling in New Jersey and New York</title>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -704,23 +701,19 @@
   </div>
   
   <!-- Firebase Loader Script -->
-  <script src="js/firebase-loader.js?v=3"></script>
+  <script src="js/firebase-loader.js"></script>
   
   <!-- Mobile News Optimizer -->
-  <script src="js/mobile-news-optimizer.js?v=3"></script>
+  <script src="js/mobile-news-optimizer.js"></script>
   
   <!-- Load content -->
   <script>
-    console.log('=== CACHE BUSTING VERSION 3 - FORCE UPDATE ===');
     window.addEventListener('load', function() {
-      console.log('Homepage window load event triggered - VERSION 3');
+      console.log('Homepage window load event triggered');
       
       // Wait for Firebase to initialize
       setTimeout(function() {
         console.log('Loading homepage content...');
-        console.log('Firebase db available:', typeof db !== 'undefined');
-        console.log('Mobile optimizer available:', typeof window.mobileNewsOptimizer !== 'undefined');
-        console.log('Is mobile:', window.innerWidth <= 768);
         
         // Load featured riders
         if (typeof loadFeaturedRiders === 'function') {
@@ -731,23 +724,11 @@
         }
         
         // Load latest news with mobile optimization
-        console.log('Checking mobile optimizer...');
-        console.log('Mobile optimizer available:', typeof window.mobileNewsOptimizer !== 'undefined');
-        console.log('Is mobile device:', window.innerWidth <= 768);
-        
-        // Always try mobile optimizer first on mobile devices
-        if (window.innerWidth <= 768 && typeof window.mobileNewsOptimizer !== 'undefined') {
+        if (typeof window.mobileNewsOptimizer !== 'undefined' && window.mobileNewsOptimizer.isMobile()) {
           console.log('Loading latest news with mobile optimization...');
-          try {
-            window.mobileNewsOptimizer.loadNewsOptimized();
-          } catch (error) {
-            console.error('Mobile optimizer failed, falling back to regular loading:', error);
-            if (typeof loadLatestNews === 'function') {
-              loadLatestNews();
-            }
-          }
+          window.mobileNewsOptimizer.loadNewsOptimized();
         } else if (typeof loadLatestNews === 'function') {
-          console.log('Loading latest news with regular method...');
+          console.log('Loading latest news...');
           loadLatestNews();
         } else {
           console.error('loadLatestNews function not found');
