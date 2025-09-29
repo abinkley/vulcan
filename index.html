@@ -708,12 +708,15 @@
   
   <!-- Load content -->
   <script>
+    console.log('=== STATIC HTML VERSION - DEBUGGING ===');
     window.addEventListener('load', function() {
-      console.log('Homepage window load event triggered');
+      console.log('Homepage window load event triggered - STATIC HTML');
       
       // Wait for Firebase to initialize
       setTimeout(function() {
         console.log('Loading homepage content...');
+        console.log('Firebase db available:', typeof db !== 'undefined');
+        console.log('Mobile optimizer available:', typeof window.mobileNewsOptimizer !== 'undefined');
         
         // Load featured riders
         if (typeof loadFeaturedRiders === 'function') {
