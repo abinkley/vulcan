@@ -74,7 +74,10 @@
     };
   };
   
-  // Mobile-optimized news loading
+  // Mobile-optimized news loading with retry counter
+  let firebaseRetryCount = 0;
+  const maxRetries = 5;
+  
   const loadNewsOptimized = () => {
     performanceMonitor.start();
     
@@ -86,6 +89,29 @@
     
     // Show loading indicator
     newsGrid.innerHTML = '<div class="loading-mobile">Loading news...</div>';
+    
+    // Wait for Firebase to be initialized
+    if (typeof db === 'undefined' || !db) {
+      firebaseRetryCount++;
+      console.log(`Firebase not ready yet, waiting... (attempt ${firebaseRetryCount}/${maxRetries})`);
+      newsGrid.innerHTML = '<div class="loading-mobile">Connecting to database...</div>';
+      
+      if (firebaseRetryCount >= maxRetries) {
+        console.error('Firebase initialization failed after maximum retries, falling back to regular loading');
+        newsGrid.innerHTML = '<div class="loading-mobile">Loading with fallback method...</div>';
+        // Fall back to regular loading
+        if (typeof loadLatestNews === 'function') {
+          setTimeout(() => loadLatestNews(), 500);
+        }
+        return;
+      }
+      
+      // Retry after a short delay
+      setTimeout(loadNewsOptimized, 1000);
+      return;
+    }
+    
+    console.log('Firebase is ready, proceeding with mobile-optimized news loading');
     
     // Use optimized query
     const query = db.collection('content')

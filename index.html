@@ -714,6 +714,9 @@
       // Wait for Firebase to initialize
       setTimeout(function() {
         console.log('Loading homepage content...');
+        console.log('Firebase db available:', typeof db !== 'undefined');
+        console.log('Mobile optimizer available:', typeof window.mobileNewsOptimizer !== 'undefined');
+        console.log('Is mobile:', window.innerWidth <= 768);
         
         // Load featured riders
         if (typeof loadFeaturedRiders === 'function') {
@@ -726,7 +729,14 @@
         // Load latest news with mobile optimization
         if (typeof window.mobileNewsOptimizer !== 'undefined' && window.mobileNewsOptimizer.isMobile()) {
           console.log('Loading latest news with mobile optimization...');
-          window.mobileNewsOptimizer.loadNewsOptimized();
+          try {
+            window.mobileNewsOptimizer.loadNewsOptimized();
+          } catch (error) {
+            console.error('Mobile optimizer failed, falling back to regular loading:', error);
+            if (typeof loadLatestNews === 'function') {
+              loadLatestNews();
+            }
+          }
         } else if (typeof loadLatestNews === 'function') {
           console.log('Loading latest news...');
           loadLatestNews();
