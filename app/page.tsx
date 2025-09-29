@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
@@ -33,11 +35,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load data from Firebase
     const loadData = async () => {
       try {
-        // This will be replaced with actual Firebase calls
-        // For now, we'll use placeholder data but structure it properly
         setRiders([
           { id: '1', name: 'Rider Name', category: 'Junior Category', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae elit libero.', image: '/placeholder.svg' },
           { id: '2', name: 'Rider Name', category: 'Junior Category', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae elit libero.', image: '/placeholder.svg' },
@@ -65,6 +64,7 @@ export default function Home() {
 
     loadData();
   }, []);
+
   return (
     <>
       {/* Hero Section */}
@@ -117,7 +117,6 @@ export default function Home() {
               ))}
             </div>
           )}
-          </div>
           <div className="text-center mt-12">
             <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
               View All Riders
@@ -155,7 +154,6 @@ export default function Home() {
               ))}
             </div>
           )}
-          </div>
           <div className="text-center mt-12">
             <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
               View All News
@@ -182,12 +180,13 @@ export default function Home() {
                     <h3 className="text-xl font-bold text-white mt-1">{race.name}</h3>
                     <p className="text-gray-400">{race.location}</p>
                   </div>
-                  <Button className="mt-4 md:mt-0 bg-pink-500 hover:bg-pink-600 text-white">Race Details</Button>
+                  <Button className="mt-4 md:mt-0 bg-pink-500 hover:bg-pink-600 text-white">
+                    Race Details
+                  </Button>
                 </div>
               ))}
             </div>
           )}
-          </div>
           <div className="text-center mt-12">
             <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
               Full Race Calendar
@@ -216,5 +215,5 @@ export default function Home() {
         </div>
       </section>
     </>
-  )
+  );
 }
