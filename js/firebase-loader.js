@@ -689,11 +689,22 @@ function loadLatestNews() {
     })
     .catch((error) => {
       console.error('Error loading news:', error);
-      newsGrid.innerHTML = `
-        <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
-          <p>Error loading news. Please try again later.</p>
-        </div>
-      `;
+      
+      // Check if it's a CORS/security rules error
+      if (error.message && error.message.includes('access control checks')) {
+        newsGrid.innerHTML = `
+          <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+            <p>Database access temporarily unavailable. Please check back later.</p>
+            <p style="font-size: 0.8rem; color: #999;">Error: ${error.message}</p>
+          </div>
+        `;
+      } else {
+        newsGrid.innerHTML = `
+          <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+            <p>Error loading news. Please try again later.</p>
+          </div>
+        `;
+      }
     });
 }
 
