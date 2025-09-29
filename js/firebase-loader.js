@@ -12,14 +12,9 @@ const firebaseConfig = {
 // Global variables for Firebase services
 let db;
 let storage;
-let firebaseInitialized = false;
 
-// Initialize Firebase for all pages with performance optimizations
+// Initialize Firebase for all pages
 function initFirebase() {
-  if (firebaseInitialized) {
-    return true;
-  }
-  
   console.log('Initializing Firebase...');
   
   // Check if Firebase is already initialized
@@ -35,17 +30,9 @@ function initFirebase() {
     console.log('Firebase already initialized');
   }
   
-  // Initialize Firestore with performance settings
+  // Initialize Firestore
   try {
     db = firebase.firestore();
-    // Enable offline persistence for better performance
-    db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
-      if (err.code === 'failed-precondition') {
-        console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-      } else if (err.code === 'unimplemented') {
-        console.log('The current browser does not support all features required for persistence');
-      }
-    });
     console.log('Firestore initialized successfully');
   } catch (error) {
     console.error('Error initializing Firestore:', error);
@@ -63,34 +50,14 @@ function initFirebase() {
     // Not critical, so continue
   }
   
-  firebaseInitialized = true;
   return true;
 }
 
-// Initialize Firebase with a small delay to prevent blocking page load
-setTimeout(() => {
-  console.log('Initializing Firebase on script load...');
-  initFirebase();
-}, 100);
+// Initialize Firebase immediately when the script loads
+console.log('Initializing Firebase on script load...');
+initFirebase();
 
-// Cache for loaded data to prevent repeated queries
-const dataCache = {
-  riders: null,
-  news: null,
-  races: null,
-  lastUpdated: null
-};
-
-// Cache duration in milliseconds (5 minutes)
-const CACHE_DURATION = 5 * 60 * 1000;
-
-// Check if cache is valid
-function isCacheValid() {
-  if (!dataCache.lastUpdated) return false;
-  return (Date.now() - dataCache.lastUpdated) < CACHE_DURATION;
-}
-
-// Load featured riders for the homepage with caching
+// Load featured riders for the homepage
 async function loadFeaturedRiders() {
   console.log('=== Starting loadFeaturedRiders function ===');
   
@@ -111,19 +78,11 @@ async function loadFeaturedRiders() {
   }
   
   try {
-    // Check cache first
-    if (dataCache.riders && isCacheValid()) {
-      console.log('Using cached riders data');
-      displayRiders(dataCache.riders, ridersGrid);
-      return;
-    }
-    
     console.log('Querying Firestore for riders with type="rider"...');
     
     // Get all riders - only filter by type, ignore status for now to see if we get any results
     const snapshot = await db.collection('content')
       .where('type', '==', 'rider')
-      .limit(20) // Limit results to improve performance
       .get();
     
     // Debug output the query results
@@ -164,108 +123,98 @@ async function loadFeaturedRiders() {
     
     console.log(`Extracted ${allRiders.length} total riders from Firestore`);
     
-    // Cache the riders data
-    dataCache.riders = allRiders;
-    dataCache.lastUpdated = Date.now();
-    
-    // Display the riders
-    displayRiders(allRiders, ridersGrid);
+    // If we actually have riders, continue with the random selection
+    if (allRiders.length > 0) {
+      // Shuffle the array using Fisher-Yates algorithm
+      for (let i = allRiders.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allRiders[i], allRiders[j]] = [allRiders[j], allRiders[i]];
+      }
+      
+      // Select the first 3 (or fewer if less than 3 are available)
+      const featuredRiders = allRiders.slice(0, Math.min(3, allRiders.length));
+      console.log(`Selected ${featuredRiders.length} random riders to feature:`);
+      featuredRiders.forEach((rider, index) => {
+        console.log(`Featured rider ${index + 1}:`, rider.firstName, rider.lastName, rider.fullName);
+      });
+      
+      // Clear the existing content
+      ridersGrid.innerHTML = '';
+      
+      // Add each rider to the grid
+      featuredRiders.forEach(data => {
+        // Create rider card
+        const riderCard = document.createElement('div');
+        riderCard.className = 'rider-card';
+        
+        // Create rider image
+        const riderImage = document.createElement('div');
+        riderImage.className = 'rider-image';
+        
+        // If there's an image, set it as background, otherwise use placeholder
+        if (data.imageUrl) {
+          console.log('Using rider image URL:', data.imageUrl);
+          riderImage.style.backgroundImage = `url('${data.imageUrl}')`;
+        } else {
+          console.log('No image for rider, using placeholder');
+          // Check if we're in the homepage context
+          const isHomepage = window.location.pathname.endsWith('/') || 
+                            window.location.pathname.endsWith('/index.html') ||
+                            window.location.pathname.endsWith('/vulcan/');
+          
+          // Use relative path based on current page
+          const placeholderPath = isHomepage ? 'images/rider-placeholder.jpg' : '../images/rider-placeholder.jpg';
+          console.log(`Using placeholder image: ${placeholderPath}`);
+          riderImage.style.backgroundImage = `url('${placeholderPath}')`;
+        }
+        
+        riderImage.style.backgroundSize = 'cover';
+        riderImage.style.backgroundPosition = 'center';
+        
+        // Create rider info
+        const riderInfo = document.createElement('div');
+        riderInfo.className = 'rider-info';
+        
+        // Add rider name
+        const riderName = document.createElement('h3');
+        const displayName = data.fullName || `${data.firstName || ''} ${data.lastName || ''}`.trim();
+        riderName.textContent = displayName || 'Unknown Rider';
+        
+        // Add rider bio (with fallback)
+        const riderBio = document.createElement('p');
+        riderBio.textContent = data.bio || 'No biography available.';
+        
+        // Add rider category (with fallback)
+        const riderCategory = document.createElement('span');
+        riderCategory.className = 'category';
+        // Format category to be capitalized
+        const categoryText = data.category ? 
+          data.category.charAt(0).toUpperCase() + data.category.slice(1) : 
+          'Junior';
+        riderCategory.textContent = categoryText;
+        
+        // Assemble the card
+        riderInfo.appendChild(riderName);
+        riderInfo.appendChild(riderBio);
+        riderInfo.appendChild(riderCategory);
+        
+        riderCard.appendChild(riderImage);
+        riderCard.appendChild(riderInfo);
+        
+        // Add the card to the grid
+        ridersGrid.appendChild(riderCard);
+        console.log(`Added rider card for ${displayName} to the grid`);
+      });
+    } else {
+      console.warn('Found documents but no valid riders to display');
+      ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No valid riders found. Please check the database.</p>';
+    }
   } catch (error) {
     console.error('Error loading featured riders:', error);
     ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Error loading featured riders. Please check the console for details.</p>';
   }
   
   console.log('=== Completed loadFeaturedRiders function ===');
-}
-
-// Helper function to display riders
-function displayRiders(allRiders, ridersGrid) {
-  // If we actually have riders, continue with the random selection
-  if (allRiders.length > 0) {
-    // Shuffle the array using Fisher-Yates algorithm
-    for (let i = allRiders.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allRiders[i], allRiders[j]] = [allRiders[j], allRiders[i]];
-    }
-    
-    // Select the first 3 (or fewer if less than 3 are available)
-    const featuredRiders = allRiders.slice(0, Math.min(3, allRiders.length));
-    console.log(`Selected ${featuredRiders.length} random riders to feature:`);
-    featuredRiders.forEach((rider, index) => {
-      console.log(`Featured rider ${index + 1}:`, rider.firstName, rider.lastName, rider.fullName);
-    });
-    
-    // Clear the existing content
-    ridersGrid.innerHTML = '';
-    
-    // Add each rider to the grid
-    featuredRiders.forEach(data => {
-      // Create rider card
-      const riderCard = document.createElement('div');
-      riderCard.className = 'rider-card';
-      
-      // Create rider image
-      const riderImage = document.createElement('div');
-      riderImage.className = 'rider-image';
-      
-      // If there's an image, set it as background, otherwise use placeholder
-      if (data.imageUrl) {
-        console.log('Using rider image URL:', data.imageUrl);
-        riderImage.style.backgroundImage = `url('${data.imageUrl}')`;
-      } else {
-        console.log('No image for rider, using placeholder');
-        // Check if we're in the homepage context
-        const isHomepage = window.location.pathname.endsWith('/') || 
-                          window.location.pathname.endsWith('/index.html') ||
-                          window.location.pathname.endsWith('/vulcan/');
-        
-        // Use relative path based on current page
-        const placeholderPath = isHomepage ? 'images/rider-placeholder.jpg' : '../images/rider-placeholder.jpg';
-        console.log(`Using placeholder image: ${placeholderPath}`);
-        riderImage.style.backgroundImage = `url('${placeholderPath}')`;
-      }
-      
-      riderImage.style.backgroundSize = 'cover';
-      riderImage.style.backgroundPosition = 'center';
-      
-      // Create rider info
-      const riderInfo = document.createElement('div');
-      riderInfo.className = 'rider-info';
-      
-      // Add rider name
-      const riderName = document.createElement('h3');
-      const displayName = data.fullName || `${data.firstName || ''} ${data.lastName || ''}`.trim();
-      riderName.textContent = displayName || 'Unknown Rider';
-      
-      // Add rider bio (with fallback)
-      const riderBio = document.createElement('p');
-      riderBio.textContent = data.bio || 'No biography available.';
-      
-      // Add rider category (with fallback)
-      const riderCategory = document.createElement('span');
-      riderCategory.className = 'category';
-      // Format category to be capitalized
-      const categoryText = data.category ? 
-        data.category.charAt(0).toUpperCase() + data.category.slice(1) : 
-        'Junior';
-      riderCategory.textContent = categoryText;
-      
-      // Assemble the card
-      riderInfo.appendChild(riderName);
-      riderInfo.appendChild(riderBio);
-      riderInfo.appendChild(riderCategory);
-      
-      riderCard.appendChild(riderImage);
-      riderCard.appendChild(riderInfo);
-      
-      // Add the card to the grid
-      ridersGrid.appendChild(riderCard);
-      console.log(`Added rider card for ${displayName} to the grid`);
-    });
-  } else {
-    console.warn('Found documents but no valid riders to display');
-    ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No valid riders found. Please check the database.</p>';
-  }
 }
 
 // Load news articles for the news page

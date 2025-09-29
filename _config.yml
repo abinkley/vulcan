@@ -1,0 +1,21 @@
+# GitHub Pages configuration
+# This ensures the site is served from the public directory
+
+# Site settings
+title: Vulcan Cycling
+description: Grasshopper Kids Race and cycling events
+url: "https://vulcancycling.com"
+
+# Build settings
+source: .
+destination: _site
+
+# Exclude files from processing
+exclude:
+  - node_modules
+  - .git
+  - .next
+  - out
+  - app
+  - components
+  - lib
