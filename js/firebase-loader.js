@@ -551,17 +551,25 @@ function loadLatestNews() {
     newsGrid.appendChild(gridCell);
   }
   
-  // Query Firestore for news - without complex sorting that requires indexes
+  // Use limit to reduce data transfer on mobile
+  const isMobile = window.innerWidth <= 768;
+  const limit = isMobile ? 3 : 6; // Load fewer items on mobile
+  
+  // Query Firestore with limit for better mobile performance
   db.collection('content')
     .where('type', '==', 'news')
+    .limit(limit)
     .get()
     .then((querySnapshot) => {
       console.log(`Found ${querySnapshot.size} news items`);
+      console.log('Query snapshot details:', querySnapshot);
       
       if (querySnapshot.empty) {
+        console.log('No news articles found in database');
         newsGrid.innerHTML = `
           <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
             <p>No news articles available yet.</p>
+            <p style="font-size: 0.8rem; color: #999;">Check if articles exist in the database.</p>
           </div>
         `;
         return;
@@ -612,9 +620,10 @@ function loadLatestNews() {
       latestArticles.forEach((article, index) => {
         const formattedDate = formatDate(article.parsedDate);
         
-        // Create excerpt from content
+        // Create excerpt from content (shorter on mobile)
+        const excerptLength = isMobile ? 80 : 120;
         const excerpt = article.content 
-          ? article.content.substring(0, 120) + (article.content.length > 120 ? '...' : '') 
+          ? article.content.substring(0, excerptLength) + (article.content.length > excerptLength ? '...' : '') 
           : 'No content available';
         
         // Get the grid cell for this position
@@ -629,9 +638,17 @@ function loadLatestNews() {
         const imageSection = document.createElement('div');
         imageSection.className = 'news-image';
         
-        // If there's an image, set it as background
+        // If there's an image, set it as background with lazy loading
         if (article.imageUrl) {
-          imageSection.style.backgroundImage = `url('${article.imageUrl}')`;
+          // Use lazy loading for images
+          const img = new Image();
+          img.onload = () => {
+            imageSection.style.backgroundImage = `url('${article.imageUrl}')`;
+            imageSection.style.opacity = '1';
+          };
+          img.src = article.imageUrl;
+          imageSection.style.opacity = '0.5';
+          imageSection.style.transition = 'opacity 0.3s ease';
         } else {
           // Use placeholder image if no image is available
           imageSection.style.backgroundImage = "url('images/news-placeholder.jpg')";
@@ -675,11 +692,22 @@ function loadLatestNews() {
     })
     .catch((error) => {
       console.error('Error loading news:', error);
-      newsGrid.innerHTML = `
-        <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
-          <p>Error loading news. Please try again later.</p>
-        </div>
-      `;
+      
+      // Check if it's a CORS/security rules error
+      if (error.message && error.message.includes('access control checks')) {
+        newsGrid.innerHTML = `
+          <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+            <p>Database access temporarily unavailable. Please check back later.</p>
+            <p style="font-size: 0.8rem; color: #999;">Error: ${error.message}</p>
+          </div>
+        `;
+      } else {
+        newsGrid.innerHTML = `
+          <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+            <p>Error loading news. Please try again later.</p>
+          </div>
+        `;
+      }
     });
 }
 
@@ -1299,9 +1327,14 @@ function loadAllNewsNonIndexed() {
   // Clear loading message
   newsContainer.innerHTML = '';
   
-  // Query Firestore for news articles (without orderBy to avoid index requirement)
+  // Use pagination for mobile performance
+  const isMobile = window.innerWidth <= 768;
+  const pageSize = isMobile ? 6 : 12; // Load fewer items on mobile
+  
+  // Query Firestore for news articles with pagination
   db.collection('content')
     .where('type', '==', 'news')
+    .limit(pageSize)
     .get()
     .then((querySnapshot) => {
       console.log(`Found ${querySnapshot.size} news articles`);
@@ -1393,7 +1426,7 @@ function loadAllNewsNonIndexed() {
     });
 }
 
-// Function to load and display a single news article
+// Function to load and display a single news article with mobile optimization
 function loadNewsDetails() {
   console.log('Loading news article details');
   const urlParams = new URLSearchParams(window.location.search);
@@ -1414,6 +1447,18 @@ function loadNewsDetails() {
       </a>
     `;
     return;
+  }
+  
+  // Check for cached article data
+  const cachedArticle = localStorage.getItem(`article_${articleId}`);
+  if (cachedArticle) {
+    try {
+      const article = JSON.parse(cachedArticle);
+      displayArticle(article);
+      return;
+    } catch (e) {
+      console.log('Invalid cached data, fetching fresh');
+    }
   }
   
   // Query Firestore for the specific news article
@@ -1440,6 +1485,9 @@ function loadNewsDetails() {
       }
       
       const article = doc.data();
+      
+      // Cache the article data for faster loading
+      localStorage.setItem(`article_${articleId}`, JSON.stringify(article));
       
       // Parse the date properly
       let articleDate;
@@ -1483,7 +1531,7 @@ function loadNewsDetails() {
           
           ${article.imageUrl ? `
             <div class="article-featured-image">
-              <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image">
+              <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image" loading="lazy">
             </div>
           ` : ''}
           
@@ -1520,6 +1568,73 @@ function loadNewsDetails() {
         </a>
       `;
     });
+}
+
+// Helper function to display cached article
+function displayArticle(article) {
+  const newsDetailContainer = document.querySelector('.news-detail-container');
+  
+  // Parse the date properly
+  let articleDate;
+  if (article.date) {
+    if (article.date.toDate) {
+      // Firestore timestamp
+      articleDate = article.date.toDate();
+    } else if (typeof article.date === 'string') {
+      // ISO string or other string format
+      articleDate = new Date(article.date);
+    } else if (article.date.seconds) {
+      // Firestore timestamp in serialized form
+      articleDate = new Date(article.date.seconds * 1000);
+    } else {
+      // Default to now
+      articleDate = new Date();
+    }
+  } else {
+    // If no date, use current date
+    articleDate = new Date();
+  }
+  
+  const formattedDate = formatDate(articleDate);
+  
+  // Update page title
+  document.title = `${article.title || 'News Article'} - Vulcan Cycling`;
+  
+  // Format content with paragraphs if needed
+  const formattedContent = article.content ? article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : 'No content available';
+  
+  // Build the article HTML
+  newsDetailContainer.innerHTML = `
+    <article class="news-article">
+      <header class="article-header">
+        <div class="article-metadata">
+          <span class="article-date">${formattedDate}</span>
+          ${article.author ? `<span class="article-author">By ${article.author}</span>` : ''}
+        </div>
+        <h1 class="article-title">${article.title || 'Untitled'}</h1>
+      </header>
+      
+      ${article.imageUrl ? `
+        <div class="article-featured-image">
+          <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image" loading="lazy">
+        </div>
+      ` : ''}
+      
+      <div class="article-content">
+        <p>${formattedContent}</p>
+      </div>
+      
+      <div class="article-footer">
+        <a href="index.html" class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to News
+        </a>
+      </div>
+    </article>
+  `;
 }
 
 // Function to load all race results from Firestore
