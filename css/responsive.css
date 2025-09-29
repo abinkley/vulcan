@@ -142,6 +142,51 @@
     flex-direction: column;
   }
   
+  /* Mobile news optimization */
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .news-card {
+    margin-bottom: 1rem;
+  }
+  
+  .news-image {
+    height: 150px; /* Smaller on mobile */
+  }
+  
+  .news-info {
+    padding: 1rem;
+  }
+  
+  .news-info h3 {
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  
+  .news-info p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  /* Mobile news detail optimization */
+  .article-title {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  
+  .article-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 0 1rem 1rem;
+  }
+  
+  .article-image {
+    max-height: 200px;
+    object-fit: cover;
+  }
+  
   .logo {
     margin-bottom: 1rem;
   }

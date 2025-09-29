@@ -361,6 +361,29 @@
     @media (max-width: 768px) {
       .news-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .news-card {
+        margin-bottom: 1rem;
+      }
+      
+      .news-image {
+        height: 150px;
+      }
+      
+      .news-info {
+        padding: 1rem;
+      }
+      
+      .news-info h3 {
+        font-size: 1.1rem;
+        line-height: 1.3;
+      }
+      
+      .news-info p {
+        font-size: 0.9rem;
+        line-height: 1.4;
       }
     }
     
@@ -680,6 +703,9 @@
   <!-- Firebase Loader Script -->
   <script src="js/firebase-loader.js"></script>
   
+  <!-- Mobile News Optimizer -->
+  <script src="js/mobile-news-optimizer.js"></script>
+  
   <!-- Load content -->
   <script>
     window.addEventListener('load', function() {
@@ -697,8 +723,11 @@
           console.error('loadFeaturedRiders function not found');
         }
         
-        // Load latest news
-        if (typeof loadLatestNews === 'function') {
+        // Load latest news with mobile optimization
+        if (typeof window.mobileNewsOptimizer !== 'undefined' && window.mobileNewsOptimizer.isMobile()) {
+          console.log('Loading latest news with mobile optimization...');
+          window.mobileNewsOptimizer.loadNewsOptimized();
+        } else if (typeof loadLatestNews === 'function') {
           console.log('Loading latest news...');
           loadLatestNews();
         } else {
