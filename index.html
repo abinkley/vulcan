@@ -731,7 +731,8 @@
         console.log('Mobile optimizer available:', typeof window.mobileNewsOptimizer !== 'undefined');
         console.log('Is mobile device:', window.innerWidth <= 768);
         
-        if (typeof window.mobileNewsOptimizer !== 'undefined' && window.mobileNewsOptimizer.isMobile()) {
+        // Always try mobile optimizer first on mobile devices
+        if (window.innerWidth <= 768 && typeof window.mobileNewsOptimizer !== 'undefined') {
           console.log('Loading latest news with mobile optimization...');
           try {
             window.mobileNewsOptimizer.loadNewsOptimized();

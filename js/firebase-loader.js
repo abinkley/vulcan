@@ -562,11 +562,14 @@ function loadLatestNews() {
     .get()
     .then((querySnapshot) => {
       console.log(`Found ${querySnapshot.size} news items`);
+      console.log('Query snapshot details:', querySnapshot);
       
       if (querySnapshot.empty) {
+        console.log('No news articles found in database');
         newsGrid.innerHTML = `
           <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
             <p>No news articles available yet.</p>
+            <p style="font-size: 0.8rem; color: #999;">Check if articles exist in the database.</p>
           </div>
         `;
         return;
