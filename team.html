@@ -329,6 +329,7 @@
 
   <!-- Mobile Navigation Script -->
   <script src="./js/mobile-nav.js" defer></script>
+  <script src="./js/firebase-loader.js"></script>
 
 </head>
 <body>
@@ -439,26 +440,35 @@
     async function loadRiders() {
       const ridersContainer = document.getElementById('riders-container');
       
+      console.log('=== TEAM PAGE: Loading riders ===');
+      console.log('Firebase db available:', typeof db !== 'undefined');
+      
       try {
         // Query riders from Firestore
         let snapshot;
         
         try {
+          console.log('Querying for riders with type="rider"...');
           // Try multiple query approaches to ensure we get all riders
           let typeSnapshot = await db.collection('content')
             .where('type', '==', 'rider')
             .get();
             
+          console.log('Type query found', typeSnapshot.size, 'riders');
+          
           // If no results with type, try alternate approach
           if (typeSnapshot.empty) {
+            console.log('No riders with type="rider", trying alternate query...');
             // Try to find documents that have firstName and lastName fields (likely riders)
             typeSnapshot = await db.collection('content')
               .where('firstName', '!=', null)
               .get();
+            console.log('Alternate query found', typeSnapshot.size, 'documents');
           }
           
           snapshot = typeSnapshot;
         } catch (queryError) {
+          console.error('Query error:', queryError);
           ridersContainer.innerHTML = `
             <p style="grid-column: 1 / -1; text-align: center; color: #ff3e82; padding: 20px;">
               Error querying Firestore: ${queryError.message}. Please try again later.
