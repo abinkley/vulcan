@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Content - Vulcan Cycling Admin</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+      --sidebar-width: 250px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: #1a1a1a;
+      color: white;
+      padding: 1.5rem;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .sidebar-header img {
+      height: 40px;
+      width: auto;
+      margin-right: 0.75rem;
+    }
+    
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .sidebar-header h2 {
+      font-size: 1rem;
+      font-weight: 400;
+    }
+    
+    .sidebar-nav {
+      margin-bottom: 2rem;
+    }
+    
+    .sidebar-nav h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 0.75rem;
+      letter-spacing: 1px;
+    }
+    
+    .sidebar-nav ul {
+      list-style: none;
+    }
+    
+    .sidebar-nav li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      border-radius: 0.25rem;
+      color: #ccc;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .sidebar-nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    
+    .sidebar-nav a.active {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .sidebar-nav svg {
+      margin-right: 0.75rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid #333;
+    }
+    
+    .sidebar-footer a {
+      display: flex;
+      align-items: center;
+      color: #999;
+      text-decoration: none;
+      padding: 0.75rem;
+      border-radius: 0.25rem;
+      transition: all 0.2s ease;
+    }
+    
+    .sidebar-footer a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    
+    .sidebar-footer svg {
+      margin-right: 0.75rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    
+    /* Main content */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 2rem;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+    }
+    
+    .page-header .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.625rem 1.25rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .page-header .btn:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    .page-header .btn svg {
+      margin-right: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+    }
+    
+    /* Form */
+    .form-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(255, 62, 130, 0.2);
+    }
+    
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .form-group .hint {
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: #666;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.625rem 1.25rem;
+      background-color: white;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #f5f5f5;
+    }
+    
+    /* Content type tabs */
+    .content-type-tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .content-type-tab {
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .content-type-tab:hover {
+      color: #333;
+    }
+    
+    .content-type-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    
+    /* Content type forms */
+    .content-type-form {
+      display: none;
+    }
+    
+    .content-type-form.active {
+      display: block;
+    }
+    
+    /* Image upload */
+    .image-upload {
+      border: 2px dashed #ddd;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .image-upload:hover {
+      border-color: var(--primary);
+    }
+    
+    .image-upload svg {
+      width: 3rem;
+      height: 3rem;
+      color: #999;
+      margin-bottom: 1rem;
+    }
+    
+    .image-upload p {
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    
+    .image-upload .hint {
+      font-size: 0.875rem;
+      color: #999;
+    }
+    
+    .image-upload input {
+      display: none;
+    }
+
+    /* Auth overlay */
+    #auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .auth-message {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .auth-message h2 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .auth-message p {
+      margin-bottom: 1.5rem;
+      color: #666;
+    }
+
+    .auth-message .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #ff3e82;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .auth-message .btn {
+      display: inline-block;
+      padding: 0.625rem 1.25rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .auth-message .btn:hover {
+      background-color: var(--primary-hover);
+    }
+  </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+  <!-- Auth overlay -->
+  <div id="auth-overlay">
+    <div class="auth-message">
+      <div class="spinner"></div>
+      <h2>Checking authentication...</h2>
+      <p>Please wait while we verify your credentials.</p>
+      <a href="index.html" class="btn" style="display: none;" id="login-btn">Return to Login</a>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>VULCAN CYCLING</h1>
+        <h2>Admin Panel</h2>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <h2>Content</h2>
+        <ul>
+          <li>
+            <a href="#" class="active" id="dashboard-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              Admin Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="#" data-content-type="news" class="content-type-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              News
+            </a>
+          </li>
+          <li>
+            <a href="#" data-content-type="rider" class="content-type-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Riders
+            </a>
+          </li>
+          <li>
+            <a href="#" data-content-type="race" class="content-type-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Races
+            </a>
+          </li>
+          <li>
+            <a href="#" data-content-type="result" class="content-type-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Results
+            </a>
+          </li>
+        </ul>
+        
+        <h2 style="margin-top: 2rem;">Settings</h2>
+        <ul>
+          <li>
+            <a href="settings.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="manage-users.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Users
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="#" id="logout-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Log Out
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Content Management</h1>
+        <a href="../index.html" class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          View Website
+        </a>
+      </div>
+      
+      <!-- Content List Section - This will be shown/hidden based on sidebar clicks -->
+      <div id="content-list-section">
+        <div class="search-bar" style="margin: 15px 0;">
+          <input type="text" id="content-search" placeholder="Search content...">
+        </div>
+        
+        <div class="content-table-container">
+          <table class="content-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background-color: #f5f5f5;">
+                <th style="text-align: left; padding: 10px;">Title</th>
+                <th style="text-align: left; padding: 10px;">Type</th>
+                <th style="text-align: left; padding: 10px;">Status</th>
+                <th style="text-align: left; padding: 10px;">Date</th>
+                <th style="text-align: left; padding: 10px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="content-table-body">
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 20px;">Select a content type from the sidebar</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+          <button id="add-new-content-btn" class="btn" style="padding: 10px 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add New
+          </button>
+        </div>
+      </div>
+      
+      <!-- Content Form Section - Hidden initially, shown when adding/editing -->
+      <div id="content-form-section" style="display: none;">
+        <div class="content-type-tabs">
+          <div class="content-type-tab active" data-tab="news">News Article</div>
+          <div class="content-type-tab" data-tab="rider">Rider</div>
+          <div class="content-type-tab" data-tab="race">Race</div>
+          <div class="content-type-tab" data-tab="result">Race Result</div>
+        </div>
+        
+        <div class="form-container">
+          <!-- News Article Form -->
+          <form class="content-type-form active" id="news-form">
+            <div class="form-group">
+              <label for="news-title">Title</label>
+              <input type="text" id="news-title" placeholder="Enter article title">
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="news-date">Date</label>
+                <input type="date" id="news-date">
+              </div>
+              
+              <div class="form-group">
+                <label for="news-status">Status</label>
+                <select id="news-status">
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="news-excerpt">Excerpt</label>
+              <textarea id="news-excerpt" placeholder="Enter a short excerpt"></textarea>
+              <div class="hint">This will be displayed in news listings.</div>
+            </div>
+            
+            <div class="form-group">
+              <label for="news-content">Content</label>
+              <textarea id="news-content" placeholder="Enter the full article content"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Featured Image</label>
+              <div class="image-upload">
+                <input type="file" id="news-image" accept="image/*">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <p>Click to upload an image</p>
+                <div class="hint">Recommended size: 1200 x 800 pixels</div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" class="btn-secondary">Cancel</button>
+              <button type="submit" class="btn">Save Article</button>
+            </div>
+          </form>
+          
+          <!-- Rider Form -->
+          <form class="content-type-form" id="rider-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="rider-first-name">First Name</label>
+                <input type="text" id="rider-first-name" placeholder="Enter first name">
+              </div>
+              
+              <div class="form-group">
+                <label for="rider-last-name">Last Name</label>
+                <input type="text" id="rider-last-name" placeholder="Enter last name">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="rider-category">Category</label>
+                <select id="rider-category">
+                  <option value="junior">Junior</option>
+                  <option value="u23">Under 23</option>
+                  <option value="elite">Elite</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="rider-status">Status</label>
+                <select id="rider-status">
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="rider-bio">Biography</label>
+              <textarea id="rider-bio" placeholder="Enter rider biography"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Profile Image</label>
+              <div class="image-upload">
+                <input type="file" id="rider-image" accept="image/*">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <p>Click to upload an image</p>
+                <div class="hint">Recommended size: 800 x 1200 pixels</div>
+                <div class="image-controls" style="display: none; margin-top: 10px;">
+                  <button type="button" class="btn-secondary remove-image" style="padding: 5px 10px; font-size: 12px;">
+                    Remove Image
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" class="btn-secondary">Cancel</button>
+              <button type="submit" class="btn">Save Rider</button>
+            </div>
+          </form>
+          
+          <!-- Race Form -->
+          <form class="content-type-form" id="race-form">
+            <div class="form-group">
+              <label for="race-title">Title</label>
+              <input type="text" id="race-title" placeholder="Enter race title">
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="race-date">Date</label>
+                <input type="date" id="race-date">
+              </div>
+              
+              <div class="form-group">
+                <label for="race-location">Location</label>
+                <input type="text" id="race-location" placeholder="Enter race location">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="race-description">Description</label>
+              <textarea id="race-description" placeholder="Enter race description"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="race-details">Race Details</label>
+              <textarea id="race-details" placeholder="Enter race details (course, schedule, etc.)"></textarea>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" class="btn-secondary">Cancel</button>
+              <button type="submit" class="btn">Save Race</button>
+            </div>
+          </form>
+          
+          <!-- Result Form -->
+          <form class="content-type-form" id="result-form">
+            <div class="form-group">
+              <label for="result-race">Race</label>
+              <select id="result-race">
+                <option value="">Select a race</option>
+                <option value="1">Junior Regional Cup - Stage 1</option>
+                <option value="2">Junior Regional Cup - Stage 2</option>
+                <option value="3">Junior Regional Cup - Stage 3</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="result-rider">Rider</label>
+              <select id="result-rider">
+                <option value="">Select a rider</option>
+                <option value="1">Alex Johnson</option>
+                <option value="2">Sarah Smith</option>
+                <option value="3">Michael Brown</option>
+              </select>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="result-position">Position</label>
+                <input type="number" id="result-position" min="1" placeholder="Enter position">
+              </div>
+              
+              <div class="form-group">
+                <label for="result-time">Time</label>
+                <input type="text" id="result-time" placeholder="Enter time (e.g. 2:34:15)">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="result-category">Category</label>
+              <input type="text" id="result-category" placeholder="Enter race category (e.g. Junior Women, Cat 3)">
+            </div>
+            
+            <div class="form-group">
+              <label for="result-notes">Notes</label>
+              <textarea id="result-notes" placeholder="Enter any additional notes"></textarea>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" class="btn-secondary">Cancel</button>
+              <button type="submit" class="btn">Save Result</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0hp0wbDPAG2Cbs_K1pi1jBDWtW4PMUuk",
+      authDomain: "vulcan-edfea.firebaseapp.com",
+      projectId: "vulcan-edfea",
+      storageBucket: "vulcan-edfea.firebasestorage.app",
+      messagingSenderId: "906189775089",
+      appId: "1:906189775089:web:7ce445936dfbc556778950",
+      measurementId: "G-5GZYY5YKTB"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    // Initialize Firestore
+    const db = firebase.firestore();
+    
+    // Initialize Storage
+    const storage = firebase.storage();
+    
+    // Initialize Auth
+    const auth = firebase.auth();
+    
+    // Function to show content list with specific type
+    function showContentList(contentType = null) {
+      // Show content list, hide content form
+      document.getElementById('content-list-section').style.display = 'block';
+      document.getElementById('content-form-section').style.display = 'none';
+      
+      // Update heading based on content type
+      const pageHeader = document.querySelector('.page-header h1');
+      if (contentType) {
+        const typeCapitalized = contentType.charAt(0).toUpperCase() + contentType.slice(1);
+        pageHeader.textContent = `Manage ${typeCapitalized}${contentType !== 'news' ? 's' : ''}`;
+        
+        // Update the "Add New" button
+        const addNewBtn = document.getElementById('add-new-content-btn');
+        addNewBtn.textContent = `Add New ${typeCapitalized}`;
+        addNewBtn.setAttribute('data-content-type', contentType);
+      } else {
+        pageHeader.textContent = 'Content Management';
+        
+        // Update the "Add New" button
+        const addNewBtn = document.getElementById('add-new-content-btn');
+        addNewBtn.textContent = 'Add New Content';
+        addNewBtn.setAttribute('data-content-type', '');
+      }
+      
+      // Load content with filter
+      loadContent(contentType || 'all');
+    }
+    
+    // Function to show content form
+    function showContentForm(contentType, editId = null) {
+      console.log('Showing content form for type:', contentType, editId ? 'editing ID: ' + editId : 'adding new');
+      
+      // Make sure we're using the right elements that exist in the DOM
+      // Hide content list, show content form
+      document.getElementById('content-list-section').style.display = 'none';
+      document.getElementById('content-form-section').style.display = 'block';
+      
+      // Update heading based on action
+      const pageHeader = document.querySelector('.page-header h1');
+      const typeCapitalized = contentType.charAt(0).toUpperCase() + contentType.slice(1);
+      pageHeader.textContent = editId ? `Edit ${typeCapitalized}` : `Add New ${typeCapitalized}`;
+      
+      // Activate the correct tab
+      const tabs = document.querySelectorAll('.content-type-tab');
+      const forms = document.querySelectorAll('.content-type-form');
+      
+      // Reset active state
+      tabs.forEach(tab => tab.classList.remove('active'));
+      forms.forEach(form => form.classList.remove('active'));
+      
+      // Set active tab based on content type
+      const targetTab = Array.from(tabs).find(tab => tab.getAttribute('data-tab') === contentType);
+      const targetForm = document.getElementById(`${contentType}-form`);
+      
+      if (targetTab && targetForm) {
+        console.log('Activating tab and form for:', contentType);
+        targetTab.classList.add('active');
+        targetForm.classList.add('active');
+        
+        // If it's a result form, load race and rider options
+        if (contentType === 'result') {
+          loadRacesAndRidersForResultForm();
+        }
+      } else {
+        console.error('Could not find tab or form for content type:', contentType);
+      }
+      
+      // Check if we're editing or adding new
+      if (editId) {
+        console.log('Loading existing content for editing, ID:', editId);
+        loadContentForEdit(editId);
+      } else {
+        console.log('Creating new content, resetting form fields');
+        resetForm(contentType);
+        
+        // For image forms, also reset any image uploads and states
+        resetImageUploads(contentType);
+      }
+    }
+    
+    // New helper function to reset image uploads
+    function resetImageUploads(contentType) {
+      console.log('Resetting image uploads for', contentType);
+      
+      // Target the appropriate image upload area based on content type
+      let uploadAreaId = null;
+      
+      switch(contentType) {
+        case 'news':
+          uploadAreaId = 'news-image';
+          break;
+        case 'rider':
+          uploadAreaId = 'rider-image';
+          break;
+        default:
+          return; // No image upload for this content type
+      }
+      
+      if (uploadAreaId) {
+        const uploadArea = document.getElementById(uploadAreaId)?.parentElement;
+        if (uploadArea) {
+          // Reset the file input
+          const fileInput = uploadArea.querySelector('input[type="file"]');
+          if (fileInput) {
+            fileInput.value = '';
+          }
+          
+          // Remove any preview images
+          const preview = uploadArea.querySelector('.image-preview, .image-preview-placeholder');
+          if (preview) {
+            preview.remove();
+          }
+          
+          // Reset the text
+          const textElement = uploadArea.querySelector('p');
+          if (textElement) {
+            textElement.textContent = 'Click to upload an image';
+          }
+          
+          // Remove has-file class
+          uploadArea.classList.remove('has-file');
+          
+          // Hide image controls if they exist
+          const imageControls = uploadArea.querySelector('.image-controls');
+          if (imageControls) {
+            imageControls.style.display = 'none';
+          }
+          
+          // Remove any removal flags
+          const removalFlag = document.getElementById(`${uploadAreaId}-removed`);
+          if (removalFlag) {
+            removalFlag.remove();
+          }
+          
+          console.log('Reset complete for', uploadAreaId);
+        }
+      }
+    }
+    
+    // Function to reset form fields for new content
+    function resetForm(contentType) {
+      console.log('Resetting form for:', contentType);
+      switch (contentType) {
+        case 'news':
+          document.getElementById('news-title').value = '';
+          document.getElementById('news-date').value = new Date().toISOString().split('T')[0]; // Today's date
+          document.getElementById('news-status').value = 'draft';
+          document.getElementById('news-excerpt').value = '';
+          document.getElementById('news-content').value = '';
+          break;
+        case 'rider':
+          document.getElementById('rider-first-name').value = '';
+          document.getElementById('rider-last-name').value = '';
+          document.getElementById('rider-category').value = 'junior';
+          document.getElementById('rider-status').value = 'active';
+          document.getElementById('rider-bio').value = '';
+          break;
+        case 'race':
+          document.getElementById('race-title').value = '';
+          
+          // Set current date in local timezone without timezone shifts
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+          const day = String(now.getDate()).padStart(2, '0');
+          document.getElementById('race-date').value = `${year}-${month}-${day}`;
+          console.log("Setting default race date for new race:", `${year}-${month}-${day}`);
+          
+          document.getElementById('race-location').value = '';
+          document.getElementById('race-description').value = '';
+          document.getElementById('race-details').value = '';
+          break;
+        case 'result':
+          document.getElementById('result-position').value = '';
+          document.getElementById('result-time').value = '';
+          document.getElementById('result-notes').value = '';
+          break;
+      }
+    }
+    
+    // Event listener for sidebar links
+    document.querySelectorAll('.content-type-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all links
+        document.querySelectorAll('.sidebar-nav a').forEach(a => {
+          a.classList.remove('active');
+        });
+        
+        // Add active class to clicked link
+        this.classList.add('active');
+        
+        // Get content type from data attribute
+        const contentType = this.getAttribute('data-content-type');
+        console.log('Sidebar link clicked for content type:', contentType);
+        
+        // Show content list for this type
+        showContentList(contentType);
+      });
+    });
+    
+    // Event listener for dashboard link
+    document.getElementById('dashboard-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Remove active class from all links
+      document.querySelectorAll('.sidebar-nav a').forEach(a => {
+        a.classList.remove('active');
+      });
+      
+      // Add active class to clicked link
+      this.classList.add('active');
+      
+      // Show all content
+      showContentList();
+    });
+    
+    // Event listener for "Add New" button
+    document.getElementById('add-new-content-btn').addEventListener('click', function() {
+      // Get content type from active sidebar link or default to 'news'
+      const activeSidebarLink = document.querySelector('.content-type-link.active');
+      const contentType = activeSidebarLink 
+        ? activeSidebarLink.getAttribute('data-content-type') 
+        : this.getAttribute('data-content-type') || 'news';
+      
+      console.log('Add New button clicked for content type:', contentType);
+      
+      // IMPORTANT: Clear any existing URL parameters to ensure we're creating a new item
+      const baseUrl = window.location.pathname;
+      const newUrl = baseUrl + '?add=' + contentType;
+      window.history.pushState({}, '', newUrl);
+      
+      showContentForm(contentType);
+    });
+    
+    // Event listener for Cancel buttons
+    document.querySelectorAll('.btn-secondary').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Determine which content type link is active
+        const activeLink = document.querySelector('.content-type-link.active');
+        const contentType = activeLink ? activeLink.getAttribute('data-content-type') : null;
+        
+        // Go back to content list
+        showContentList(contentType);
+      });
+    });
+    
+    // Check URL parameters on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      console.clear();
+      console.log('============= Page Loaded =============');
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      const addParam = urlParams.get('add');
+      const tabParam = urlParams.get('tab');
+      
+      console.log('URL Parameters - Edit ID:', editId, 'Add:', addParam, 'Tab:', tabParam);
+      
+      // First priority: Check if we're adding a new item
+      if (addParam && !editId) {
+        console.log('Opening form to add new', addParam);
+        // Update the active sidebar link
+        document.querySelectorAll('.sidebar-nav a').forEach(a => {
+          a.classList.remove('active');
+        });
+        const contentTypeLink = document.querySelector(`.content-type-link[data-content-type="${addParam}"]`);
+        if (contentTypeLink) {
+          contentTypeLink.classList.add('active');
+        }
+        
+        // Show the appropriate form for adding new content
+        showContentForm(addParam);
+      }
+      // Second priority: Check if we're editing an existing item
+      else if (editId && tabParam) {
+        console.log('Opening form to edit', tabParam, 'with ID:', editId);
+        // If editing content, show form
+        showContentForm(tabParam, editId);
+      } 
+      // Third priority: Show content list for a specific tab
+      else if (tabParam) {
+        console.log('Showing content list for', tabParam);
+        // If specific tab requested, show that content type
+        const contentTypeLink = document.querySelector(`.content-type-link[data-content-type="${tabParam}"]`);
+        if (contentTypeLink) {
+          contentTypeLink.classList.add('active');
+          document.getElementById('dashboard-link').classList.remove('active');
+          showContentList(tabParam);
+        }
+      } 
+      // Default: Show dashboard view
+      else {
+        console.log('Showing default dashboard view');
+        showContentList();
+      }
+      
+      // Check if we should load races and riders for the result form
+      if (tabParam === 'result' || addParam === 'result') {
+        loadRacesAndRidersForResultForm();
+      }
+    });
+    
+    // Function to load content for editing
+    async function loadContentForEdit(id) {
+      try {
+        const doc = await db.collection('content').doc(id).get();
+        
+        if (!doc.exists) {
+          alert('Content not found');
+          return;
+        }
+        
+        const data = doc.data();
+        populateForm(data);
+      } catch (error) {
+        console.error('Error loading content for edit:', error);
+        alert('Error loading content for edit. Please try again.');
+      }
+    }
+    
+    // Function to populate form fields with data
+    function populateForm(data) {
+      const type = data.type;
+      
+      // Populate form fields based on content type
+      switch (type) {
+        case 'news':
+          document.getElementById('news-title').value = data.title || '';
+          document.getElementById('news-date').value = data.date || '';
+          document.getElementById('news-status').value = data.status || 'draft';
+          document.getElementById('news-excerpt').value = data.excerpt || '';
+          document.getElementById('news-content').value = data.content || '';
+          // If image URL exists, show preview
+          if (data.imageUrl) {
+            showImagePreview('news-image', data.imageUrl);
+          }
+          break;
+        case 'rider':
+          document.getElementById('rider-first-name').value = data.firstName || '';
+          document.getElementById('rider-last-name').value = data.lastName || '';
+          document.getElementById('rider-category').value = data.category || '';
+          document.getElementById('rider-status').value = data.status || 'active';
+          document.getElementById('rider-bio').value = data.bio || '';
+          // If image URL exists, show preview
+          if (data.imageUrl) {
+            console.log("Showing rider image preview for URL:", data.imageUrl);
+            showImagePreview('rider-image', data.imageUrl);
+          }
+          break;
+        case 'race':
+          document.getElementById('race-title').value = data.title || '';
+          
+          // Directly use the stored date string when populating the form
+          // This ensures we preserve the exact date that was saved
+          if (data.date) {
+            console.log("Populating race date with stored value:", data.date);
+            document.getElementById('race-date').value = data.date;
+          } else {
+            // If no date is found, set a default
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('race-date').value = `${year}-${month}-${day}`;
+          }
+          
+          document.getElementById('race-location').value = data.location || '';
+          document.getElementById('race-description').value = data.description || '';
+          document.getElementById('race-details').value = data.details || '';
+          break;
+        case 'result':
+          document.getElementById('result-race').value = data.raceId || '';
+          document.getElementById('result-rider').value = data.riderId || '';
+          document.getElementById('result-position').value = data.position || '';
+          document.getElementById('result-time').value = data.time || '';
+          document.getElementById('result-notes').value = data.notes || '';
+          break;
+      }
+    }
+    
+    // Load content from Firestore
+    async function loadContent(filter = 'all') {
+      const tableBody = document.getElementById('content-table-body');
+      if (!tableBody) return;
+      
+      console.log('Loading content with filter:', filter);
+      tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading content...</td></tr>';
+      
+      try {
+        let query = db.collection('content');
+        
+        // Apply filter if not 'all'
+        if (filter !== 'all') {
+          console.log('Applying Firestore filter type ==', filter);
+          query = query.where('type', '==', filter);
+        }
+        
+        // Get content
+        console.log('Executing Firestore query...');
+        const snapshot = await query.orderBy('createdAt', 'desc').get();
+        
+        // Debug the results
+        console.log('Query results size:', snapshot.size);
+        
+        // Clear loading message
+        tableBody.innerHTML = '';
+        
+        // If no content, show message
+        if (snapshot.empty) {
+          console.log('No content found with filter:', filter);
+          // Check if rider is selected but no results
+          if (filter === 'rider') {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 20px;">
+                  No riders found. Use the "Add New Rider" button to create one.
+                </td>
+              </tr>
+            `;
+          } else {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 20px;">
+                  No ${filter === 'all' ? 'content' : filter + 's'} found.
+                </td>
+              </tr>
+            `;
+          }
+          return;
+        }
+        
+        // Add each content item to the table
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          // Debug each document
+          console.log('Document:', doc.id, 'Data:', data);
+          
+          const row = document.createElement('tr');
+          row.setAttribute('data-type', data.type || 'unknown');
+          row.style.borderBottom = '1px solid #eee';
+          
+          // Format date correctly without timezone shifts
+          let formattedDate = 'N/A';
+          
+          if (data.date) {
+            if (typeof data.date === 'string' && data.date.includes('-')) {
+              // Parse YYYY-MM-DD directly without Date object conversion to avoid timezone issues
+              const parts = data.date.split('-');
+              if (parts.length === 3) {
+                formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; // MM/DD/YYYY format
+              } else {
+                formattedDate = data.date; // Use as-is if not in expected format
+              }
+            } else {
+              // Fallback for non-string dates
+              formattedDate = new Date(data.date).toLocaleDateString();
+            }
+          } else if (data.createdAt && data.createdAt.toDate) {
+            formattedDate = new Date(data.createdAt.toDate()).toLocaleDateString();
+          }
+          
+          // Get appropriate title for different content types
+          let title = 'Untitled';
+          if (data.title) {
+            title = data.title;
+          } else if (data.fullName) {
+            title = data.fullName;
+          } else if (data.firstName && data.lastName) {
+            title = `${data.firstName} ${data.lastName}`;
+          } else if (data.raceTitle && data.riderName) {
+            title = `${data.raceTitle} - ${data.riderName}`;
+          }
+          
+          // Create row content
+          row.innerHTML = `
+            <td style="padding: 10px;">${title}</td>
+            <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 3px; background-color: #f0f0f0;">${data.type || 'unknown'}</span></td>
+            <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 3px; background-color: ${data.status === 'published' ? '#e6f7e6' : '#f7f7e6'};">${data.status || 'draft'}</span></td>
+            <td style="padding: 10px;">${formattedDate}</td>
+            <td style="padding: 10px;">
+              <a href="add-content.html?edit=${doc.id}&tab=${data.type}" style="color: var(--primary); margin-right: 10px;">Edit</a>
+              <button class="delete-btn" data-id="${doc.id}" data-type="${data.type || 'unknown'}" style="background: none; border: none; color: #dc3545; cursor: pointer;">Delete</button>
+            </td>
+          `;
+          
+          // Add row to table
+          tableBody.appendChild(row);
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', handleDelete);
+        });
+      } catch (error) {
+        console.error('Error loading content:', error);
+        console.error('Error details:', error.message, error.code);
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #dc3545;">Error loading content: ${error.message}</td></tr>`;
+      }
+    }
+    
+    // Handle content deletion
+    async function handleDelete(e) {
+      const id = e.target.getAttribute('data-id');
+      const contentType = e.target.getAttribute('data-type');
+      
+      if (!id) return;
+      
+      if (confirm('Are you sure you want to delete this content? This action cannot be undone.')) {
+        try {
+          await db.collection('content').doc(id).delete();
+          
+          // Remove the row from the table
+          e.target.closest('tr').remove();
+          
+          // Show success message
+          alert('Content deleted successfully.');
+          
+          // Reload content if table is empty
+          const tableBody = document.getElementById('content-table-body');
+          if (tableBody && tableBody.children.length === 0) {
+            // Get current active link
+            const activeLink = document.querySelector('.content-type-link.active');
+            const currentType = activeLink ? activeLink.getAttribute('data-content-type') : 'all';
+            loadContent(currentType);
+          }
+        } catch (error) {
+          console.error('Error deleting content:', error);
+          alert('Error deleting content. Please try again.');
+        }
+      }
+    }
+    
+    // Search content
+    const searchInput = document.getElementById('content-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#content-table-body tr');
+        
+        rows.forEach(row => {
+          const title = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
+          
+          if (title.includes(searchTerm)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+    
+    // Add event listeners for tab switching
+    document.querySelectorAll('.content-type-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        
+        // Remove active class from all tabs and forms
+        document.querySelectorAll('.content-type-tab').forEach(t => {
+          t.classList.remove('active');
+        });
+        
+        document.querySelectorAll('.content-type-form').forEach(f => {
+          f.classList.remove('active');
+        });
+        
+        // Add active class to clicked tab and corresponding form
+        this.classList.add('active');
+        document.getElementById(`${tabId}-form`).classList.add('active');
+      });
+    });
+    
+    // Check authentication state
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // User is signed in, hide the auth overlay
+        document.getElementById('auth-overlay').style.display = 'none';
+      } else {
+        // User is not signed in, show login button
+        document.getElementById('login-btn').style.display = 'block';
+      }
+    });
+    
+    // Initialize image upload functionality for all upload elements
+    document.querySelectorAll('.image-upload').forEach(uploadArea => {
+      const input = uploadArea.querySelector('input[type="file"]');
+      
+      // Make the entire area clickable
+      uploadArea.addEventListener('click', (e) => {
+        // Don't trigger if clicking on an existing preview image
+        if (e.target.classList && (
+              e.target.classList.contains('image-preview') || 
+              e.target.classList.contains('remove-image') ||
+              (e.target.closest && e.target.closest('.image-controls')) ||
+              e.target.tagName === 'BUTTON'
+           )) {
+          console.log('Click on preview image or controls ignored');
+          return;
+        }
+        console.log('Upload area clicked, opening file picker');
+        input.click();
+      });
+      
+      input.addEventListener('change', function(e) {
+        e.stopPropagation(); // Prevent the click from bubbling to the uploadArea
+        
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+          console.log('File selected:', file.name, 'type:', file.type, 'size:', file.size, 'bytes');
+          
+          // Update the UI to show the selected file name
+          uploadArea.classList.add('has-file');
+          uploadArea.querySelector('p').textContent = file.name;
+          
+          // Show image controls if they exist
+          const imageControls = uploadArea.querySelector('.image-controls');
+          if (imageControls) {
+            imageControls.style.display = 'block';
+          }
+          
+          // Remove any image removal flag
+          const removalFlag = uploadArea.querySelector(`#${this.id}-removed`);
+          if (removalFlag) {
+            removalFlag.remove();
+          }
+          
+          // For image preview
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              // Check if there's an existing preview and remove it
+              const existingPreview = uploadArea.querySelector('.image-preview');
+              if (existingPreview) {
+                existingPreview.remove();
+              }
+              
+              // Also remove any placeholder
+              const placeholder = uploadArea.querySelector('.image-preview-placeholder');
+              if (placeholder) {
+                placeholder.remove();
+              }
+              
+              // Create and add the preview image
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = 'image-preview';
+              img.style.maxWidth = '100%';
+              img.style.maxHeight = '200px';
+              img.style.marginTop = '10px';
+              img.style.borderRadius = '4px';
+              uploadArea.appendChild(img);
+              console.log('Preview image created from selected file');
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+    });
+
+    // Helper function to show image preview for uploaded images
+    function showImagePreview(inputId, imageUrl) {
+      if (!imageUrl) {
+        console.warn('No image URL provided to showImagePreview for', inputId);
+        return;
+      }
+      
+      const uploadArea = document.getElementById(inputId).parentElement;
+      
+      if (!uploadArea) {
+        console.error('Could not find parent element for input', inputId);
+        return;
+      }
+      
+      console.log('Setting up image preview for', inputId, 'with URL:', imageUrl);
+      
+      // Set text to show a file is selected
+      uploadArea.classList.add('has-file');
+      
+      // Check if there's an existing preview and remove it
+      const existingPreview = uploadArea.querySelector('.image-preview');
+      if (existingPreview) {
+        existingPreview.remove();
+      }
+      
+      // Show image controls
+      const imageControls = uploadArea.querySelector('.image-controls');
+      if (imageControls) {
+        imageControls.style.display = 'block';
+        
+        // Add event listener to remove button
+        const removeButton = imageControls.querySelector('.remove-image');
+        if (removeButton) {
+          // Remove old event listeners first
+          const newButton = removeButton.cloneNode(true);
+          removeButton.parentNode.replaceChild(newButton, removeButton);
+          
+          newButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Clear the image preview
+            const preview = uploadArea.querySelector('.image-preview, .image-preview-placeholder');
+            if (preview) {
+              preview.remove();
+            }
+            
+            // Reset upload area state
+            uploadArea.classList.remove('has-file');
+            uploadArea.querySelector('p').textContent = 'Click to upload an image';
+            
+            // Add a hidden field to indicate image removal
+            const imageRemovedField = document.getElementById(`${inputId}-removed`);
+            if (!imageRemovedField) {
+              const hiddenField = document.createElement('input');
+              hiddenField.type = 'hidden';
+              hiddenField.id = `${inputId}-removed`;
+              hiddenField.value = 'true';
+              uploadArea.appendChild(hiddenField);
+            } else {
+              imageRemovedField.value = 'true';
+            }
+            
+            // Hide image controls
+            imageControls.style.display = 'none';
+            
+            console.log('Image removed from preview');
+          });
+        }
+      }
+      
+      // For Firebase Storage URLs, just show a placeholder with confirmation
+      if (imageUrl.includes('firebasestorage.googleapis.com')) {
+        // Create placeholder div
+        const placeholderDiv = document.createElement('div');
+        placeholderDiv.className = 'image-preview-placeholder';
+        placeholderDiv.style.width = '100%';
+        placeholderDiv.style.height = '150px';
+        placeholderDiv.style.backgroundColor = '#f8f9fa';
+        placeholderDiv.style.border = '1px solid #ddd';
+        placeholderDiv.style.borderRadius = '4px';
+        placeholderDiv.style.marginTop = '10px';
+        placeholderDiv.style.display = 'flex';
+        placeholderDiv.style.flexDirection = 'column';
+        placeholderDiv.style.alignItems = 'center';
+        placeholderDiv.style.justifyContent = 'center';
+        placeholderDiv.style.color = '#495057';
+        
+        // Add placeholder icon
+        const iconDiv = document.createElement('div');
+        iconDiv.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        `;
+        placeholderDiv.appendChild(iconDiv);
+        
+        // Add confirmation text
+        const textDiv = document.createElement('div');
+        textDiv.style.marginTop = '8px';
+        textDiv.style.fontSize = '14px';
+        textDiv.style.textAlign = 'center';
+        textDiv.style.padding = '0 10px';
+        textDiv.innerHTML = `Image successfully uploaded<br><span style="font-size:12px; color:#6c757d; overflow-wrap: break-word; word-break: break-all; white-space: normal;">${imageUrl.substring(0, 50)}...</span>`;
+        placeholderDiv.appendChild(textDiv);
+        
+        // Add placeholder to upload area
+        uploadArea.appendChild(placeholderDiv);
+        uploadArea.querySelector('p').textContent = 'Image saved to Storage';
+        console.log('Added placeholder for Firebase Storage image');
+        return;
+      }
+      
+      // For other URLs, try to load the actual image
+      const img = document.createElement('img');
+      img.crossOrigin = "anonymous";
+      
+      img.onerror = function(error) {
+        console.error('Error loading image preview for URL:', imageUrl, error);
+        img.alt = 'Image preview unavailable';
+        img.style.display = 'none';
+        uploadArea.querySelector('p').textContent = 'Image exists but preview is unavailable';
+      };
+      
+      img.src = imageUrl;
+      img.className = 'image-preview';
+      img.style.maxWidth = '100%';
+      img.style.maxHeight = '200px';
+      img.style.marginTop = '10px';
+      img.style.borderRadius = '4px';
+      
+      uploadArea.appendChild(img);
+    }
+    
+    // New helper function to compress images before upload
+    async function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
+      return new Promise((resolve) => {
+        console.log('Starting image compression for', file.name, 'size:', file.size, 'bytes');
+        
+        // For very large files, decrease quality and dimensions more aggressively
+        if (file.size > 5000000) { // For files > 5MB
+          maxWidth = 600;
+          maxHeight = 600;
+          quality = 0.6;
+          console.log('Large file detected, using more aggressive compression settings');
+        } else if (file.size > 2000000) { // For files > 2MB
+          maxWidth = 700;
+          maxHeight = 700;
+          quality = 0.7;
+          console.log('Medium-large file detected, using stronger compression settings');
+        }
+        
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(event) {
+          const img = new Image();
+          img.src = event.target.result;
+          
+          img.onload = function() {
+            // Calculate the new dimensions while maintaining aspect ratio
+            let width = img.width;
+            let height = img.height;
+            
+            console.log('Original image dimensions:', width, 'x', height);
+            
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round(height * maxWidth / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round(width * maxHeight / height);
+                height = maxHeight;
+              }
+            }
+            
+            console.log('Resized dimensions:', width, 'x', height);
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF'; // White background to avoid transparency
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to blob with reduced quality
+            canvas.toBlob((blob) => {
+              if (blob) {
+                // Create a new file from the blob
+                const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                  type: 'image/jpeg',
+                  lastModified: new Date().getTime()
+                });
+                
+                console.log('Image compressed:', file.size, '->', compressedFile.size, 
+                            'bytes (', Math.round(compressedFile.size / file.size * 100), '% of original)');
+                            
+                // If still too large after first compression, compress again with lower quality
+                if (compressedFile.size > 1000000) { // > 1MB
+                  console.log('Compressed image still large, applying second pass compression');
+                  const secondPassQuality = compressedFile.size > 2000000 ? 0.5 : 0.65;
+                  
+                  // Create another canvas for second-pass compression
+                  const canvas2 = document.createElement('canvas');
+                  const img2 = new Image();
+                  img2.src = URL.createObjectURL(compressedFile);
+                  
+                  img2.onload = function() {
+                    canvas2.width = width;
+                    canvas2.height = height;
+                    const ctx2 = canvas2.getContext('2d');
+                    ctx2.fillStyle = '#FFFFFF';
+                    ctx2.fillRect(0, 0, width, height);
+                    ctx2.drawImage(img2, 0, 0, width, height);
+                    
+                    canvas2.toBlob((blob2) => {
+                      if (blob2) {
+                        const finalFile = new File([blob2], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                          type: 'image/jpeg',
+                          lastModified: new Date().getTime()
+                        });
+                        
+                        console.log('Second-pass compression:', compressedFile.size, '->', finalFile.size, 
+                                  'bytes (', Math.round(finalFile.size / file.size * 100), '% of original)');
+                        resolve(finalFile);
+                      } else {
+                        resolve(compressedFile);
+                      }
+                    }, 'image/jpeg', secondPassQuality);
+                  };
+                  
+                  img2.onerror = function() {
+                    console.warn('Error in second-pass compression, using first-pass result');
+                    resolve(compressedFile);
+                  };
+                } else {
+                  resolve(compressedFile);
+                }
+              } else {
+                console.warn('Compression failed, using original file');
+                resolve(file);
+              }
+            }, 'image/jpeg', quality);
+          };
+          
+          img.onerror = function() {
+            console.warn('Error loading image for compression, using original file');
+            resolve(file);
+          };
+        };
+        
+        reader.onerror = function() {
+          console.warn('Error reading file for compression, using original file');
+          resolve(file);
+        };
+      });
+    }
+
+    // Helper function to upload an image to Firebase Storage
+    async function uploadImage(file, path) {
+      return new Promise(async (resolve, reject) => {
+        if (!file) {
+          console.warn("No file provided to uploadImage function");
+          resolve(null);
+          return;
+        }
+        
+        try {
+          // Compress the image first if it's an image file
+          let fileToUpload = file;
+          
+          if (file.type.startsWith('image/')) {
+            console.log('Compressing image before upload...');
+            try {
+              fileToUpload = await compressImage(file);
+              console.log('Compression successful, proceeding with upload');
+            } catch (compressError) {
+              console.error('Error during compression:', compressError);
+              console.log('Falling back to original file');
+              fileToUpload = file;
+            }
+          }
+          
+          console.log('Uploading image:', fileToUpload.name, 'to path:', path, 'size:', fileToUpload.size, 'bytes');
+          
+          // Sanitize the path to ensure valid Firebase Storage path
+          const sanitizedPath = path.replace(/[^a-zA-Z0-9./_-]/g, '_');
+          console.log('Sanitized path:', sanitizedPath);
+          
+          // Add size category to metadata for better tracking
+          let sizeCategory = 'small';
+          if (fileToUpload.size > 5000000) sizeCategory = 'very-large';
+          else if (fileToUpload.size > 2000000) sizeCategory = 'large';
+          else if (fileToUpload.size > 1000000) sizeCategory = 'medium';
+          
+          // Create a storage reference
+          const storageRef = storage.ref(sanitizedPath);
+          
+          // Set metadata to avoid caching issues
+          const metadata = {
+            contentType: 'image/jpeg', // Force JPEG for all uploads
+            customMetadata: {
+              'uploadedAt': new Date().toISOString(),
+              'originalSize': file.size.toString(),
+              'compressedSize': fileToUpload.size.toString(),
+              'sizeCategory': sizeCategory,
+              'originalName': file.name,
+              'browserInfo': navigator.userAgent
+            }
+          };
+          
+          // Function to handle upload with retry logic
+          const attemptUpload = async (attempts = 0) => {
+            if (attempts >= 3) {
+              throw new Error('Maximum upload retry attempts reached');
+            }
+            
+            try {
+              // Upload the file with metadata
+              const uploadTask = storageRef.put(fileToUpload, metadata);
+              
+              // Return a promise that resolves with the download URL
+              return new Promise((resolveUpload, rejectUpload) => {
+                // Register three observers:
+                uploadTask.on('state_changed', 
+                  (snapshot) => {
+                    // Observe state change events such as progress, pause, and resume
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress.toFixed(2) + '% done');
+                  }, 
+                  (error) => {
+                    // Handle unsuccessful uploads
+                    console.error('Error during upload attempt ' + (attempts + 1) + ':', error);
+                    if (attempts < 2) {
+                      console.log('Retrying upload...');
+                      setTimeout(() => {
+                        attemptUpload(attempts + 1)
+                          .then(resolveUpload)
+                          .catch(rejectUpload);
+                      }, 1000); // Wait 1 second before retry
+                    } else {
+                      rejectUpload(error);
+                    }
+                  }, 
+                  async () => {
+                    try {
+                      // Handle successful uploads on complete
+                      console.log('Upload completed successfully');
+                      // Get the download URL
+                      const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                      console.log('File available at', downloadURL);
+                      resolveUpload(downloadURL);
+                    } catch (urlError) {
+                      console.error('Error getting download URL:', urlError);
+                      rejectUpload(urlError);
+                    }
+                  }
+                );
+              });
+            } catch (uploadError) {
+              console.error('Error initiating upload (attempt ' + (attempts + 1) + '):', uploadError);
+              if (attempts < 2) {
+                console.log('Retrying upload initialization...');
+                return attemptUpload(attempts + 1);
+              }
+              throw uploadError;
+            }
+          };
+          
+          // Start the upload process with retry logic
+          const downloadURL = await attemptUpload();
+          resolve(downloadURL);
+          
+        } catch (error) {
+          console.error('Error handling upload:', error);
+          reject(error);
+        }
+      });
+    }
+    
+    // Additional helper function to load race and rider options dynamically
+    async function loadRacesAndRidersForResultForm() {
+      try {
+        // Clear existing options (keep the first placeholder option)
+        const raceSelect = document.getElementById('result-race');
+        const riderSelect = document.getElementById('result-rider');
+        
+        // Keep only the first option in each select
+        while (raceSelect.options.length > 1) {
+          raceSelect.remove(1);
+        }
+        
+        while (riderSelect.options.length > 1) {
+          riderSelect.remove(1);
+        }
+        
+        // Load races
+        const racesSnapshot = await db.collection('content').where('type', '==', 'race').get();
+        racesSnapshot.forEach(doc => {
+          const data = doc.data();
+          const option = document.createElement('option');
+          option.value = doc.id;
+          option.textContent = data.title;
+          raceSelect.appendChild(option);
+        });
+        
+        // Load riders
+        const ridersSnapshot = await db.collection('content').where('type', '==', 'rider').get();
+        ridersSnapshot.forEach(doc => {
+          const data = doc.data();
+          const option = document.createElement('option');
+          option.value = doc.id;
+          option.textContent = data.fullName || `${data.firstName} ${data.lastName}`;
+          riderSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading races and riders:', error);
+      }
+    }
+
+    document.getElementById('rider-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      console.log('======== RIDER FORM SUBMISSION STARTED ========');
+      
+      // Get form values
+      const firstName = document.getElementById('rider-first-name').value;
+      const lastName = document.getElementById('rider-last-name').value;
+      const category = document.getElementById('rider-category').value;
+      const status = document.getElementById('rider-status').value;
+      const bio = document.getElementById('rider-bio').value;
+      
+      // Get selected image file
+      const imageInput = document.getElementById('rider-image');
+      const imageFile = imageInput.files[0];
+      
+      // Check if image was removed by user
+      const imageRemovalRequested = document.getElementById('rider-image-removed')?.value === 'true';
+      
+      console.log('Rider image upload field check:', {
+        inputExists: !!imageInput,
+        hasFiles: imageInput.files.length > 0,
+        fileSelected: !!imageFile,
+        fileName: imageFile ? imageFile.name : 'none',
+        fileType: imageFile ? imageFile.type : 'none',
+        fileSize: imageFile ? imageFile.size : 'none',
+        imageRemovalRequested
+      });
+      
+      // IMPORTANT: Check URL parameters to determine if we're adding or editing
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      const addParam = urlParams.get('add');
+      
+      // Determine if this is a new rider or an edit
+      // We're only editing if:
+      // 1. There's an edit parameter
+      // 2. There's NO add parameter (add takes precedence)
+      const isNewRider = !editId || !!addParam;
+      
+      console.log('Operation determination:', {
+        urlEditParam: editId,
+        urlAddParam: addParam,
+        isNewRider: isNewRider,
+        operation: isNewRider ? 'Creating new rider' : 'Editing existing rider ID: ' + editId
+      });
+      
+      try {
+        // Create document data
+        const riderData = {
+          firstName,
+          lastName,
+          fullName: `${firstName} ${lastName}`,
+          category,
+          status,
+          bio,
+          type: 'rider', // Ensure the type is set to 'rider'
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // If new content, add creation timestamp
+        if (isNewRider) {
+          riderData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        } 
+        // If editing, we need to retrieve existing data to maintain fields we don't change
+        else {
+          try {
+            console.log('Retrieving existing rider data for ID:', editId);
+            const doc = await db.collection('content').doc(editId).get();
+            
+            if (doc.exists) {
+              const existingData = doc.data();
+              console.log('Existing rider data retrieved:', existingData);
+              
+              // Handle image URL based on user actions:
+              // 1. If user requested image removal, don't include imageUrl
+              if (imageRemovalRequested) {
+                console.log('User requested image removal, removing imageUrl from data');
+                // We explicitly don't set imageUrl, which will remove it from the document
+                // We may also need to delete from storage in a production app
+              } 
+              // 2. If no new image uploaded and no removal requested, keep existing URL
+              else if (!imageFile && existingData.imageUrl) {
+                console.log('Preserving existing image URL:', existingData.imageUrl);
+                riderData.imageUrl = existingData.imageUrl;
+              }
+              
+              // Ensure we don't lose any essential fields from the original document
+              if (existingData.createdAt) {
+                riderData.createdAt = existingData.createdAt;
+              }
+            } else {
+              console.warn('No existing document found with ID:', editId);
+            }
+          } catch (err) {
+            console.error('Error retrieving existing rider data:', err);
+          }
+        }
+        
+        // If a new image was selected, upload it
+        if (imageFile) {
+          console.log('Starting image upload process for rider', firstName, lastName);
+          
+          // Show loading message
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.textContent;
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Uploading image...';
+          
+          try {
+            // Generate a unique identifier for the image path
+            const timestamp = Date.now();
+            const randomId = Math.random().toString(36).substring(2, 15);
+            
+            // Create a path that includes timestamp and random string to avoid conflicts
+            const imagePath = isNewRider
+              ? `riders/new_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
+              : `riders/${editId}_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+            
+            console.log('Uploading rider image to path:', imagePath);
+            
+            const imageUrl = await uploadImage(imageFile, imagePath);
+            
+            // Add the image URL to the rider data
+            if (imageUrl) {
+              console.log('Image uploaded successfully, URL:', imageUrl);
+              riderData.imageUrl = imageUrl;
+            } else {
+              console.warn('No image URL returned from upload');
+            }
+          } catch (uploadError) {
+            console.error('Error during image upload:', uploadError);
+            console.error('Upload error details:', {
+              message: uploadError.message,
+              code: uploadError.code,
+              stack: uploadError.stack
+            });
+            alert('Error uploading image: ' + uploadError.message);
+          } finally {
+            // Restore button state
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
+        }
+        
+        // Add debugging logs
+        console.log('========== RIDER DATA DEBUG ==========');
+        console.log('Saving rider data with type:', riderData.type);
+        console.log('Complete rider data object:', riderData);
+        console.log('Image URL included:', riderData.imageUrl ? 'Yes' : 'No');
+        console.log('Using Firestore collection: content');
+        console.log('====================================');
+        
+        // Save to Firestore
+        let saveResult;
+        if (isNewRider) {
+          // For new riders, create a new document with auto-generated ID
+          console.log('Creating new rider document with auto-generated ID');
+          saveResult = await db.collection('content').add(riderData);
+          console.log('New rider created with ID:', saveResult.id);
+        } else {
+          // For existing riders, update the document
+          console.log('Updating existing rider with ID:', editId);
+          saveResult = await db.collection('content').doc(editId).update(riderData);
+          console.log('Existing rider updated successfully');
+        }
+        
+        console.log('Rider saved successfully with type:', riderData.type);
+        alert(`Rider ${isNewRider ? 'created' : 'updated'} successfully!`);
+        
+        // Show content list after submission
+        showContentList('rider');
+        
+        // Update sidebar active link
+        document.querySelectorAll('.sidebar-nav a').forEach(a => {
+          a.classList.remove('active');
+        });
+        const riderLink = document.querySelector('.content-type-link[data-content-type="rider"]');
+        if (riderLink) {
+          riderLink.classList.add('active');
+        }
+        
+        console.log('======== RIDER FORM SUBMISSION COMPLETED ========');
+      } catch (error) {
+        console.error('Error saving rider:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+        alert('Error saving rider: ' + error.message);
+      }
+    });
+    
+    // Add submission handler for the race form
+    document.getElementById('race-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      console.log('======== RACE FORM SUBMISSION STARTED ========');
+      
+      // Get form values
+      const title = document.getElementById('race-title').value;
+      const date = document.getElementById('race-date').value;
+      const location = document.getElementById('race-location').value;
+      const description = document.getElementById('race-description').value;
+      const details = document.getElementById('race-details').value;
+      
+      console.log('Race form values:', {
+        title,
+        date,
+        location,
+        description: description.length > 50 ? description.substring(0, 50) + '...' : description,
+        details: details.length > 50 ? details.substring(0, 50) + '...' : details
+      });
+      
+      // Check if we're editing or creating new
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      const addParam = urlParams.get('add');
+      
+      // Determine if this is a new race or an edit
+      const isNewRace = !editId || !!addParam;
+      
+      console.log('Operation determination:', {
+        urlEditParam: editId,
+        urlAddParam: addParam,
+        isNewRace: isNewRace,
+        operation: isNewRace ? 'Creating new race' : 'Editing existing race ID: ' + editId
+      });
+      
+      try {
+        // Create document data
+        const raceData = {
+          title,
+          date,
+          location,
+          description,
+          details,
+          type: 'race', // Ensure the type is set to 'race'
+          status: 'published', // Default to published
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // If new content, add creation timestamp
+        if (isNewRace) {
+          raceData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        } 
+        // If editing, we need to retrieve existing data to maintain fields we don't change
+        else {
+          try {
+            console.log('Retrieving existing race data for ID:', editId);
+            const doc = await db.collection('content').doc(editId).get();
+            
+            if (doc.exists) {
+              const existingData = doc.data();
+              console.log('Existing race data retrieved:', existingData);
+              
+              // Ensure we don't lose any essential fields from the original document
+              if (existingData.createdAt) {
+                raceData.createdAt = existingData.createdAt;
+              }
+            } else {
+              console.warn('No existing document found with ID:', editId);
+            }
+          } catch (err) {
+            console.error('Error retrieving existing race data:', err);
+          }
+        }
+        
+        // Add debugging logs
+        console.log('========== RACE DATA DEBUG ==========');
+        console.log('Saving race data with type:', raceData.type);
+        console.log('Complete race data object:', raceData);
+        console.log('Using Firestore collection: content');
+        console.log('====================================');
+        
+        // Save to Firestore
+        let saveResult;
+        if (isNewRace) {
+          // For new races, create a new document with auto-generated ID
+          console.log('Creating new race document with auto-generated ID');
+          saveResult = await db.collection('content').add(raceData);
+          console.log('New race created with ID:', saveResult.id);
+        } else {
+          // For existing races, update the document
+          console.log('Updating existing race with ID:', editId);
+          saveResult = await db.collection('content').doc(editId).update(raceData);
+          console.log('Existing race updated successfully');
+        }
+        
+        console.log('Race saved successfully with type:', raceData.type);
+        alert(`Race ${isNewRace ? 'created' : 'updated'} successfully!`);
+        
+        // Show content list after submission
+        showContentList('race');
+        
+        // Update sidebar active link
+        document.querySelectorAll('.sidebar-nav a').forEach(a => {
+          a.classList.remove('active');
+        });
+        const raceLink = document.querySelector('.content-type-link[data-content-type="race"]');
+        if (raceLink) {
+          raceLink.classList.add('active');
+        }
+        
+        console.log('======== RACE FORM SUBMISSION COMPLETED ========');
+      } catch (error) {
+        console.error('Error saving race:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+        alert('Error saving race: ' + error.message);
+      }
+    });
+    
+    // Add submission handler for the news form
+    document.getElementById('news-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      console.log('======== NEWS FORM SUBMISSION STARTED ========');
+      
+      // Get form values
+      const title = document.getElementById('news-title').value;
+      const date = document.getElementById('news-date').value;
+      const status = document.getElementById('news-status').value;
+      const excerpt = document.getElementById('news-excerpt').value;
+      const content = document.getElementById('news-content').value;
+      
+      // Get selected image file
+      const imageInput = document.getElementById('news-image');
+      const imageFile = imageInput.files[0];
+      
+      // Check if image was removed by user
+      const imageRemovalRequested = document.getElementById('news-image-removed')?.value === 'true';
+      
+      console.log('News form values:', {
+        title,
+        date,
+        status,
+        excerpt: excerpt.length > 50 ? excerpt.substring(0, 50) + '...' : excerpt,
+        content: content.length > 50 ? content.substring(0, 50) + '...' : content,
+        imageSelected: !!imageFile,
+        imageRemovalRequested
+      });
+      
+      // Check if we're editing or creating new
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      const addParam = urlParams.get('add');
+      
+      // Determine if this is a new news item or an edit
+      const isNewNews = !editId || !!addParam;
+      
+      console.log('Operation determination:', {
+        urlEditParam: editId,
+        urlAddParam: addParam,
+        isNewNews: isNewNews,
+        operation: isNewNews ? 'Creating new news article' : 'Editing existing news article ID: ' + editId
+      });
+      
+      try {
+        // Create document data
+        const newsData = {
+          title,
+          date,
+          status,
+          excerpt,
+          content,
+          type: 'news', // Ensure the type is set to 'news'
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // If new content, add creation timestamp
+        if (isNewNews) {
+          newsData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        } 
+        // If editing, we need to retrieve existing data to maintain fields we don't change
+        else {
+          try {
+            console.log('Retrieving existing news data for ID:', editId);
+            const doc = await db.collection('content').doc(editId).get();
+            
+            if (doc.exists) {
+              const existingData = doc.data();
+              console.log('Existing news data retrieved:', existingData);
+              
+              // Handle image URL based on user actions:
+              // 1. If user requested image removal, don't include imageUrl
+              if (imageRemovalRequested) {
+                console.log('User requested image removal, removing imageUrl from data');
+                // We explicitly don't set imageUrl, which will remove it from the document
+                // We may also need to delete from storage in a production app
+              } 
+              // 2. If no new image uploaded and no removal requested, keep existing URL
+              else if (!imageFile && existingData.imageUrl) {
+                console.log('Preserving existing image URL:', existingData.imageUrl);
+                newsData.imageUrl = existingData.imageUrl;
+              }
+              
+              // Ensure we don't lose any essential fields from the original document
+              if (existingData.createdAt) {
+                newsData.createdAt = existingData.createdAt;
+              }
+            } else {
+              console.warn('No existing document found with ID:', editId);
+            }
+          } catch (err) {
+            console.error('Error retrieving existing news data:', err);
+          }
+        }
+        
+        // If a new image was selected, upload it
+        if (imageFile) {
+          console.log('Starting image upload process for news article', title);
+          
+          // Show loading message
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.textContent;
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Uploading image...';
+          
+          try {
+            // Generate a unique identifier for the image path
+            const timestamp = Date.now();
+            const randomId = Math.random().toString(36).substring(2, 15);
+            
+            // Create a path that includes timestamp and random string to avoid conflicts
+            const imagePath = isNewNews
+              ? `news/new_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
+              : `news/${editId}_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+            
+            console.log('Uploading news image to path:', imagePath);
+            
+            const imageUrl = await uploadImage(imageFile, imagePath);
+            
+            // Add the image URL to the news data
+            if (imageUrl) {
+              console.log('Image uploaded successfully, URL:', imageUrl);
+              newsData.imageUrl = imageUrl;
+            } else {
+              console.warn('No image URL returned from upload');
+            }
+          } catch (uploadError) {
+            console.error('Error during image upload:', uploadError);
+            console.error('Upload error details:', {
+              message: uploadError.message,
+              code: uploadError.code,
+              stack: uploadError.stack
+            });
+            alert('Error uploading image: ' + uploadError.message);
+          } finally {
+            // Restore button state
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
+        }
+        
+        // Add debugging logs
+        console.log('========== NEWS DATA DEBUG ==========');
+        console.log('Saving news data with type:', newsData.type);
+        console.log('Complete news data object:', newsData);
+        console.log('Image URL included:', newsData.imageUrl ? 'Yes' : 'No');
+        console.log('Using Firestore collection: content');
+        console.log('====================================');
+        
+        // Save to Firestore
+        let saveResult;
+        if (isNewNews) {
+          // For new news, create a new document with auto-generated ID
+          console.log('Creating new news document with auto-generated ID');
+          saveResult = await db.collection('content').add(newsData);
+          console.log('New news article created with ID:', saveResult.id);
+        } else {
+          // For existing news, update the document
+          console.log('Updating existing news article with ID:', editId);
+          saveResult = await db.collection('content').doc(editId).update(newsData);
+          console.log('Existing news article updated successfully');
+        }
+        
+        console.log('News saved successfully with type:', newsData.type);
+        alert(`News article ${isNewNews ? 'created' : 'updated'} successfully!`);
+        
+        // Show content list after submission
+        showContentList('news');
+        
+        // Update sidebar active link
+        document.querySelectorAll('.sidebar-nav a').forEach(a => {
+          a.classList.remove('active');
+        });
+        const newsLink = document.querySelector('.content-type-link[data-content-type="news"]');
+        if (newsLink) {
+          newsLink.classList.add('active');
+        }
+        
+        console.log('======== NEWS FORM SUBMISSION COMPLETED ========');
+      } catch (error) {
+        console.error('Error saving news:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+        alert('Error saving news article: ' + error.message);
+      }
+    });
+    
+    // Add submission handler for the result form
+    document.getElementById('result-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      console.log('======== RESULT FORM SUBMISSION STARTED ========');
+      
+      // Get form values
+      const raceId = document.getElementById('result-race').value;
+      const riderId = document.getElementById('result-rider').value;
+      const position = document.getElementById('result-position').value;
+      const time = document.getElementById('result-time').value;
+      const category = document.getElementById('result-category').value;
+      const notes = document.getElementById('result-notes').value;
+      
+      // Validate required fields
+      if (!raceId) {
+        alert('Please select a race');
+        return;
+      }
+      
+      if (!riderId) {
+        alert('Please select a rider');
+        return;
+      }
+      
+      console.log('Result form values:', {
+        raceId,
+        riderId,
+        position,
+        time,
+        category,
+        notes: notes ? (notes.length > 50 ? notes.substring(0, 50) + '...' : notes) : ''
+      });
+      
+      // Check if we're editing or creating new
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      const addParam = urlParams.get('add');
+      
+      // Determine if this is a new result or an edit
+      const isNewResult = !editId || !!addParam;
+      
+      console.log('Operation determination:', {
+        urlEditParam: editId,
+        urlAddParam: addParam,
+        isNewResult: isNewResult,
+        operation: isNewResult ? 'Creating new race result' : 'Editing existing race result ID: ' + editId
+      });
+      
+      try {
+        // Get race and rider information to store with the result
+        let raceName = '';
+        let riderName = '';
+        
+        // Get selected race name
+        const raceOption = document.getElementById('result-race').selectedOptions[0];
+        if (raceOption) {
+          raceName = raceOption.textContent;
+        }
+        
+        // Get selected rider name
+        const riderOption = document.getElementById('result-rider').selectedOptions[0];
+        if (riderOption) {
+          riderName = riderOption.textContent;
+        }
+        
+        // Create document data
+        const resultData = {
+          raceId,
+          riderId,
+          raceTitle: raceName,
+          riderName: riderName,
+          position: position ? parseInt(position, 10) : null,
+          time,
+          category,
+          notes,
+          type: 'result', // Ensure the type is set to 'result'
+          status: 'published', // Default to published
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // If new content, add creation timestamp
+        if (isNewResult) {
+          resultData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        } 
+        // If editing, we need to retrieve existing data to maintain fields we don't change
+        else {
+          try {
+            console.log('Retrieving existing result data for ID:', editId);
+            const doc = await db.collection('content').doc(editId).get();
+            
+            if (doc.exists) {
+              const existingData = doc.data();
+              console.log('Existing result data retrieved:', existingData);
+              
+              // Ensure we don't lose any essential fields from the original document
+              if (existingData.createdAt) {
+                resultData.createdAt = existingData.createdAt;
+              }
+              
+              // Keep the original race date if we have it
+              if (existingData.raceDate) {
+                resultData.raceDate = existingData.raceDate;
+              }
+            } else {
+              console.warn('No existing document found with ID:', editId);
+            }
+          } catch (err) {
+            console.error('Error retrieving existing result data:', err);
+          }
+        }
+        
+        // Fetch race data to get the date
+        if (raceId && isNewResult) {
+          try {
+            const raceDoc = await db.collection('content').doc(raceId).get();
+            if (raceDoc.exists) {
+              const raceData = raceDoc.data();
+              if (raceData.date) {
+                resultData.raceDate = raceData.date;
+                console.log('Added race date to result data:', raceData.date);
+              }
+            }
+          } catch (error) {
+            console.warn('Could not fetch race date:', error);
+          }
+        }
+        
+        // Add debugging logs
+        console.log('========== RESULT DATA DEBUG ==========');
+        console.log('Saving result data with type:', resultData.type);
+        console.log('Complete result data object:', resultData);
+        console.log('Using Firestore collection: content');
+        console.log('====================================');
+        
+        // Save to Firestore
+        let saveResult;
+        if (isNewResult) {
+          // For new results, create a new document with auto-generated ID
+          console.log('Creating new result document with auto-generated ID');
+          saveResult = await db.collection('content').add(resultData);
+          console.log('New result created with ID:', saveResult.id);
+        } else {
+          // For existing results, update the document
+          console.log('Updating existing result with ID:', editId);
+          saveResult = await db.collection('content').doc(editId).update(resultData);
+          console.log('Existing result updated successfully');
+        }
+        
+        console.log('Result saved successfully with type:', resultData.type);
+        alert(`Race result ${isNewResult ? 'created' : 'updated'} successfully!`);
+        
+        // Show content list after submission
+        showContentList('result');
+        
+        // Update sidebar active link
+        document.querySelectorAll('.sidebar-nav a').forEach(a => {
+          a.classList.remove('active');
+        });
+        const resultLink = document.querySelector('.content-type-link[data-content-type="result"]');
+        if (resultLink) {
+          resultLink.classList.add('active');
+        }
+        
+        console.log('======== RESULT FORM SUBMISSION COMPLETED ========');
+      } catch (error) {
+        console.error('Error saving race result:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          stack: error.stack
+        });
+        alert('Error saving race result: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html> 

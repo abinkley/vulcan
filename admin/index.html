@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vulcan Cycling Admin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    
+    .login-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .logo-container {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo-container img {
+      height: 80px;
+      width: auto;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #ff3e82;
+      box-shadow: 0 0 0 2px rgba(255, 62, 130, 0.2);
+    }
+    
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #ff3e82;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    button:hover {
+      background-color: #e62e72;
+    }
+    
+    .error-message {
+      color: #e62e72;
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+
+    #loading-spinner {
+      display: none;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #ff3e82;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo-container">
+      <h2>VULCAN CYCLING</h2>
+    </div>
+    <h1>Admin Login</h1>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" id="login-button">Log In</button>
+      <div id="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+      <p class="error-message" id="error-message">Invalid email or password. Please try again.</p>
+    </form>
+  </div>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0hp0wbDPAG2Cbs_K1pi1jBDWtW4PMUuk",
+      authDomain: "vulcan-edfea.firebaseapp.com",
+      projectId: "vulcan-edfea",
+      storageBucket: "vulcan-edfea.firebasestorage.app",
+      messagingSenderId: "906189775089",
+      appId: "1:906189775089:web:7ce445936dfbc556778950",
+      measurementId: "G-5GZYY5YKTB"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Check if user is already logged in
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in, redirect to add-content.html instead of dashboard.html
+        window.location.href = 'add-content.html';
+      }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('error-message');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      const loginButton = document.getElementById('login-button');
+      
+      // Show loading spinner, hide error message
+      errorMessage.style.display = 'none';
+      loadingSpinner.style.display = 'block';
+      loginButton.disabled = true;
+      
+      // Sign in with Firebase
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Signed in successfully
+          window.location.href = 'add-content.html';
+        })
+        .catch((error) => {
+          // Handle errors
+          console.error("Login error:", error);
+          errorMessage.textContent = error.message || 'Invalid email or password. Please try again.';
+          errorMessage.style.display = 'block';
+          loadingSpinner.style.display = 'none';
+          loginButton.disabled = false;
+        });
+    });
+  </script>
+</body>
+</html> 
