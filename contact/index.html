@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact - Vulcan Cycling</title>
+  <link rel="stylesheet" href="../css/responsive.css">
+  <script src="../js/mobile-nav.js" defer></script>
+  <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #000;
+      line-height: 1.6;
+    }
+    .bg-image {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      z-index: 1;
+      background-image: url('../images/vulcan-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #000;
+    }
+    .content { position: relative; z-index: 2; }
+    a { color: inherit; text-decoration: none; }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    header {
+      padding: 1.5rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo h1 {
+      margin-left: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    nav ul { display: flex; list-style: none; }
+    nav li { margin-left: 2rem; }
+    nav a { font-weight: 500; transition: color 0.3s ease; }
+    nav a:hover { color: var(--primary); }
+    nav a.active { color: var(--primary); }
+    .contact-section {
+      padding: 4rem 0;
+      min-height: 50vh;
+    }
+    .contact-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .contact-section h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .contact-section p {
+      color: #ccc;
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .contact-email {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+    .contact-email:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+    footer {
+      padding: 4rem 0 2rem;
+      background-color: rgba(0, 0, 0, 0.9);
+      margin-top: 4rem;
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    .footer-links h3 { font-size: 1.25rem; margin-bottom: 1.5rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 0.75rem; }
+    .footer-links a {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+    .footer-links a:hover { color: var(--primary); }
+    .copyright {
+      margin-top: 4rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.875rem;
+    }
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-image"></div>
+  <div class="content">
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <a href="../index.html"><h1>VULCAN CYCLING</h1></a>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../results/index.html">Results</a></li>
+            <li><a href="../news/index.html">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
+            <li><a href="../about/index.html">About</a></li>
+            <li><a href="index.html" class="active">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="contact-section">
+        <div class="container contact-container">
+          <h1>Contact Us</h1>
+          <p>Get in touch with Vulcan Cycling.</p>
+          <p>
+            Reach out at <a href="mailto:vulcancycling@gmail.com" class="contact-email">vulcancycling@gmail.com</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3>VULCAN CYCLING</h3>
+          </div>
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../news/index.html">News</a></li>
+              <li><a href="../results/index.html">Results</a></li>
+              <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h3>Contact Us</h3>
+            <ul>
+              <li><a href="../about/index.html">About Us</a></li>
+              <li><a href="index.html">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="copyright">
+          &copy; 2025 Vulcan Cycling. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
