@@ -508,14 +508,25 @@ async function loadNewsArticle() {
 }
 
 // Format date for display
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+function formatDate(value) {
+  if (!value) return 'N/A';
+  let d;
+  if (value && typeof value.toDate === 'function') {
+    d = value.toDate();                       // Firestore Timestamp
+  } else if (value && typeof value.seconds === 'number') {
+    d = new Date(value.seconds * 1000);       // serialized Timestamp
+  } else if (value instanceof Date) {
+    d = value;                                // already a Date
+  } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+    const [y, m, day] = value.split('T')[0].split('-').map(Number);
+    d = new Date(Date.UTC(y, m - 1, day, 12, 0, 0)); // noon UTC, no day shift
+  } else {
+    d = new Date(value);
+  }
+  if (isNaN(d)) return 'N/A';
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    timeZone: 'UTC'
   });
 }
 
@@ -1449,18 +1460,6 @@ function loadNewsDetails() {
     return;
   }
   
-  // Check for cached article data
-  const cachedArticle = localStorage.getItem(`article_${articleId}`);
-  if (cachedArticle) {
-    try {
-      const article = JSON.parse(cachedArticle);
-      displayArticle(article);
-      return;
-    } catch (e) {
-      console.log('Invalid cached data, fetching fresh');
-    }
-  }
-  
   // Query Firestore for the specific news article
   db.collection('content').doc(articleId).get()
     .then((doc) => {
@@ -1485,9 +1484,6 @@ function loadNewsDetails() {
       }
       
       const article = doc.data();
-      
-      // Cache the article data for faster loading
-      localStorage.setItem(`article_${articleId}`, JSON.stringify(article));
       
       // Parse the date properly
       let articleDate;
@@ -1655,6 +1651,8 @@ function loadAllResults() {
     .where('type', '==', 'race')
     .get()
     .then(raceSnapshot => {
+      console.log(`Found ${raceSnapshot.size} races`);
+      
       // Create map of race IDs to race data (including dates)
       const racesMap = {};
       raceSnapshot.forEach(doc => {
@@ -1677,9 +1675,9 @@ function loadAllResults() {
           
           if (resultsSnapshot.empty) {
             resultsContainer.innerHTML = `
-              <div style="text-align: center; padding: 3rem;">
-                <h3>No Results Found</h3>
-                <p>Check back soon for race results from Vulcan Cycling team members.</p>
+              <div style="text-align: center; padding: 3rem; background-color: rgba(30, 30, 30, 0.5); border-radius: 8px;">
+                <h3 style="color: white; margin-bottom: 1rem;">No Results Found</h3>
+                <p style="color: #ccc;">Check back soon for race results from Vulcan Cycling team members.</p>
               </div>
             `;
             return;
@@ -1897,20 +1895,19 @@ function loadAllResults() {
     })
     .catch((error) => {
       console.error('Error loading results:', error);
-      resultsContainer.innerHTML = `
-        <div style="text-align: center; padding: 3rem;">
-          <h3>Error Loading Results</h3>
-          <p>There was an error loading the race results. Please try again later.</p>
-        </div>
-      `;
+      
+      // Try to show fallback results if available
+      const fallbackResults = document.getElementById('fallback-results');
+      if (fallbackResults) {
+        resultsContainer.innerHTML = fallbackResults.innerHTML;
+      } else {
+        resultsContainer.innerHTML = `
+          <div style="text-align: center; padding: 3rem; background-color: rgba(30, 30, 30, 0.5); border-radius: 8px;">
+            <h3 style="color: white; margin-bottom: 1rem;">Error Loading Results</h3>
+            <p style="color: #ccc;">There was an error loading the race results. Please try again later.</p>
+            <small style="color: #ff6b6b; margin-top: 1rem; display: block;">Error: ${error.message}</small>
+          </div>
+        `;
+      }
     });
-}
-
-// Helper function to format dates consistently
-function formatDate(date) {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
 }
