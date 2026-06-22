@@ -1,65 +1,46 @@
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD0hp0wbDPAG2Cbs_K1pi1jBDWtW4PMUuk",
-  authDomain: "vulcan-edfea.firebaseapp.com",
-  projectId: "vulcan-edfea",
-  storageBucket: "vulcan-edfea.firebasestorage.app",
-  messagingSenderId: "906189775089",
-  appId: "1:906189775089:web:7ce445936dfbc556778950",
-  measurementId: "G-5GZYY5YKTB"
-};
+const DEBUG = false;
+function debugLog(...args) { if (DEBUG) debugLog(...args); }
+function debugWarn(...args) { if (DEBUG) debugWarn(...args); }
 
 // Global variables for Firebase services
 let db;
 let storage;
 
-// Initialize Firebase for all pages
+// Initialize Firestore/Storage (firebase-init.js must load first)
 function initFirebase() {
-  console.log('Initializing Firebase...');
-  
-  // Check if Firebase is already initialized
-  if (firebase.apps.length === 0) {
-    try {
-      firebase.initializeApp(firebaseConfig);
-      console.log('Firebase initialized successfully');
-    } catch (error) {
-      console.error('Error initializing Firebase:', error);
-      return false;
-    }
-  } else {
-    console.log('Firebase already initialized');
+  if (typeof firebase === 'undefined') {
+    console.error('Firebase SDK not loaded');
+    return false;
   }
-  
-  // Initialize Firestore
+
+  if (!firebase.apps.length) {
+    console.error('Firebase not initialized — include firebase-init.js before firebase-loader.js');
+    return false;
+  }
+
   try {
     db = firebase.firestore();
-    console.log('Firestore initialized successfully');
   } catch (error) {
     console.error('Error initializing Firestore:', error);
     return false;
   }
-  
-  // Initialize Storage if available
+
   try {
     if (firebase.storage) {
       storage = firebase.storage();
-      console.log('Firebase Storage initialized successfully');
     }
   } catch (error) {
-    console.log('Firebase Storage not initialized (might not be needed):', error);
-    // Not critical, so continue
+    debugLog('Firebase Storage not initialized (might not be needed):', error);
   }
-  
+
   return true;
 }
 
-// Initialize Firebase immediately when the script loads
-console.log('Initializing Firebase on script load...');
 initFirebase();
 
 // Load featured riders for the homepage
 async function loadFeaturedRiders() {
-  console.log('=== Starting loadFeaturedRiders function ===');
+  debugLog('=== Starting loadFeaturedRiders function ===');
   
   // Get the riders container first to ensure we can log errors properly
   const ridersGrid = document.querySelector('.riders-grid');
@@ -70,7 +51,7 @@ async function loadFeaturedRiders() {
   
   // Make sure Firebase is initialized
   if (!db) {
-    console.log('Firestore not initialized yet, initializing Firebase...');
+    debugLog('Firestore not initialized yet, initializing Firebase...');
     if (!initFirebase()) {
       ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Error initializing Firebase. Please check the console for details.</p>';
       return;
@@ -78,7 +59,7 @@ async function loadFeaturedRiders() {
   }
   
   try {
-    console.log('Querying Firestore for riders with type="rider"...');
+    debugLog('Querying Firestore for riders with type="rider"...');
     
     // Get all riders - only filter by type, ignore status for now to see if we get any results
     const snapshot = await db.collection('content')
@@ -86,11 +67,11 @@ async function loadFeaturedRiders() {
       .get();
     
     // Debug output the query results
-    console.log(`Query completed. Found ${snapshot.size} total documents`);
+    debugLog(`Query completed. Found ${snapshot.size} total documents`);
     
     // If there are no riders, return
     if (snapshot.empty) {
-      console.warn('No riders found in database with type="rider"');
+      debugWarn('No riders found in database with type="rider"');
       ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No riders found in the database. Please add some riders in the admin interface.</p>';
       return;
     }
@@ -99,7 +80,7 @@ async function loadFeaturedRiders() {
     let debugCount = 0;
     snapshot.forEach(doc => {
       if (debugCount < 2) { // Just show the first 2 for debugging
-        console.log(`Document ${doc.id}:`, doc.data());
+        debugLog(`Document ${doc.id}:`, doc.data());
         debugCount++;
       }
     });
@@ -112,7 +93,7 @@ async function loadFeaturedRiders() {
       
       // Check if this actually looks like a rider
       if (!data.firstName && !data.lastName && !data.fullName) {
-        console.warn(`Document ${doc.id} appears to be missing rider name fields:`, data);
+        debugWarn(`Document ${doc.id} appears to be missing rider name fields:`, data);
       }
       
       allRiders.push({
@@ -121,7 +102,7 @@ async function loadFeaturedRiders() {
       });
     });
     
-    console.log(`Extracted ${allRiders.length} total riders from Firestore`);
+    debugLog(`Extracted ${allRiders.length} total riders from Firestore`);
     
     // If we actually have riders, continue with the random selection
     if (allRiders.length > 0) {
@@ -133,9 +114,9 @@ async function loadFeaturedRiders() {
       
       // Select the first 3 (or fewer if less than 3 are available)
       const featuredRiders = allRiders.slice(0, Math.min(3, allRiders.length));
-      console.log(`Selected ${featuredRiders.length} random riders to feature:`);
+      debugLog(`Selected ${featuredRiders.length} random riders to feature:`);
       featuredRiders.forEach((rider, index) => {
-        console.log(`Featured rider ${index + 1}:`, rider.firstName, rider.lastName, rider.fullName);
+        debugLog(`Featured rider ${index + 1}:`, rider.firstName, rider.lastName, rider.fullName);
       });
       
       // Clear the existing content
@@ -153,10 +134,10 @@ async function loadFeaturedRiders() {
         
         // If there's an image, set it as background, otherwise use placeholder
         if (data.imageUrl) {
-          console.log('Using rider image URL:', data.imageUrl);
+          debugLog('Using rider image URL:', data.imageUrl);
           riderImage.style.backgroundImage = `url('${data.imageUrl}')`;
         } else {
-          console.log('No image for rider, using placeholder');
+          debugLog('No image for rider, using placeholder');
           // Check if we're in the homepage context
           const isHomepage = window.location.pathname.endsWith('/') || 
                             window.location.pathname.endsWith('/index.html') ||
@@ -164,7 +145,7 @@ async function loadFeaturedRiders() {
           
           // Use relative path based on current page
           const placeholderPath = isHomepage ? 'images/rider-placeholder.jpg' : '../images/rider-placeholder.jpg';
-          console.log(`Using placeholder image: ${placeholderPath}`);
+          debugLog(`Using placeholder image: ${placeholderPath}`);
           riderImage.style.backgroundImage = `url('${placeholderPath}')`;
         }
         
@@ -203,10 +184,10 @@ async function loadFeaturedRiders() {
         
         // Add the card to the grid
         ridersGrid.appendChild(riderCard);
-        console.log(`Added rider card for ${displayName} to the grid`);
+        debugLog(`Added rider card for ${displayName} to the grid`);
       });
     } else {
-      console.warn('Found documents but no valid riders to display');
+      debugWarn('Found documents but no valid riders to display');
       ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No valid riders found. Please check the database.</p>';
     }
   } catch (error) {
@@ -214,7 +195,7 @@ async function loadFeaturedRiders() {
     ridersGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Error loading featured riders. Please check the console for details.</p>';
   }
   
-  console.log('=== Completed loadFeaturedRiders function ===');
+  debugLog('=== Completed loadFeaturedRiders function ===');
 }
 
 // Load news articles for the news page
@@ -223,7 +204,7 @@ async function loadNewsArticles() {
     // Get the news container
     const newsContainer = document.querySelector('.news-container');
     if (!newsContainer) {
-      console.log('News container not found');
+      debugLog('News container not found');
       return;
     }
     
@@ -308,7 +289,7 @@ async function loadRaceResults() {
     // Get the results container
     const resultsContainer = document.querySelector('.results-container');
     if (!resultsContainer) {
-      console.log('Results container not found');
+      debugLog('Results container not found');
       return;
     }
     
@@ -323,6 +304,17 @@ async function loadRaceResults() {
       resultsContainer.innerHTML = '<p class="no-content">No race results found.</p>';
       return;
     }
+
+    const [raceSnapshot, riderSnapshot] = await Promise.all([
+      db.collection('content').where('type', '==', 'race').get(),
+      db.collection('content').where('type', '==', 'rider').get()
+    ]);
+
+    const racesMap = {};
+    raceSnapshot.forEach(doc => { racesMap[doc.id] = doc.data(); });
+
+    const ridersMap = {};
+    riderSnapshot.forEach(doc => { ridersMap[doc.id] = doc.data(); });
     
     // Group results by race
     const resultsByRace = {};
@@ -331,16 +323,12 @@ async function loadRaceResults() {
     for (const doc of snapshot.docs) {
       const data = doc.data();
       
-      // Get the race and rider details
-      const raceDoc = await db.collection('content').doc(data.raceId).get();
-      const riderDoc = await db.collection('content').doc(data.riderId).get();
+      const race = racesMap[data.raceId];
+      const rider = ridersMap[data.riderId];
       
-      if (!raceDoc.exists || !riderDoc.exists) {
+      if (!race || !rider) {
         continue;
       }
-      
-      const race = raceDoc.data();
-      const rider = riderDoc.data();
       
       // Add the race to the results object if it doesn't exist
       if (!resultsByRace[data.raceId]) {
@@ -438,14 +426,14 @@ async function loadNewsArticle() {
     const articleId = urlParams.get('id');
     
     if (!articleId) {
-      console.log('No article ID provided');
+      debugLog('No article ID provided');
       return;
     }
     
     // Get the article container
     const articleContainer = document.querySelector('.article-container');
     if (!articleContainer) {
-      console.log('Article container not found');
+      debugLog('Article container not found');
       return;
     }
     
@@ -508,15 +496,57 @@ async function loadNewsArticle() {
 }
 
 // Format date for display
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+function formatDate(value) {
+  if (!value) return 'N/A';
+  let d;
+  if (value && typeof value.toDate === 'function') {
+    d = value.toDate();                       // Firestore Timestamp
+  } else if (value && typeof value.seconds === 'number') {
+    d = new Date(value.seconds * 1000);       // serialized Timestamp
+  } else if (value instanceof Date) {
+    d = value;                                // already a Date
+  } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+    const [y, m, day] = value.split('T')[0].split('-').map(Number);
+    d = new Date(Date.UTC(y, m - 1, day, 12, 0, 0)); // noon UTC, no day shift
+  } else {
+    d = new Date(value);
+  }
+  if (isNaN(d)) return 'N/A';
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    timeZone: 'UTC'
   });
+}
+
+function updateArticleMetaTags(article) {
+  const title = article.title || 'News Article';
+  const description = article.excerpt ||
+    (article.content ? article.content.substring(0, 160).replace(/\s+/g, ' ').trim() : '');
+  const imagePath = article.imageUrl || 'images/news-placeholder.jpg';
+  const image = imagePath.startsWith('http') ? imagePath : `${window.location.origin}/${imagePath.replace(/^\//, '')}`;
+
+  function setMeta(attr, name, content) {
+    if (!content) return;
+    let el = document.querySelector(`meta[${attr}="${name}"]`);
+    if (!el) {
+      el = document.createElement('meta');
+      el.setAttribute(attr, name);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
+  }
+
+  document.title = `${title} - Vulcan Cycling`;
+  setMeta('name', 'description', description);
+  setMeta('property', 'og:title', title);
+  setMeta('property', 'og:description', description);
+  setMeta('property', 'og:image', image);
+  setMeta('property', 'og:url', window.location.href);
+  setMeta('property', 'og:type', 'article');
+  setMeta('name', 'twitter:card', 'summary_large_image');
+  setMeta('name', 'twitter:title', title);
+  setMeta('name', 'twitter:description', description);
+  setMeta('name', 'twitter:image', image);
 }
 
 // Format content for display (convert newlines to paragraphs)
@@ -532,7 +562,7 @@ function formatContent(content) {
 
 // Function to load latest news for homepage
 function loadLatestNews() {
-  console.log('Loading latest news for homepage');
+  debugLog('Loading latest news for homepage');
   const newsGrid = document.querySelector('.news-grid');
   
   if (!newsGrid) {
@@ -551,17 +581,22 @@ function loadLatestNews() {
     newsGrid.appendChild(gridCell);
   }
   
-  // Query Firestore for news - without complex sorting that requires indexes
+  // Query Firestore ordered by date, then limit to 3 latest
   db.collection('content')
     .where('type', '==', 'news')
+    .orderBy('date', 'desc')
+    .limit(3)
     .get()
     .then((querySnapshot) => {
-      console.log(`Found ${querySnapshot.size} news items`);
+      debugLog(`Found ${querySnapshot.size} news items`);
+      debugLog('Query snapshot details:', querySnapshot);
       
       if (querySnapshot.empty) {
+        debugLog('No news articles found in database');
         newsGrid.innerHTML = `
           <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
             <p>No news articles available yet.</p>
+            <p style="font-size: 0.8rem; color: #999;">Check if articles exist in the database.</p>
           </div>
         `;
         return;
@@ -600,21 +635,21 @@ function loadLatestNews() {
         });
       });
       
-      // Sort by date descending (newest first)
-      articles.sort((a, b) => b.parsedDate - a.parsedDate);
-      
-      // Take only the first 3
+      // Already ordered by query; take first 3 for grid cells
       const latestArticles = articles.slice(0, 3);
       
-      console.log(`Displaying ${latestArticles.length} latest news articles`);
+      const isMobile = window.innerWidth <= 768;
+      
+      debugLog(`Displaying ${latestArticles.length} latest news articles`);
       
       // Display each article in its grid cell
       latestArticles.forEach((article, index) => {
         const formattedDate = formatDate(article.parsedDate);
         
-        // Create excerpt from content
+        // Create excerpt from content (shorter on mobile)
+        const excerptLength = isMobile ? 80 : 120;
         const excerpt = article.content 
-          ? article.content.substring(0, 120) + (article.content.length > 120 ? '...' : '') 
+          ? article.content.substring(0, excerptLength) + (article.content.length > excerptLength ? '...' : '') 
           : 'No content available';
         
         // Get the grid cell for this position
@@ -629,9 +664,17 @@ function loadLatestNews() {
         const imageSection = document.createElement('div');
         imageSection.className = 'news-image';
         
-        // If there's an image, set it as background
+        // If there's an image, set it as background with lazy loading
         if (article.imageUrl) {
-          imageSection.style.backgroundImage = `url('${article.imageUrl}')`;
+          // Use lazy loading for images
+          const img = new Image();
+          img.onload = () => {
+            imageSection.style.backgroundImage = `url('${article.imageUrl}')`;
+            imageSection.style.opacity = '1';
+          };
+          img.src = article.imageUrl;
+          imageSection.style.opacity = '0.5';
+          imageSection.style.transition = 'opacity 0.3s ease';
         } else {
           // Use placeholder image if no image is available
           imageSection.style.backgroundImage = "url('images/news-placeholder.jpg')";
@@ -675,17 +718,28 @@ function loadLatestNews() {
     })
     .catch((error) => {
       console.error('Error loading news:', error);
-      newsGrid.innerHTML = `
-        <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
-          <p>Error loading news. Please try again later.</p>
-        </div>
-      `;
+      
+      // Check if it's a CORS/security rules error
+      if (error.message && error.message.includes('access control checks')) {
+        newsGrid.innerHTML = `
+          <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+            <p>Database access temporarily unavailable. Please check back later.</p>
+            <p style="font-size: 0.8rem; color: #999;">Error: ${error.message}</p>
+          </div>
+        `;
+      } else {
+        newsGrid.innerHTML = `
+          <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+            <p>Error loading news. Please try again later.</p>
+          </div>
+        `;
+      }
     });
 }
 
 // Function to load upcoming races for homepage
 function loadUpcomingRaces() {
-  console.log('Loading upcoming races for homepage');
+  debugLog('Loading upcoming races for homepage');
   const racesList = document.querySelector('.races-list');
   
   if (!racesList) {
@@ -700,20 +754,20 @@ function loadUpcomingRaces() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  console.log('Current date for comparison:', today);
+  debugLog('Current date for comparison:', today);
   
   // Query Firestore for all races - no complex queries that require indexes
   db.collection('content')
     .where('type', '==', 'race')
     .get()
     .then((querySnapshot) => {
-      console.log(`Found ${querySnapshot.size} total races, filtering for upcoming ones`);
+      debugLog(`Found ${querySnapshot.size} total races, filtering for upcoming ones`);
       
       // Filter races client-side to handle date format variations
       const allRaces = [];
       querySnapshot.forEach(doc => {
         const race = doc.data();
-        console.log(`Race "${race.title}" date type:`, race.date ? typeof race.date : 'undefined');
+        debugLog(`Race "${race.title}" date type:`, race.date ? typeof race.date : 'undefined');
         
         let raceDate;
         // Handle different possible date formats
@@ -752,7 +806,7 @@ function loadUpcomingRaces() {
             raceDate = new Date();
           }
           
-          console.log(`Race "${race.title}" parsed date:`, raceDate);
+          debugLog(`Race "${race.title}" parsed date:`, raceDate);
           
           allRaces.push({
             id: doc.id,
@@ -760,7 +814,7 @@ function loadUpcomingRaces() {
             parsedDate: raceDate
           });
         } else {
-          console.warn(`Race "${race.title || 'Untitled'}" has no date property`);
+          debugWarn(`Race "${race.title || 'Untitled'}" has no date property`);
         }
       });
       
@@ -773,7 +827,7 @@ function loadUpcomingRaces() {
       // Take only the first 3
       const racesToShow = upcomingRaces.slice(0, 3);
       
-      console.log(`Showing ${racesToShow.length} upcoming races`);
+      debugLog(`Showing ${racesToShow.length} upcoming races`);
       
       if (racesToShow.length === 0) {
         racesList.innerHTML = `
@@ -829,7 +883,7 @@ function loadUpcomingRaces() {
 
 // Load all races for the races page
 async function loadAllRaces() {
-  console.log('=== Starting loadAllRaces function ===');
+  debugLog('=== Starting loadAllRaces function ===');
   
   // Debug flag to enable extra logging
   const DEBUG = true;
@@ -844,7 +898,7 @@ async function loadAllRaces() {
       return;
     }
     
-    if (DEBUG) console.log('Found races container:', racesContainer);
+    if (DEBUG) debugLog('Found races container:', racesContainer);
     
     // Show loading indicator
     racesContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><p>Loading races from Firestore...</p></div>';
@@ -853,11 +907,11 @@ async function loadAllRaces() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    console.log('Current date for race filtering:', today);
+    debugLog('Current date for race filtering:', today);
     
     // Make sure Firebase is initialized
     if (!db) {
-      console.log('Firestore not initialized yet, initializing Firebase...');
+      debugLog('Firestore not initialized yet, initializing Firebase...');
       if (!initFirebase()) {
         racesContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: red;">Error initializing Firebase. Please check the console for details.</p>';
         return;
@@ -865,13 +919,13 @@ async function loadAllRaces() {
     }
     
     // Get all races - no complex queries that require indexes
-    if (DEBUG) console.log('Querying Firestore for races with type="race"...');
+    if (DEBUG) debugLog('Querying Firestore for races with type="race"...');
     
     const snapshot = await db.collection('content')
       .where('type', '==', 'race')
       .get();
     
-    console.log(`Found ${snapshot.size} total races`);
+    debugLog(`Found ${snapshot.size} total races`);
     
     // Separate races into upcoming and past
     const upcomingRaces = [];
@@ -916,8 +970,8 @@ async function loadAllRaces() {
           raceDate = new Date();
         }
         
-        if (DEBUG) console.log(`Race "${race.title}" (${doc.id}) - date type:`, typeof race.date);
-        if (DEBUG) console.log(`Race "${race.title}" (${doc.id}) - parsed date:`, raceDate);
+        if (DEBUG) debugLog(`Race "${race.title}" (${doc.id}) - date type:`, typeof race.date);
+        if (DEBUG) debugLog(`Race "${race.title}" (${doc.id}) - parsed date:`, raceDate);
         
         if (raceDate >= today) {
           upcomingRaces.push({
@@ -933,7 +987,7 @@ async function loadAllRaces() {
           });
         }
       } else {
-        console.warn(`Race ${doc.id} has no date property:`, race);
+        debugWarn(`Race ${doc.id} has no date property:`, race);
       }
     });
     
@@ -941,7 +995,7 @@ async function loadAllRaces() {
     upcomingRaces.sort((a, b) => a.parsedDate - b.parsedDate);
     pastRaces.sort((a, b) => b.parsedDate - a.parsedDate); // Reverse order for past races
     
-    console.log(`Found ${upcomingRaces.length} upcoming races and ${pastRaces.length} past races`);
+    debugLog(`Found ${upcomingRaces.length} upcoming races and ${pastRaces.length} past races`);
     
     // Clear the existing content
     racesContainer.innerHTML = '';
@@ -1074,7 +1128,7 @@ async function loadAllRaces() {
     pastSection.appendChild(pastList);
     racesContainer.appendChild(pastSection);
     
-    console.log('=== Completed loadAllRaces function ===');
+    debugLog('=== Completed loadAllRaces function ===');
     
   } catch (error) {
     console.error('Error loading races:', error);
@@ -1087,7 +1141,7 @@ async function loadAllRaces() {
 
 // Load single race details
 async function loadRaceDetails() {
-  console.log('Loading race details...');
+  debugLog('Loading race details...');
   try {
     // Get the race ID from the URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -1103,7 +1157,7 @@ async function loadRaceDetails() {
       return;
     }
     
-    console.log('Loading race with ID:', raceId);
+    debugLog('Loading race with ID:', raceId);
     
     // Get the race container - use the correct container selector from the HTML
     const raceContainer = document.querySelector('.race-detail-container');
@@ -1125,7 +1179,7 @@ async function loadRaceDetails() {
     }
     
     const data = doc.data();
-    console.log('Race data loaded:', data);
+    debugLog('Race data loaded:', data);
     
     // Parse the date
     let raceDate;
@@ -1150,7 +1204,7 @@ async function loadRaceDetails() {
     
     // Format date
     const dateString = formatDate(raceDate);
-    console.log('Formatted race date:', dateString);
+    debugLog('Formatted race date:', dateString);
     
     // Create race header
     const raceHeader = document.createElement('div');
@@ -1183,7 +1237,7 @@ async function loadRaceDetails() {
     
     // Only show results if the race date has passed
     if (raceDate < today) {
-      console.log('Race date has passed, checking for results');
+      debugLog('Race date has passed, checking for results');
       resultsSection.innerHTML = '<h3>Results</h3>';
       
       try {
@@ -1194,7 +1248,7 @@ async function loadRaceDetails() {
           .orderBy('position', 'asc')
           .get();
         
-        console.log(`Found ${resultsSnapshot.size} results for this race`);
+        debugLog(`Found ${resultsSnapshot.size} results for this race`);
         
         if (resultsSnapshot.empty) {
           resultsSection.innerHTML += '<p>No results available yet.</p>';
@@ -1216,32 +1270,31 @@ async function loadRaceDetails() {
           
           // Add table body
           const tableBody = document.createElement('tbody');
+
+          const ridersSnapshot = await db.collection('content')
+            .where('type', '==', 'rider')
+            .get();
+          const ridersMap = {};
+          ridersSnapshot.forEach(doc => {
+            const rider = doc.data();
+            ridersMap[doc.id] = rider.fullName ||
+              `${rider.firstName || ''} ${rider.lastName || ''}`.trim() ||
+              'Unknown Rider';
+          });
           
           // Process each result and look up rider information
           for (const resultDoc of resultsSnapshot.docs) {
             const result = resultDoc.data();
-            console.log('Processing result:', result);
+            debugLog('Processing result:', result);
             
             let riderName = 'Unknown Rider';
             
-            // Try to get rider info if rider ID is available
-            if (result.riderId) {
-              try {
-                const riderDoc = await db.collection('content').doc(result.riderId).get();
-                if (riderDoc.exists) {
-                  const rider = riderDoc.data();
-                  if (rider.fullName) {
-                    riderName = rider.fullName;
-                  } else if (rider.firstName || rider.lastName) {
-                    riderName = `${rider.firstName || ''} ${rider.lastName || ''}`.trim();
-                  }
-                }
-              } catch (error) {
-                console.error('Error loading rider info:', error);
-              }
+            if (result.riderId && ridersMap[result.riderId]) {
+              riderName = ridersMap[result.riderId];
             } else if (result.riderName) {
-              // If rider name is directly stored in the result
               riderName = result.riderName;
+            } else if (result.rider) {
+              riderName = result.rider;
             }
             
             const row = document.createElement('tr');
@@ -1264,7 +1317,7 @@ async function loadRaceDetails() {
         resultsSection.innerHTML += '<p>Error loading results. Please try again later.</p>';
       }
     } else {
-      console.log('Race is in the future, no results to show');
+      debugLog('Race is in the future, no results to show');
       resultsSection.innerHTML = '<h3>Results</h3><p>Results will be available after the race.</p>';
     }
     
@@ -1276,7 +1329,7 @@ async function loadRaceDetails() {
     raceContainer.appendChild(raceDetails);
     raceContainer.appendChild(resultsSection);
     
-    console.log('Race details displayed successfully');
+    debugLog('Race details displayed successfully');
   } catch (error) {
     console.error('Error loading race details:', error);
     const raceContainer = document.querySelector('.race-detail-container');
@@ -1288,7 +1341,7 @@ async function loadRaceDetails() {
 
 // Function to load all news articles for the news page (without requiring index)
 function loadAllNewsNonIndexed() {
-  console.log('Loading all news articles (non-indexed version)...');
+  debugLog('Loading all news articles (non-indexed version)...');
   const newsContainer = document.querySelector('.news-container');
   
   if (!newsContainer) {
@@ -1299,12 +1352,17 @@ function loadAllNewsNonIndexed() {
   // Clear loading message
   newsContainer.innerHTML = '';
   
-  // Query Firestore for news articles (without orderBy to avoid index requirement)
+  // Use pagination for mobile performance
+  const isMobile = window.innerWidth <= 768;
+  const pageSize = isMobile ? 6 : 12; // Load fewer items on mobile
+  
+  // Query Firestore for news articles with pagination
   db.collection('content')
     .where('type', '==', 'news')
+    .limit(pageSize)
     .get()
     .then((querySnapshot) => {
-      console.log(`Found ${querySnapshot.size} news articles`);
+      debugLog(`Found ${querySnapshot.size} news articles`);
       
       if (querySnapshot.empty) {
         newsContainer.innerHTML = `
@@ -1352,7 +1410,7 @@ function loadAllNewsNonIndexed() {
       // Sort by date descending (newest first)
       articles.sort((a, b) => b.parsedDate - a.parsedDate);
       
-      console.log(`Displaying ${articles.length} sorted news articles`);
+      debugLog(`Displaying ${articles.length} sorted news articles`);
       
       // Create a card for each news article
       articles.forEach((article) => {
@@ -1393,9 +1451,9 @@ function loadAllNewsNonIndexed() {
     });
 }
 
-// Function to load and display a single news article
+// Function to load and display a single news article with mobile optimization
 function loadNewsDetails() {
-  console.log('Loading news article details');
+  debugLog('Loading news article details');
   const urlParams = new URLSearchParams(window.location.search);
   const articleId = urlParams.get('id');
   
@@ -1464,8 +1522,7 @@ function loadNewsDetails() {
       
       const formattedDate = formatDate(articleDate);
       
-      // Update page title
-      document.title = `${article.title || 'News Article'} - Vulcan Cycling`;
+      updateArticleMetaTags(article);
       
       // Format content with paragraphs if needed
       const formattedContent = article.content ? article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : 'No content available';
@@ -1483,7 +1540,7 @@ function loadNewsDetails() {
           
           ${article.imageUrl ? `
             <div class="article-featured-image">
-              <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image">
+              <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image" loading="lazy">
             </div>
           ` : ''}
           
@@ -1522,9 +1579,75 @@ function loadNewsDetails() {
     });
 }
 
+// Helper function to display cached article
+function displayArticle(article) {
+  const newsDetailContainer = document.querySelector('.news-detail-container');
+  
+  // Parse the date properly
+  let articleDate;
+  if (article.date) {
+    if (article.date.toDate) {
+      // Firestore timestamp
+      articleDate = article.date.toDate();
+    } else if (typeof article.date === 'string') {
+      // ISO string or other string format
+      articleDate = new Date(article.date);
+    } else if (article.date.seconds) {
+      // Firestore timestamp in serialized form
+      articleDate = new Date(article.date.seconds * 1000);
+    } else {
+      // Default to now
+      articleDate = new Date();
+    }
+  } else {
+    // If no date, use current date
+    articleDate = new Date();
+  }
+  
+  const formattedDate = formatDate(articleDate);
+  
+  updateArticleMetaTags(article);
+  
+  // Format content with paragraphs if needed
+  const formattedContent = article.content ? article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : 'No content available';
+  
+  // Build the article HTML
+  newsDetailContainer.innerHTML = `
+    <article class="news-article">
+      <header class="article-header">
+        <div class="article-metadata">
+          <span class="article-date">${formattedDate}</span>
+          ${article.author ? `<span class="article-author">By ${article.author}</span>` : ''}
+        </div>
+        <h1 class="article-title">${article.title || 'Untitled'}</h1>
+      </header>
+      
+      ${article.imageUrl ? `
+        <div class="article-featured-image">
+          <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image" loading="lazy">
+        </div>
+      ` : ''}
+      
+      <div class="article-content">
+        <p>${formattedContent}</p>
+      </div>
+      
+      <div class="article-footer">
+        <a href="index.html" class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to News
+        </a>
+      </div>
+    </article>
+  `;
+}
+
 // Function to load all race results from Firestore
 function loadAllResults() {
-  console.log('Loading all results...');
+  debugLog('Loading all results...');
   const resultsContainer = document.querySelector('.results-container');
   
   if (!resultsContainer) {
@@ -1535,36 +1658,32 @@ function loadAllResults() {
   // Clear loading message
   resultsContainer.innerHTML = '';
   
-  // First, fetch all races to get their dates
-  db.collection('content')
-    .where('type', '==', 'race')
-    .get()
-    .then(raceSnapshot => {
-      // Create map of race IDs to race data (including dates)
+  Promise.all([
+    db.collection('content').where('type', '==', 'race').get(),
+    db.collection('content').where('type', '==', 'rider').get(),
+    db.collection('content').where('type', '==', 'result').get()
+  ])
+    .then(([raceSnapshot, riderSnapshot, resultsSnapshot]) => {
+      debugLog(`Found ${raceSnapshot.size} races, ${riderSnapshot.size} riders, ${resultsSnapshot.size} results`);
+      
       const racesMap = {};
       raceSnapshot.forEach(doc => {
-        const raceData = doc.data();
-        racesMap[doc.id] = {
-          title: raceData.title,
-          date: raceData.date,
-          ...raceData
-        };
+        racesMap[doc.id] = { title: doc.data().title, date: doc.data().date, ...doc.data() };
+      });
+
+      const ridersMap = {};
+      riderSnapshot.forEach(doc => {
+        const rider = doc.data();
+        ridersMap[doc.id] = rider.fullName ||
+          `${rider.firstName || ''} ${rider.lastName || ''}`.trim() ||
+          'Unknown Rider';
       });
       
-      console.log('Loaded races map:', racesMap);
-      
-      // Now query for results
-      return db.collection('content')
-        .where('type', '==', 'result')
-        .get()
-        .then(resultsSnapshot => {
-          console.log(`Found ${resultsSnapshot.size} results`);
-          
-          if (resultsSnapshot.empty) {
+      if (resultsSnapshot.empty) {
             resultsContainer.innerHTML = `
-              <div style="text-align: center; padding: 3rem;">
-                <h3>No Results Found</h3>
-                <p>Check back soon for race results from Vulcan Cycling team members.</p>
+              <div style="text-align: center; padding: 3rem; background-color: rgba(30, 30, 30, 0.5); border-radius: 8px;">
+                <h3 style="color: white; margin-bottom: 1rem;">No Results Found</h3>
+                <p style="color: #ccc;">Check back soon for race results from Vulcan Cycling team members.</p>
               </div>
             `;
             return;
@@ -1574,7 +1693,7 @@ function loadAllResults() {
           const results = [];
           resultsSnapshot.forEach((doc) => {
             const result = doc.data();
-            console.log('Processing result:', result);
+            debugLog('Processing result:', result);
             
             // Get race date from the race map
             let resultDate;
@@ -1614,7 +1733,7 @@ function loadAllResults() {
                 resultDate = new Date();
               }
               
-              console.log(`Using race date for result: ${resultDate}`);
+              debugLog(`Using race date for result: ${resultDate}`);
             } else {
               // Fallback to creation date
               if (result.createdAt) {
@@ -1628,12 +1747,14 @@ function loadAllResults() {
               } else {
                 resultDate = new Date();
               }
-              console.log(`Using fallback date for result: ${resultDate}`);
+              debugLog(`Using fallback date for result: ${resultDate}`);
             }
             
             results.push({
               id: doc.id,
               date: resultDate,
+              displayRider: result.rider || result.riderName || result.name ||
+                (result.riderId && ridersMap[result.riderId]) || 'Unknown Rider',
               ...result
             });
           });
@@ -1759,11 +1880,11 @@ function loadAllResults() {
             const tbody = document.createElement('tbody');
             race.results.forEach(result => {
               // Debug log to see what rider field we have
-              console.log('Processing result rider:', result.rider, 'riderName:', result.riderName, 'name:', result.name);
+              debugLog('Processing result rider:', result.rider, 'riderName:', result.riderName, 'name:', result.name);
               
               const row = document.createElement('tr');
               row.innerHTML = `
-                <td>${result.rider || result.riderName || 'Unknown Rider'}</td>
+                <td>${result.displayRider || result.rider || result.riderName || 'Unknown Rider'}</td>
                 <td>${result.category || 'N/A'}</td>
                 <td>${result.position || result.placement || 'N/A'}</td>
                 <td>${result.time || 'N/A'}</td>
@@ -1777,25 +1898,23 @@ function loadAllResults() {
             resultsContainer.appendChild(raceSection);
           });
           
-          console.log('Results displayed successfully');
-        });
+          debugLog('Results displayed successfully');
     })
     .catch((error) => {
       console.error('Error loading results:', error);
-      resultsContainer.innerHTML = `
-        <div style="text-align: center; padding: 3rem;">
-          <h3>Error Loading Results</h3>
-          <p>There was an error loading the race results. Please try again later.</p>
-        </div>
-      `;
+      
+      // Try to show fallback results if available
+      const fallbackResults = document.getElementById('fallback-results');
+      if (fallbackResults) {
+        resultsContainer.innerHTML = fallbackResults.innerHTML;
+      } else {
+        resultsContainer.innerHTML = `
+          <div style="text-align: center; padding: 3rem; background-color: rgba(30, 30, 30, 0.5); border-radius: 8px;">
+            <h3 style="color: white; margin-bottom: 1rem;">Error Loading Results</h3>
+            <p style="color: #ccc;">There was an error loading the race results. Please try again later.</p>
+            <small style="color: #ff6b6b; margin-top: 1rem; display: block;">Error: ${error.message}</small>
+          </div>
+        `;
+      }
     });
-}
-
-// Helper function to format dates consistently
-function formatDate(date) {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
 }

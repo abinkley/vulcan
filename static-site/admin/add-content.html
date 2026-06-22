@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add and manage content for Vulcan Cycling — riders, races, news, and results.">
   <title>Add Content - Vulcan Cycling Admin</title>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js" defer></script>
+  <script src="../js/firebase-init.js" defer></script>
   <style>
     :root {
       --primary: #ff3e82;
@@ -786,20 +788,9 @@
   </div>
   
   <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyD0hp0wbDPAG2Cbs_K1pi1jBDWtW4PMUuk",
-      authDomain: "vulcan-edfea.firebaseapp.com",
-      projectId: "vulcan-edfea",
-      storageBucket: "vulcan-edfea.firebasestorage.app",
-      messagingSenderId: "906189775089",
-      appId: "1:906189775089:web:7ce445936dfbc556778950",
-      measurementId: "G-5GZYY5YKTB"
-    };
+    const DEBUG = false;
+    function debugLog(...args) { if (DEBUG) console.log(...args); }
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    
     // Initialize Firestore
     const db = firebase.firestore();
     
@@ -840,7 +831,7 @@
     
     // Function to show content form
     function showContentForm(contentType, editId = null) {
-      console.log('Showing content form for type:', contentType, editId ? 'editing ID: ' + editId : 'adding new');
+      debugLog('Showing content form for type:', contentType, editId ? 'editing ID: ' + editId : 'adding new');
       
       // Make sure we're using the right elements that exist in the DOM
       // Hide content list, show content form
@@ -865,7 +856,7 @@
       const targetForm = document.getElementById(`${contentType}-form`);
       
       if (targetTab && targetForm) {
-        console.log('Activating tab and form for:', contentType);
+        debugLog('Activating tab and form for:', contentType);
         targetTab.classList.add('active');
         targetForm.classList.add('active');
         
@@ -879,10 +870,10 @@
       
       // Check if we're editing or adding new
       if (editId) {
-        console.log('Loading existing content for editing, ID:', editId);
+        debugLog('Loading existing content for editing, ID:', editId);
         loadContentForEdit(editId);
       } else {
-        console.log('Creating new content, resetting form fields');
+        debugLog('Creating new content, resetting form fields');
         resetForm(contentType);
         
         // For image forms, also reset any image uploads and states
@@ -892,7 +883,7 @@
     
     // New helper function to reset image uploads
     function resetImageUploads(contentType) {
-      console.log('Resetting image uploads for', contentType);
+      debugLog('Resetting image uploads for', contentType);
       
       // Target the appropriate image upload area based on content type
       let uploadAreaId = null;
@@ -944,14 +935,14 @@
             removalFlag.remove();
           }
           
-          console.log('Reset complete for', uploadAreaId);
+          debugLog('Reset complete for', uploadAreaId);
         }
       }
     }
     
     // Function to reset form fields for new content
     function resetForm(contentType) {
-      console.log('Resetting form for:', contentType);
+      debugLog('Resetting form for:', contentType);
       switch (contentType) {
         case 'news':
           document.getElementById('news-title').value = '';
@@ -976,7 +967,7 @@
           const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
           const day = String(now.getDate()).padStart(2, '0');
           document.getElementById('race-date').value = `${year}-${month}-${day}`;
-          console.log("Setting default race date for new race:", `${year}-${month}-${day}`);
+          debugLog("Setting default race date for new race:", `${year}-${month}-${day}`);
           
           document.getElementById('race-location').value = '';
           document.getElementById('race-description').value = '';
@@ -1005,7 +996,7 @@
         
         // Get content type from data attribute
         const contentType = this.getAttribute('data-content-type');
-        console.log('Sidebar link clicked for content type:', contentType);
+        debugLog('Sidebar link clicked for content type:', contentType);
         
         // Show content list for this type
         showContentList(contentType);
@@ -1036,7 +1027,7 @@
         ? activeSidebarLink.getAttribute('data-content-type') 
         : this.getAttribute('data-content-type') || 'news';
       
-      console.log('Add New button clicked for content type:', contentType);
+      debugLog('Add New button clicked for content type:', contentType);
       
       // IMPORTANT: Clear any existing URL parameters to ensure we're creating a new item
       const baseUrl = window.location.pathname;
@@ -1063,18 +1054,18 @@
     // Check URL parameters on page load
     document.addEventListener('DOMContentLoaded', function() {
       console.clear();
-      console.log('============= Page Loaded =============');
+      debugLog('============= Page Loaded =============');
       
       const urlParams = new URLSearchParams(window.location.search);
       const editId = urlParams.get('edit');
       const addParam = urlParams.get('add');
       const tabParam = urlParams.get('tab');
       
-      console.log('URL Parameters - Edit ID:', editId, 'Add:', addParam, 'Tab:', tabParam);
+      debugLog('URL Parameters - Edit ID:', editId, 'Add:', addParam, 'Tab:', tabParam);
       
       // First priority: Check if we're adding a new item
       if (addParam && !editId) {
-        console.log('Opening form to add new', addParam);
+        debugLog('Opening form to add new', addParam);
         // Update the active sidebar link
         document.querySelectorAll('.sidebar-nav a').forEach(a => {
           a.classList.remove('active');
@@ -1089,13 +1080,13 @@
       }
       // Second priority: Check if we're editing an existing item
       else if (editId && tabParam) {
-        console.log('Opening form to edit', tabParam, 'with ID:', editId);
+        debugLog('Opening form to edit', tabParam, 'with ID:', editId);
         // If editing content, show form
         showContentForm(tabParam, editId);
       } 
       // Third priority: Show content list for a specific tab
       else if (tabParam) {
-        console.log('Showing content list for', tabParam);
+        debugLog('Showing content list for', tabParam);
         // If specific tab requested, show that content type
         const contentTypeLink = document.querySelector(`.content-type-link[data-content-type="${tabParam}"]`);
         if (contentTypeLink) {
@@ -1106,7 +1097,7 @@
       } 
       // Default: Show dashboard view
       else {
-        console.log('Showing default dashboard view');
+        debugLog('Showing default dashboard view');
         showContentList();
       }
       
@@ -1159,7 +1150,7 @@
           document.getElementById('rider-bio').value = data.bio || '';
           // If image URL exists, show preview
           if (data.imageUrl) {
-            console.log("Showing rider image preview for URL:", data.imageUrl);
+            debugLog("Showing rider image preview for URL:", data.imageUrl);
             showImagePreview('rider-image', data.imageUrl);
           }
           break;
@@ -1169,7 +1160,7 @@
           // Directly use the stored date string when populating the form
           // This ensures we preserve the exact date that was saved
           if (data.date) {
-            console.log("Populating race date with stored value:", data.date);
+            debugLog("Populating race date with stored value:", data.date);
             document.getElementById('race-date').value = data.date;
           } else {
             // If no date is found, set a default
@@ -1199,7 +1190,7 @@
       const tableBody = document.getElementById('content-table-body');
       if (!tableBody) return;
       
-      console.log('Loading content with filter:', filter);
+      debugLog('Loading content with filter:', filter);
       tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading content...</td></tr>';
       
       try {
@@ -1207,23 +1198,23 @@
         
         // Apply filter if not 'all'
         if (filter !== 'all') {
-          console.log('Applying Firestore filter type ==', filter);
+          debugLog('Applying Firestore filter type ==', filter);
           query = query.where('type', '==', filter);
         }
         
         // Get content
-        console.log('Executing Firestore query...');
+        debugLog('Executing Firestore query...');
         const snapshot = await query.orderBy('createdAt', 'desc').get();
         
         // Debug the results
-        console.log('Query results size:', snapshot.size);
+        debugLog('Query results size:', snapshot.size);
         
         // Clear loading message
         tableBody.innerHTML = '';
         
         // If no content, show message
         if (snapshot.empty) {
-          console.log('No content found with filter:', filter);
+          debugLog('No content found with filter:', filter);
           // Check if rider is selected but no results
           if (filter === 'rider') {
             tableBody.innerHTML = `
@@ -1249,7 +1240,7 @@
         snapshot.forEach(doc => {
           const data = doc.data();
           // Debug each document
-          console.log('Document:', doc.id, 'Data:', data);
+          debugLog('Document:', doc.id, 'Data:', data);
           
           const row = document.createElement('tr');
           row.setAttribute('data-type', data.type || 'unknown');
@@ -1409,10 +1400,10 @@
               (e.target.closest && e.target.closest('.image-controls')) ||
               e.target.tagName === 'BUTTON'
            )) {
-          console.log('Click on preview image or controls ignored');
+          debugLog('Click on preview image or controls ignored');
           return;
         }
-        console.log('Upload area clicked, opening file picker');
+        debugLog('Upload area clicked, opening file picker');
         input.click();
       });
       
@@ -1421,7 +1412,7 @@
         
         if (this.files && this.files[0]) {
           const file = this.files[0];
-          console.log('File selected:', file.name, 'type:', file.type, 'size:', file.size, 'bytes');
+          debugLog('File selected:', file.name, 'type:', file.type, 'size:', file.size, 'bytes');
           
           // Update the UI to show the selected file name
           uploadArea.classList.add('has-file');
@@ -1464,7 +1455,7 @@
               img.style.marginTop = '10px';
               img.style.borderRadius = '4px';
               uploadArea.appendChild(img);
-              console.log('Preview image created from selected file');
+              debugLog('Preview image created from selected file');
             };
             reader.readAsDataURL(file);
           }
@@ -1486,7 +1477,7 @@
         return;
       }
       
-      console.log('Setting up image preview for', inputId, 'with URL:', imageUrl);
+      debugLog('Setting up image preview for', inputId, 'with URL:', imageUrl);
       
       // Set text to show a file is selected
       uploadArea.classList.add('has-file');
@@ -1538,7 +1529,7 @@
             // Hide image controls
             imageControls.style.display = 'none';
             
-            console.log('Image removed from preview');
+            debugLog('Image removed from preview');
           });
         }
       }
@@ -1583,7 +1574,7 @@
         // Add placeholder to upload area
         uploadArea.appendChild(placeholderDiv);
         uploadArea.querySelector('p').textContent = 'Image saved to Storage';
-        console.log('Added placeholder for Firebase Storage image');
+        debugLog('Added placeholder for Firebase Storage image');
         return;
       }
       
@@ -1611,19 +1602,19 @@
     // New helper function to compress images before upload
     async function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
       return new Promise((resolve) => {
-        console.log('Starting image compression for', file.name, 'size:', file.size, 'bytes');
+        debugLog('Starting image compression for', file.name, 'size:', file.size, 'bytes');
         
         // For very large files, decrease quality and dimensions more aggressively
         if (file.size > 5000000) { // For files > 5MB
           maxWidth = 600;
           maxHeight = 600;
           quality = 0.6;
-          console.log('Large file detected, using more aggressive compression settings');
+          debugLog('Large file detected, using more aggressive compression settings');
         } else if (file.size > 2000000) { // For files > 2MB
           maxWidth = 700;
           maxHeight = 700;
           quality = 0.7;
-          console.log('Medium-large file detected, using stronger compression settings');
+          debugLog('Medium-large file detected, using stronger compression settings');
         }
         
         const reader = new FileReader();
@@ -1637,7 +1628,7 @@
             let width = img.width;
             let height = img.height;
             
-            console.log('Original image dimensions:', width, 'x', height);
+            debugLog('Original image dimensions:', width, 'x', height);
             
             if (width > height) {
               if (width > maxWidth) {
@@ -1651,7 +1642,7 @@
               }
             }
             
-            console.log('Resized dimensions:', width, 'x', height);
+            debugLog('Resized dimensions:', width, 'x', height);
             
             const canvas = document.createElement('canvas');
             canvas.width = width;
@@ -1671,12 +1662,12 @@
                   lastModified: new Date().getTime()
                 });
                 
-                console.log('Image compressed:', file.size, '->', compressedFile.size, 
+                debugLog('Image compressed:', file.size, '->', compressedFile.size, 
                             'bytes (', Math.round(compressedFile.size / file.size * 100), '% of original)');
                             
                 // If still too large after first compression, compress again with lower quality
                 if (compressedFile.size > 1000000) { // > 1MB
-                  console.log('Compressed image still large, applying second pass compression');
+                  debugLog('Compressed image still large, applying second pass compression');
                   const secondPassQuality = compressedFile.size > 2000000 ? 0.5 : 0.65;
                   
                   // Create another canvas for second-pass compression
@@ -1699,7 +1690,7 @@
                           lastModified: new Date().getTime()
                         });
                         
-                        console.log('Second-pass compression:', compressedFile.size, '->', finalFile.size, 
+                        debugLog('Second-pass compression:', compressedFile.size, '->', finalFile.size, 
                                   'bytes (', Math.round(finalFile.size / file.size * 100), '% of original)');
                         resolve(finalFile);
                       } else {
@@ -1749,22 +1740,22 @@
           let fileToUpload = file;
           
           if (file.type.startsWith('image/')) {
-            console.log('Compressing image before upload...');
+            debugLog('Compressing image before upload...');
             try {
               fileToUpload = await compressImage(file);
-              console.log('Compression successful, proceeding with upload');
+              debugLog('Compression successful, proceeding with upload');
             } catch (compressError) {
               console.error('Error during compression:', compressError);
-              console.log('Falling back to original file');
+              debugLog('Falling back to original file');
               fileToUpload = file;
             }
           }
           
-          console.log('Uploading image:', fileToUpload.name, 'to path:', path, 'size:', fileToUpload.size, 'bytes');
+          debugLog('Uploading image:', fileToUpload.name, 'to path:', path, 'size:', fileToUpload.size, 'bytes');
           
           // Sanitize the path to ensure valid Firebase Storage path
           const sanitizedPath = path.replace(/[^a-zA-Z0-9./_-]/g, '_');
-          console.log('Sanitized path:', sanitizedPath);
+          debugLog('Sanitized path:', sanitizedPath);
           
           // Add size category to metadata for better tracking
           let sizeCategory = 'small';
@@ -1805,13 +1796,13 @@
                   (snapshot) => {
                     // Observe state change events such as progress, pause, and resume
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Upload is ' + progress.toFixed(2) + '% done');
+                    debugLog('Upload is ' + progress.toFixed(2) + '% done');
                   }, 
                   (error) => {
                     // Handle unsuccessful uploads
                     console.error('Error during upload attempt ' + (attempts + 1) + ':', error);
                     if (attempts < 2) {
-                      console.log('Retrying upload...');
+                      debugLog('Retrying upload...');
                       setTimeout(() => {
                         attemptUpload(attempts + 1)
                           .then(resolveUpload)
@@ -1824,10 +1815,10 @@
                   async () => {
                     try {
                       // Handle successful uploads on complete
-                      console.log('Upload completed successfully');
+                      debugLog('Upload completed successfully');
                       // Get the download URL
                       const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                      console.log('File available at', downloadURL);
+                      debugLog('File available at', downloadURL);
                       resolveUpload(downloadURL);
                     } catch (urlError) {
                       console.error('Error getting download URL:', urlError);
@@ -1839,7 +1830,7 @@
             } catch (uploadError) {
               console.error('Error initiating upload (attempt ' + (attempts + 1) + '):', uploadError);
               if (attempts < 2) {
-                console.log('Retrying upload initialization...');
+                debugLog('Retrying upload initialization...');
                 return attemptUpload(attempts + 1);
               }
               throw uploadError;
@@ -1899,7 +1890,7 @@
 
     document.getElementById('rider-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      console.log('======== RIDER FORM SUBMISSION STARTED ========');
+      debugLog('======== RIDER FORM SUBMISSION STARTED ========');
       
       // Get form values
       const firstName = document.getElementById('rider-first-name').value;
@@ -1915,7 +1906,7 @@
       // Check if image was removed by user
       const imageRemovalRequested = document.getElementById('rider-image-removed')?.value === 'true';
       
-      console.log('Rider image upload field check:', {
+      debugLog('Rider image upload field check:', {
         inputExists: !!imageInput,
         hasFiles: imageInput.files.length > 0,
         fileSelected: !!imageFile,
@@ -1936,7 +1927,7 @@
       // 2. There's NO add parameter (add takes precedence)
       const isNewRider = !editId || !!addParam;
       
-      console.log('Operation determination:', {
+      debugLog('Operation determination:', {
         urlEditParam: editId,
         urlAddParam: addParam,
         isNewRider: isNewRider,
@@ -1963,23 +1954,23 @@
         // If editing, we need to retrieve existing data to maintain fields we don't change
         else {
           try {
-            console.log('Retrieving existing rider data for ID:', editId);
+            debugLog('Retrieving existing rider data for ID:', editId);
             const doc = await db.collection('content').doc(editId).get();
             
             if (doc.exists) {
               const existingData = doc.data();
-              console.log('Existing rider data retrieved:', existingData);
+              debugLog('Existing rider data retrieved:', existingData);
               
               // Handle image URL based on user actions:
               // 1. If user requested image removal, don't include imageUrl
               if (imageRemovalRequested) {
-                console.log('User requested image removal, removing imageUrl from data');
+                debugLog('User requested image removal, removing imageUrl from data');
                 // We explicitly don't set imageUrl, which will remove it from the document
                 // We may also need to delete from storage in a production app
               } 
               // 2. If no new image uploaded and no removal requested, keep existing URL
               else if (!imageFile && existingData.imageUrl) {
-                console.log('Preserving existing image URL:', existingData.imageUrl);
+                debugLog('Preserving existing image URL:', existingData.imageUrl);
                 riderData.imageUrl = existingData.imageUrl;
               }
               
@@ -1997,7 +1988,7 @@
         
         // If a new image was selected, upload it
         if (imageFile) {
-          console.log('Starting image upload process for rider', firstName, lastName);
+          debugLog('Starting image upload process for rider', firstName, lastName);
           
           // Show loading message
           const submitBtn = this.querySelector('button[type="submit"]');
@@ -2015,13 +2006,13 @@
               ? `riders/new_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
               : `riders/${editId}_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
             
-            console.log('Uploading rider image to path:', imagePath);
+            debugLog('Uploading rider image to path:', imagePath);
             
             const imageUrl = await uploadImage(imageFile, imagePath);
             
             // Add the image URL to the rider data
             if (imageUrl) {
-              console.log('Image uploaded successfully, URL:', imageUrl);
+              debugLog('Image uploaded successfully, URL:', imageUrl);
               riderData.imageUrl = imageUrl;
             } else {
               console.warn('No image URL returned from upload');
@@ -2042,28 +2033,28 @@
         }
         
         // Add debugging logs
-        console.log('========== RIDER DATA DEBUG ==========');
-        console.log('Saving rider data with type:', riderData.type);
-        console.log('Complete rider data object:', riderData);
-        console.log('Image URL included:', riderData.imageUrl ? 'Yes' : 'No');
-        console.log('Using Firestore collection: content');
-        console.log('====================================');
+        debugLog('========== RIDER DATA DEBUG ==========');
+        debugLog('Saving rider data with type:', riderData.type);
+        debugLog('Complete rider data object:', riderData);
+        debugLog('Image URL included:', riderData.imageUrl ? 'Yes' : 'No');
+        debugLog('Using Firestore collection: content');
+        debugLog('====================================');
         
         // Save to Firestore
         let saveResult;
         if (isNewRider) {
           // For new riders, create a new document with auto-generated ID
-          console.log('Creating new rider document with auto-generated ID');
+          debugLog('Creating new rider document with auto-generated ID');
           saveResult = await db.collection('content').add(riderData);
-          console.log('New rider created with ID:', saveResult.id);
+          debugLog('New rider created with ID:', saveResult.id);
         } else {
           // For existing riders, update the document
-          console.log('Updating existing rider with ID:', editId);
+          debugLog('Updating existing rider with ID:', editId);
           saveResult = await db.collection('content').doc(editId).update(riderData);
-          console.log('Existing rider updated successfully');
+          debugLog('Existing rider updated successfully');
         }
         
-        console.log('Rider saved successfully with type:', riderData.type);
+        debugLog('Rider saved successfully with type:', riderData.type);
         alert(`Rider ${isNewRider ? 'created' : 'updated'} successfully!`);
         
         // Show content list after submission
@@ -2078,7 +2069,7 @@
           riderLink.classList.add('active');
         }
         
-        console.log('======== RIDER FORM SUBMISSION COMPLETED ========');
+        debugLog('======== RIDER FORM SUBMISSION COMPLETED ========');
       } catch (error) {
         console.error('Error saving rider:', error);
         console.error('Error details:', {
@@ -2093,7 +2084,7 @@
     // Add submission handler for the race form
     document.getElementById('race-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      console.log('======== RACE FORM SUBMISSION STARTED ========');
+      debugLog('======== RACE FORM SUBMISSION STARTED ========');
       
       // Get form values
       const title = document.getElementById('race-title').value;
@@ -2102,7 +2093,7 @@
       const description = document.getElementById('race-description').value;
       const details = document.getElementById('race-details').value;
       
-      console.log('Race form values:', {
+      debugLog('Race form values:', {
         title,
         date,
         location,
@@ -2118,7 +2109,7 @@
       // Determine if this is a new race or an edit
       const isNewRace = !editId || !!addParam;
       
-      console.log('Operation determination:', {
+      debugLog('Operation determination:', {
         urlEditParam: editId,
         urlAddParam: addParam,
         isNewRace: isNewRace,
@@ -2145,12 +2136,12 @@
         // If editing, we need to retrieve existing data to maintain fields we don't change
         else {
           try {
-            console.log('Retrieving existing race data for ID:', editId);
+            debugLog('Retrieving existing race data for ID:', editId);
             const doc = await db.collection('content').doc(editId).get();
             
             if (doc.exists) {
               const existingData = doc.data();
-              console.log('Existing race data retrieved:', existingData);
+              debugLog('Existing race data retrieved:', existingData);
               
               // Ensure we don't lose any essential fields from the original document
               if (existingData.createdAt) {
@@ -2165,27 +2156,27 @@
         }
         
         // Add debugging logs
-        console.log('========== RACE DATA DEBUG ==========');
-        console.log('Saving race data with type:', raceData.type);
-        console.log('Complete race data object:', raceData);
-        console.log('Using Firestore collection: content');
-        console.log('====================================');
+        debugLog('========== RACE DATA DEBUG ==========');
+        debugLog('Saving race data with type:', raceData.type);
+        debugLog('Complete race data object:', raceData);
+        debugLog('Using Firestore collection: content');
+        debugLog('====================================');
         
         // Save to Firestore
         let saveResult;
         if (isNewRace) {
           // For new races, create a new document with auto-generated ID
-          console.log('Creating new race document with auto-generated ID');
+          debugLog('Creating new race document with auto-generated ID');
           saveResult = await db.collection('content').add(raceData);
-          console.log('New race created with ID:', saveResult.id);
+          debugLog('New race created with ID:', saveResult.id);
         } else {
           // For existing races, update the document
-          console.log('Updating existing race with ID:', editId);
+          debugLog('Updating existing race with ID:', editId);
           saveResult = await db.collection('content').doc(editId).update(raceData);
-          console.log('Existing race updated successfully');
+          debugLog('Existing race updated successfully');
         }
         
-        console.log('Race saved successfully with type:', raceData.type);
+        debugLog('Race saved successfully with type:', raceData.type);
         alert(`Race ${isNewRace ? 'created' : 'updated'} successfully!`);
         
         // Show content list after submission
@@ -2200,7 +2191,7 @@
           raceLink.classList.add('active');
         }
         
-        console.log('======== RACE FORM SUBMISSION COMPLETED ========');
+        debugLog('======== RACE FORM SUBMISSION COMPLETED ========');
       } catch (error) {
         console.error('Error saving race:', error);
         console.error('Error details:', {
@@ -2215,7 +2206,7 @@
     // Add submission handler for the news form
     document.getElementById('news-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      console.log('======== NEWS FORM SUBMISSION STARTED ========');
+      debugLog('======== NEWS FORM SUBMISSION STARTED ========');
       
       // Get form values
       const title = document.getElementById('news-title').value;
@@ -2231,7 +2222,7 @@
       // Check if image was removed by user
       const imageRemovalRequested = document.getElementById('news-image-removed')?.value === 'true';
       
-      console.log('News form values:', {
+      debugLog('News form values:', {
         title,
         date,
         status,
@@ -2249,7 +2240,7 @@
       // Determine if this is a new news item or an edit
       const isNewNews = !editId || !!addParam;
       
-      console.log('Operation determination:', {
+      debugLog('Operation determination:', {
         urlEditParam: editId,
         urlAddParam: addParam,
         isNewNews: isNewNews,
@@ -2275,23 +2266,23 @@
         // If editing, we need to retrieve existing data to maintain fields we don't change
         else {
           try {
-            console.log('Retrieving existing news data for ID:', editId);
+            debugLog('Retrieving existing news data for ID:', editId);
             const doc = await db.collection('content').doc(editId).get();
             
             if (doc.exists) {
               const existingData = doc.data();
-              console.log('Existing news data retrieved:', existingData);
+              debugLog('Existing news data retrieved:', existingData);
               
               // Handle image URL based on user actions:
               // 1. If user requested image removal, don't include imageUrl
               if (imageRemovalRequested) {
-                console.log('User requested image removal, removing imageUrl from data');
+                debugLog('User requested image removal, removing imageUrl from data');
                 // We explicitly don't set imageUrl, which will remove it from the document
                 // We may also need to delete from storage in a production app
               } 
               // 2. If no new image uploaded and no removal requested, keep existing URL
               else if (!imageFile && existingData.imageUrl) {
-                console.log('Preserving existing image URL:', existingData.imageUrl);
+                debugLog('Preserving existing image URL:', existingData.imageUrl);
                 newsData.imageUrl = existingData.imageUrl;
               }
               
@@ -2309,7 +2300,7 @@
         
         // If a new image was selected, upload it
         if (imageFile) {
-          console.log('Starting image upload process for news article', title);
+          debugLog('Starting image upload process for news article', title);
           
           // Show loading message
           const submitBtn = this.querySelector('button[type="submit"]');
@@ -2327,13 +2318,13 @@
               ? `news/new_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
               : `news/${editId}_${timestamp}_${randomId}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
             
-            console.log('Uploading news image to path:', imagePath);
+            debugLog('Uploading news image to path:', imagePath);
             
             const imageUrl = await uploadImage(imageFile, imagePath);
             
             // Add the image URL to the news data
             if (imageUrl) {
-              console.log('Image uploaded successfully, URL:', imageUrl);
+              debugLog('Image uploaded successfully, URL:', imageUrl);
               newsData.imageUrl = imageUrl;
             } else {
               console.warn('No image URL returned from upload');
@@ -2354,28 +2345,28 @@
         }
         
         // Add debugging logs
-        console.log('========== NEWS DATA DEBUG ==========');
-        console.log('Saving news data with type:', newsData.type);
-        console.log('Complete news data object:', newsData);
-        console.log('Image URL included:', newsData.imageUrl ? 'Yes' : 'No');
-        console.log('Using Firestore collection: content');
-        console.log('====================================');
+        debugLog('========== NEWS DATA DEBUG ==========');
+        debugLog('Saving news data with type:', newsData.type);
+        debugLog('Complete news data object:', newsData);
+        debugLog('Image URL included:', newsData.imageUrl ? 'Yes' : 'No');
+        debugLog('Using Firestore collection: content');
+        debugLog('====================================');
         
         // Save to Firestore
         let saveResult;
         if (isNewNews) {
           // For new news, create a new document with auto-generated ID
-          console.log('Creating new news document with auto-generated ID');
+          debugLog('Creating new news document with auto-generated ID');
           saveResult = await db.collection('content').add(newsData);
-          console.log('New news article created with ID:', saveResult.id);
+          debugLog('New news article created with ID:', saveResult.id);
         } else {
           // For existing news, update the document
-          console.log('Updating existing news article with ID:', editId);
+          debugLog('Updating existing news article with ID:', editId);
           saveResult = await db.collection('content').doc(editId).update(newsData);
-          console.log('Existing news article updated successfully');
+          debugLog('Existing news article updated successfully');
         }
         
-        console.log('News saved successfully with type:', newsData.type);
+        debugLog('News saved successfully with type:', newsData.type);
         alert(`News article ${isNewNews ? 'created' : 'updated'} successfully!`);
         
         // Show content list after submission
@@ -2390,7 +2381,7 @@
           newsLink.classList.add('active');
         }
         
-        console.log('======== NEWS FORM SUBMISSION COMPLETED ========');
+        debugLog('======== NEWS FORM SUBMISSION COMPLETED ========');
       } catch (error) {
         console.error('Error saving news:', error);
         console.error('Error details:', {
@@ -2405,7 +2396,7 @@
     // Add submission handler for the result form
     document.getElementById('result-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      console.log('======== RESULT FORM SUBMISSION STARTED ========');
+      debugLog('======== RESULT FORM SUBMISSION STARTED ========');
       
       // Get form values
       const raceId = document.getElementById('result-race').value;
@@ -2426,7 +2417,7 @@
         return;
       }
       
-      console.log('Result form values:', {
+      debugLog('Result form values:', {
         raceId,
         riderId,
         position,
@@ -2443,7 +2434,7 @@
       // Determine if this is a new result or an edit
       const isNewResult = !editId || !!addParam;
       
-      console.log('Operation determination:', {
+      debugLog('Operation determination:', {
         urlEditParam: editId,
         urlAddParam: addParam,
         isNewResult: isNewResult,
@@ -2489,12 +2480,12 @@
         // If editing, we need to retrieve existing data to maintain fields we don't change
         else {
           try {
-            console.log('Retrieving existing result data for ID:', editId);
+            debugLog('Retrieving existing result data for ID:', editId);
             const doc = await db.collection('content').doc(editId).get();
             
             if (doc.exists) {
               const existingData = doc.data();
-              console.log('Existing result data retrieved:', existingData);
+              debugLog('Existing result data retrieved:', existingData);
               
               // Ensure we don't lose any essential fields from the original document
               if (existingData.createdAt) {
@@ -2521,7 +2512,7 @@
               const raceData = raceDoc.data();
               if (raceData.date) {
                 resultData.raceDate = raceData.date;
-                console.log('Added race date to result data:', raceData.date);
+                debugLog('Added race date to result data:', raceData.date);
               }
             }
           } catch (error) {
@@ -2530,27 +2521,27 @@
         }
         
         // Add debugging logs
-        console.log('========== RESULT DATA DEBUG ==========');
-        console.log('Saving result data with type:', resultData.type);
-        console.log('Complete result data object:', resultData);
-        console.log('Using Firestore collection: content');
-        console.log('====================================');
+        debugLog('========== RESULT DATA DEBUG ==========');
+        debugLog('Saving result data with type:', resultData.type);
+        debugLog('Complete result data object:', resultData);
+        debugLog('Using Firestore collection: content');
+        debugLog('====================================');
         
         // Save to Firestore
         let saveResult;
         if (isNewResult) {
           // For new results, create a new document with auto-generated ID
-          console.log('Creating new result document with auto-generated ID');
+          debugLog('Creating new result document with auto-generated ID');
           saveResult = await db.collection('content').add(resultData);
-          console.log('New result created with ID:', saveResult.id);
+          debugLog('New result created with ID:', saveResult.id);
         } else {
           // For existing results, update the document
-          console.log('Updating existing result with ID:', editId);
+          debugLog('Updating existing result with ID:', editId);
           saveResult = await db.collection('content').doc(editId).update(resultData);
-          console.log('Existing result updated successfully');
+          debugLog('Existing result updated successfully');
         }
         
-        console.log('Result saved successfully with type:', resultData.type);
+        debugLog('Result saved successfully with type:', resultData.type);
         alert(`Race result ${isNewResult ? 'created' : 'updated'} successfully!`);
         
         // Show content list after submission
@@ -2565,7 +2556,7 @@
           resultLink.classList.add('active');
         }
         
-        console.log('======== RESULT FORM SUBMISSION COMPLETED ========');
+        debugLog('======== RESULT FORM SUBMISSION COMPLETED ========');
       } catch (error) {
         console.error('Error saving race result:', error);
         console.error('Error details:', {

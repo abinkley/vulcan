@@ -3,11 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Upcoming and past races for Vulcan Cycling — junior cycling events in New Jersey and New York.">
+  <meta property="og:title" content="Races - Vulcan Cycling">
+  <meta property="og:description" content="Upcoming and past races for Vulcan Cycling junior team.">
+  <meta property="og:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
+  <meta property="og:url" content="https://vulcancycling.com/races/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Races - Vulcan Cycling">
+  <meta name="twitter:description" content="Upcoming and past races for Vulcan Cycling junior team.">
+  <meta name="twitter:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
   <title>Races - Vulcan Cycling</title>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
   <style>
     :root {
       --primary: #ff3e82;
@@ -386,7 +395,8 @@
   </div>
   
   <!-- Firebase Loader Script -->
-  <script src="../js/firebase-loader.js"></script>
+  <script src="../js/firebase-init.js" defer></script>
+  <script src="../js/firebase-loader.js" defer></script>
   
   <!-- Force load races for this page -->
   <script>
