@@ -12,3 +12,6 @@ const firebaseConfig = {
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+if (typeof firebase !== 'undefined' && firebase.apps.length) {
+  window.db = firebase.firestore();
+}

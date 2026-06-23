@@ -1421,27 +1421,48 @@ function loadAllNewsNonIndexed() {
       // Create a card for each news article
       articles.forEach((article) => {
         const formattedDate = formatDate(article.parsedDate);
-        
-        // Create excerpt from content
-        const excerpt = article.content 
-          ? article.content.substring(0, 120) + (article.content.length > 120 ? '...' : '') 
+
+        const excerpt = article.content
+          ? article.content.substring(0, 120) + (article.content.length > 120 ? '...' : '')
           : 'No content available';
-        
-        // Create card element
+
         const articleCard = document.createElement('div');
         articleCard.className = 'news-card';
-        
-        // Build card HTML
-        articleCard.innerHTML = `
-          ${article.imageUrl ? `<img src="${article.imageUrl}" alt="${article.title}" class="news-image">` : ''}
-          <div class="news-content">
-            <div class="news-date">${formattedDate}</div>
-            <h3 class="news-title">${article.title || 'Untitled'}</h3>
-            <p class="news-excerpt">${excerpt}</p>
-            <a href="${article.id}.html" class="read-more">Read More</a>
-          </div>
-        `;
-        
+
+        if (article.imageUrl) {
+          const img = document.createElement('img');
+          img.src = article.imageUrl;
+          img.alt = article.title || 'News article';
+          img.className = 'news-image';
+          img.loading = 'lazy';
+          articleCard.appendChild(img);
+        }
+
+        const contentSection = document.createElement('div');
+        contentSection.className = 'news-content';
+
+        const dateEl = document.createElement('div');
+        dateEl.className = 'news-date';
+        dateEl.textContent = formattedDate;
+
+        const titleEl = document.createElement('h3');
+        titleEl.className = 'news-title';
+        titleEl.textContent = article.title || 'Untitled';
+
+        const excerptEl = document.createElement('p');
+        excerptEl.className = 'news-excerpt';
+        excerptEl.textContent = excerpt;
+
+        const readMore = document.createElement('a');
+        readMore.href = `${article.id}.html`;
+        readMore.className = 'read-more';
+        readMore.textContent = 'Read More';
+
+        contentSection.appendChild(dateEl);
+        contentSection.appendChild(titleEl);
+        contentSection.appendChild(excerptEl);
+        contentSection.appendChild(readMore);
+        articleCard.appendChild(contentSection);
         newsContainer.appendChild(articleCard);
       });
     })

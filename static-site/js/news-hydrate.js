@@ -44,7 +44,7 @@
   }
 
   function waitForFirebase(callback, attempts) {
-    if (typeof firebase !== 'undefined' && typeof db !== 'undefined') {
+    if (typeof firebase !== 'undefined' && firebase.apps.length) {
       callback();
       return;
     }
@@ -52,8 +52,17 @@
     setTimeout(function () { waitForFirebase(callback, attempts - 1); }, 100);
   }
 
+  function getFirestore() {
+    if (typeof db !== 'undefined') return db;
+    if (typeof firebase !== 'undefined' && firebase.apps.length) return firebase.firestore();
+    return null;
+  }
+
   function hydrateArticle(articleEl, articleId) {
-    db.collection('content').doc(articleId).get().then(function (doc) {
+    const firestore = getFirestore();
+    if (!firestore) return;
+
+    firestore.collection('content').doc(articleId).get().then(function (doc) {
       if (!doc.exists) return;
       const data = doc.data();
       if (data.type !== 'news') return;

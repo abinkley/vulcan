@@ -11,6 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="../js/firebase-init.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
   <style>
     :root {
       --primary: #ff3e82;
@@ -1599,10 +1600,34 @@
       uploadArea.appendChild(img);
     }
     
-    // New helper function to compress images before upload
+    function isHeicFile(file) {
+      const name = (file.name || '').toLowerCase();
+      return /\.(heic|heif)$/.test(name) ||
+        file.type === 'image/heic' || file.type === 'image/heif';
+    }
+
+    async function prepareImageFile(file) {
+      if (!isHeicFile(file)) return file;
+      if (typeof heic2any !== 'function') {
+        throw new Error(
+          'HEIC/iPhone photos are not supported in this browser. ' +
+          'Save as JPEG first, or set iPhone Camera → Formats → Most Compatible.'
+        );
+      }
+      debugLog('Converting HEIC to JPEG before compression...');
+      const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+      const blob = Array.isArray(converted) ? converted[0] : converted;
+      return new File([blob], file.name.replace(/\.[^.]+$/i, '.jpg'), {
+        type: 'image/jpeg',
+        lastModified: Date.now(),
+      });
+    }
+
+    // Helper function to compress images before upload
     async function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
-      return new Promise((resolve) => {
-        debugLog('Starting image compression for', file.name, 'size:', file.size, 'bytes');
+      const sourceFile = await prepareImageFile(file);
+      return new Promise((resolve, reject) => {
+        debugLog('Starting image compression for', sourceFile.name, 'size:', sourceFile.size, 'bytes');
         
         // For very large files, decrease quality and dimensions more aggressively
         if (file.size > 5000000) { // For files > 5MB
@@ -1618,7 +1643,7 @@
         }
         
         const reader = new FileReader();
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(sourceFile);
         reader.onload = function(event) {
           const img = new Image();
           img.src = event.target.result;
@@ -1657,13 +1682,13 @@
             canvas.toBlob((blob) => {
               if (blob) {
                 // Create a new file from the blob
-                const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                const compressedFile = new File([blob], sourceFile.name.replace(/\.[^/.]+$/, "") + ".jpg", {
                   type: 'image/jpeg',
                   lastModified: new Date().getTime()
                 });
                 
-                debugLog('Image compressed:', file.size, '->', compressedFile.size, 
-                            'bytes (', Math.round(compressedFile.size / file.size * 100), '% of original)');
+                debugLog('Image compressed:', sourceFile.size, '->', compressedFile.size,
+                            'bytes (', Math.round(compressedFile.size / sourceFile.size * 100), '% of original)');
                             
                 // If still too large after first compression, compress again with lower quality
                 if (compressedFile.size > 1000000) { // > 1MB
@@ -1685,13 +1710,13 @@
                     
                     canvas2.toBlob((blob2) => {
                       if (blob2) {
-                        const finalFile = new File([blob2], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                        const finalFile = new File([blob2], sourceFile.name.replace(/\.[^/.]+$/, "") + ".jpg", {
                           type: 'image/jpeg',
                           lastModified: new Date().getTime()
                         });
                         
                         debugLog('Second-pass compression:', compressedFile.size, '->', finalFile.size, 
-                                  'bytes (', Math.round(finalFile.size / file.size * 100), '% of original)');
+                                  'bytes (', Math.round(finalFile.size / sourceFile.size * 100), '% of original)');
                         resolve(finalFile);
                       } else {
                         resolve(compressedFile);
@@ -1707,21 +1732,18 @@
                   resolve(compressedFile);
                 }
               } else {
-                console.warn('Compression failed, using original file');
-                resolve(file);
+                reject(new Error('Image compression failed — could not produce JPEG output.'));
               }
             }, 'image/jpeg', quality);
           };
           
           img.onerror = function() {
-            console.warn('Error loading image for compression, using original file');
-            resolve(file);
+            reject(new Error('Could not decode image. Use JPEG or PNG, or re-select an iPhone photo after the HEIC converter loads.'));
           };
         };
         
         reader.onerror = function() {
-          console.warn('Error reading file for compression, using original file');
-          resolve(file);
+          reject(new Error('Could not read image file.'));
         };
       });
     }
@@ -1741,14 +1763,11 @@
           
           if (file.type.startsWith('image/')) {
             debugLog('Compressing image before upload...');
-            try {
-              fileToUpload = await compressImage(file);
-              debugLog('Compression successful, proceeding with upload');
-            } catch (compressError) {
-              console.error('Error during compression:', compressError);
-              debugLog('Falling back to original file');
-              fileToUpload = file;
+            fileToUpload = await compressImage(file);
+            if (fileToUpload.type !== 'image/jpeg' && fileToUpload.type !== 'image/png') {
+              throw new Error('Image must be converted to JPEG before upload.');
             }
+            debugLog('Compression successful, proceeding with upload');
           }
           
           debugLog('Uploading image:', fileToUpload.name, 'to path:', path, 'size:', fileToUpload.size, 'bytes');
