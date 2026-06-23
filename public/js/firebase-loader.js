@@ -581,11 +581,9 @@ function loadLatestNews() {
     newsGrid.appendChild(gridCell);
   }
   
-  // Query Firestore ordered by date, then limit to 3 latest
+  // Fetch all news, sort by date client-side, show latest 3 (no composite index needed)
   db.collection('content')
     .where('type', '==', 'news')
-    .orderBy('date', 'desc')
-    .limit(3)
     .get()
     .then((querySnapshot) => {
       debugLog(`Found ${querySnapshot.size} news items`);
@@ -635,7 +633,8 @@ function loadLatestNews() {
         });
       });
       
-      // Already ordered by query; take first 3 for grid cells
+      // Sort by date descending (newest first), then take latest 3
+      articles.sort((a, b) => b.parsedDate - a.parsedDate);
       const latestArticles = articles.slice(0, 3);
       
       const isMobile = window.innerWidth <= 768;

@@ -23,6 +23,10 @@ mkdir -p deploy/contact
 cp index.html deploy/
 cp team.html deploy/
 cp grasshopper.html deploy/
+cp 404.html deploy/
+cp robots.txt deploy/
+cp sitemap.xml deploy/
+cp site.webmanifest deploy/
 cp news/index.html deploy/news/
 cp news/detail.html deploy/news/
 cp races/index.html deploy/races/

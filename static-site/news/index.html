@@ -8,21 +8,22 @@
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="/css/site-assets.css">
-    <meta name="description" content="Race results from Vulcan Cycling junior team members — cyclocross, road, and mountain bike competitions.">
-    <meta property="og:title" content="Race Results - Vulcan Cycling">
-    <meta property="og:description" content="Race results from Vulcan Cycling junior team members.">
+    <meta name="description" content="Latest news from Vulcan Cycling — race recaps, team updates, and junior cycling stories.">
+    <meta property="og:title" content="News - Vulcan Cycling">
+    <meta property="og:description" content="Latest news from Vulcan Cycling — race recaps, team updates, and junior cycling stories.">
     <meta property="og:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
-    <meta property="og:url" content="https://vulcancycling.com/results/">
+    <meta property="og:url" content="https://vulcancycling.com/news/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Race Results - Vulcan Cycling">
-    <meta name="twitter:description" content="Race results from Vulcan Cycling junior team members.">
+    <meta name="twitter:title" content="News - Vulcan Cycling">
+    <meta name="twitter:description" content="Latest news from Vulcan Cycling.">
     <meta name="twitter:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
-    <title>Race Results - Vulcan Cycling</title>
+    <title>News - Vulcan Cycling</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/news.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
-    <link rel="stylesheet" href="../css/styles.css?v=1.0.1">
     <style>
         :root {
             --primary: #ff3e82;
@@ -152,114 +153,108 @@
             margin: 0 auto;
         }
         
-        /* Results Section */
-        .results-section {
+        /* News Section */
+        .news-section {
             padding: 4rem 0;
             background-color: rgba(0, 0, 0, 0.8);
         }
         
-        .results-container {
-            max-width: 1000px;
-            margin: 0 auto;
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
         }
         
-        /* Season Navigation */
-        .season-navigation {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 0.5rem;
-            border-radius: 4px;
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
         
-        .season-btn {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .season-btn:hover {
-            background-color: rgba(50, 50, 50, 0.8);
-        }
-        
-        .season-btn.active {
-            background-color: var(--primary);
-        }
-        
-        /* Race Result Cards */
-        .race-result-card {
-            background-color: rgba(30, 30, 30, 0.8);
+        .news-card {
+            background-color: white;
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
-        .race-header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1rem 1.5rem;
-            font-size: 1.25rem;
-            font-weight: 700;
+        .news-card:hover {
+            transform: translateY(-5px);
         }
         
-        /* Results Table */
-        .results-table {
+        .news-image {
             width: 100%;
-            border-collapse: collapse;
+            height: 200px;
+            object-fit: cover;
         }
         
-        .results-table th,
-        .results-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .news-content {
+            padding: 1.5rem;
+            background-color: #1a1f2b;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
         
-        .results-table th {
-            background-color: rgba(0, 0, 0, 0.3);
-            color: rgba(255, 255, 255, 0.8);
+        .news-date {
+            color: var(--primary);
+            font-size: 0.875rem;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
         }
         
-        .results-table tbody tr {
-            transition: background-color 0.3s ease;
-        }
-        
-        .results-table tbody tr:hover {
-            background-color: rgba(60, 60, 60, 0.5);
-        }
-        
-        .results-table td:nth-child(3) {
-            font-weight: 700;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            background-color: rgba(30, 30, 30, 0.5);
-            border-radius: 8px;
-        }
-        
-        .empty-state h3 {
+        .news-title {
+            font-size: 1.25rem;
             margin-bottom: 1rem;
-            font-size: 1.5rem;
+            color: white;
         }
         
-        /* Loading State */
+        .news-excerpt {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary);
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+            align-self: flex-start;
+            margin-top: auto;
+        }
+        
+        .read-more::after {
+            content: "→";
+            margin-left: 5px;
+            transition: transform 0.2s ease;
+        }
+        
+        .read-more:hover {
+            opacity: 0.8;
+        }
+        
+        .read-more:hover::after {
+            transform: translateX(3px);
+        }
+        
+        /* Loading Animation */
         .loading {
             text-align: center;
             padding: 2rem;
+        }
+        
+        .loading p {
+            color: #ccc;
         }
         
         /* Footer */
@@ -279,9 +274,15 @@
             align-items: center;
         }
         
-        .footer-logo h3 {
-            font-size: 1.5rem;
+        .footer-logo img {
+            height: 40px;
+            width: auto;
             margin-bottom: 1rem;
+        }
+        
+        .footer-logo p {
+            color: #ccc;
+            margin-bottom: 1.5rem;
         }
         
         .footer-links h3 {
@@ -312,6 +313,25 @@
             color: #999;
             font-size: 0.875rem;
         }
+        
+        /* Admin Link (Hidden) */
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .admin-link:hover {
+            opacity: 1;
+        }
     </style>
   <!-- Responsive Styles -->
   <link rel="stylesheet" href="../css/responsive.css">
@@ -336,8 +356,8 @@
                 <nav>
                     <ul>
                         <li><a href="../index.html">Home</a></li>
-                        <li><a href="index.html" class="active">Results</a></li>
-                        <li><a href="../news/index.html">News</a></li>
+                        <li><a href="../results/index.html">Results</a></li>
+                        <li><a href="index.html" class="active">News</a></li>
                         <li><a href="../races/index.html">Races</a></li>
                         <li><a href="../about/index.html">About</a></li>
                         <li><a href="../contact/index.html">Contact</a></li>
@@ -349,52 +369,21 @@
         <!-- Page Header -->
         <section class="page-header">
             <div class="container">
-                <h2>Race Results</h2>
-                <p>View the latest race results and achievements from Vulcan Cycling team members</p>
+                <h2>Latest News</h2>
+                <p>Stay updated with the latest news and announcements from Vulcan Cycling</p>
             </div>
         </section>
         
-        <!-- Results Section -->
-        <section class="results-section">
+        <!-- News Section -->
+        <section class="news-section">
             <div class="container">
-                <div class="results-container">
-                    <!-- Loading state (will be replaced by results) -->
-                    <div class="loading">
-                        <p>Loading race results...</p>
+                <div class="news-container">
+                    <!-- Loading spinner (will be replaced by news items) -->
+                    <div class="loading" style="grid-column: 1 / -1;">
+                        <p>Loading news articles...</p>
                     </div>
                     
-                    <!-- Fallback results if Firebase fails -->
-                    <div id="fallback-results" style="display: none;">
-                        <div class="race-result-card">
-                            <div class="race-header">Sample Race Results - Coming Soon</div>
-                            <table class="results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Rider</th>
-                                        <th>Category</th>
-                                        <th>Position</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Alex Johnson</td>
-                                        <td>Junior Men</td>
-                                        <td>1st</td>
-                                        <td>2:34:15</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sarah Miller</td>
-                                        <td>Junior Women</td>
-                                        <td>2nd</td>
-                                        <td>2:36:42</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <!-- Results will be loaded here dynamically -->
+                    <!-- News items will be loaded here dynamically -->
                 </div>
             </div>
         </section>
@@ -411,7 +400,7 @@
                         <h3>Quick Links</h3>
                         <ul>
                             <li><a href="../index.html">Home</a></li>
-                            <li><a href="../team.html">Our Team</a></li>
+                            <li><a href="../news/index.html">News</a></li>
                             <li><a href="../results/index.html">Results</a></li>
                             <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
                         </ul>
@@ -432,20 +421,25 @@
                 </div>
             </div>
         </footer>
+        
+        <!-- Hidden Admin Link -->
+        <a href="../admin/index.html" class="admin-link">Admin</a>
     </div>
     
     <!-- Firebase Loader Script -->
     <script src="../js/firebase-init.js" defer></script>
-    <script src="../js/firebase-loader.js?v=1.0.1" defer></script>
+    <script src="../js/firebase-loader.js" defer></script>
     
     <script>
         window.addEventListener('load', function() {
             setTimeout(function() {
-                if (typeof loadAllResults === 'function') {
-                    loadAllResults();
+                if (typeof loadAllNewsNonIndexed === 'function') {
+                    loadAllNewsNonIndexed();
+                } else if (typeof loadAllNews === 'function') {
+                    loadAllNews();
                 }
             }, 500);
         });
     </script>
 </body>
-</html> 
+</html>
