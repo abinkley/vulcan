@@ -2367,7 +2367,12 @@
         }
         
         debugLog('News saved successfully with type:', newsData.type);
-        alert(`News article ${isNewNews ? 'created' : 'updated'} successfully!`);
+        alert(
+          `News article ${isNewNews ? 'created' : 'updated'} successfully!\n\n` +
+          'Page content and images update live for visitors.\n' +
+          'Share preview cards (Slack, iMessage) refresh after deploy:\n' +
+          '  cd static-site && ./deploy-to-github.sh'
+        );
         
         // Show content list after submission
         showContentList('news');

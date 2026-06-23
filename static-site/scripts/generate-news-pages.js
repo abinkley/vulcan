@@ -128,12 +128,10 @@ function buildArticleBody(article) {
     ? `<span class="article-author">By ${escapeHtml(article.author)}</span>`
     : '';
   const imageHtml = article.imageUrl
-    ? `<div class="article-featured-image">
-            <img src="${escapeHtml(article.imageUrl)}" alt="${title}" class="article-image">
-          </div>`
+    ? `<img src="${escapeHtml(absoluteImageUrl(article.imageUrl))}" alt="${title}" class="article-featured-image" loading="lazy">`
     : '';
 
-  return `<article class="news-article">
+  return `<article class="news-article" data-article-id="${escapeHtml(article.id)}">
           <header class="article-header">
             <div class="article-metadata">
               <span class="article-date">${formattedDate}</span>
@@ -180,9 +178,15 @@ function buildPage(template, article, id) {
     ''
   );
 
+  const hydrateScripts = `  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
+  <script src="../js/firebase-init.js" defer></script>
+  <script src="../js/news-hydrate.js" defer></script>
+`;
+
   html = html.replace(
     /<!-- Firebase Loader Script[\s\S]*?<\/body>/,
-    '</body>'
+    `${hydrateScripts}\n</body>`
   );
 
   return html;
