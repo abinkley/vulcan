@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 echo "Deploying Vulcan Cycling static site to GitHub Pages..."
 
@@ -10,11 +11,9 @@ else
   echo "Warning: node not found; skipping news page generation"
 fi
 
-# Create deploy directory if it doesn't exist
+# Clean up previous deploy (including hidden .git from prior runs)
+rm -rf deploy
 mkdir -p deploy
-
-# Clean up previous deploy
-rm -rf deploy/*
 
 # Create necessary subdirectories
 mkdir -p deploy/css
@@ -74,81 +73,24 @@ if [ -d "admin/css" ]; then
   cp admin/css/*.css deploy/admin/css/ 2>/dev/null || true
 fi
 
-# Create or update the .nojekyll file to disable Jekyll processing on GitHub Pages
+# GitHub Pages essentials — CNAME must be present BEFORE push or custom domain breaks
 touch deploy/.nojekyll
-
-# Deploy to GitHub Pages
-echo "Site prepared for deployment in 'deploy' directory"
-echo "If deploying to a web server, upload all contents of the 'deploy' directory"
-echo "For GitHub Pages, push the contents of the 'deploy' directory to the gh-pages branch"
-
-# Check if GITHUB_DEPLOY_TOKEN environment variable is set
-if [ -n "$GITHUB_DEPLOY_TOKEN" ]; then
-  echo "Deploying to GitHub Pages using token..."
-  # Commands to deploy using GitHub token would go here
-else
-  echo "Deploying to GitHub Pages using git..."
-  cd deploy
-  git init
-  git add .
-  git commit -m "Deploy site update"
-  git branch -M gh-pages
-  git remote add origin https://github.com/abinkley/vulcan.git
-  git push -f origin gh-pages
-  cd ..
-  
-  echo "Deployment complete. Site should be available at: https://abinkley.github.io/vulcan/"
-  echo "Note: It may take a few minutes for changes to propagate"
-fi
-
-# Reminder about background image
-echo "Note: The background image is loaded from images/vulcan-screenshot-bg.jpg. Make sure this image exists in the images directory."
-
-# Create CNAME file for custom domain
 echo "vulcancycling.com" > deploy/CNAME
 
-echo "Deploying Vulcan Cycling static site..."
-echo "Site prepared for deployment in the 'deploy' directory."
-echo "To deploy to your web server, run: scp -r deploy/* user@your-server:/path/to/webroot/"
-echo "For GitHub Pages, push the contents of the 'deploy' directory to your gh-pages branch."
+echo "Site prepared in deploy/ ($(du -sh deploy | cut -f1))"
 
-# Check if we're in a git repository
-if [ -d .git ] || git rev-parse --git-dir > /dev/null 2>&1; then
-    # Change to deploy directory
-    cd deploy
+# Push deploy/ contents to gh-pages (single push, always includes CNAME)
+cd deploy
+git init -q
+git add .
+git commit -q -m "Deploy site update"
+git branch -M gh-pages
+git remote remove origin 2>/dev/null || true
+git remote add origin https://github.com/abinkley/vulcan.git
+git push -f origin gh-pages
+cd ..
 
-    # Check if we're already on gh-pages branch
-    current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    
-    if [ "$current_branch" != "gh-pages" ]; then
-        echo "Checking out gh-pages branch..."
-        git checkout gh-pages || git checkout -b gh-pages
-    else
-        echo "Already on 'gh-pages'"
-    fi
-    
-    # Add all files in the deploy directory
-    git add .
-    
-    # Check for background image
-    if grep -q "url('images/vulcan-screenshot-bg.jpg')" index.html; then
-        echo "Note: The background image is loaded from a local path. Make sure the image exists in the images directory."
-    elif grep -q "url('http" index.html; then
-        echo "Note: The background image is loaded from a direct URL. Make sure the image is available at that URL."
-    fi
-    
-    # Commit changes
-    git commit -m "Deploy to GitHub Pages"
-    
-    # Push to GitHub
-    echo "Pushing to GitHub Pages..."
-    git push origin gh-pages
-    
-    echo "Deployment complete! Your site should be available at your GitHub Pages URL."
-    echo "If you've set up a custom domain, it will be available at vulcancycling.com"
-    echo "Note: It may take a few minutes for the changes to propagate."
-    echo "Done!"
-else
-    echo "This is not a git repository. Please set up git before deploying to GitHub Pages."
-    exit 1
-fi 
+echo "Deployment complete."
+echo "  https://abinkley.github.io/vulcan/"
+echo "  https://vulcancycling.com/ (custom domain may take a few minutes to reconnect)"
+echo "If vulcancycling.com still 404s, re-save the custom domain in GitHub repo Settings → Pages."
