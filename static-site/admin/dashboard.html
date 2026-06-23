@@ -88,6 +88,7 @@
   </main>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
     const db = firebase.firestore();
     
     // Initialize Auth
@@ -331,6 +332,7 @@
           contentList.innerHTML = '<li class="error">Error loading content.</li>';
         });
     }
+    });
   </script>
 </body>
 </html> 

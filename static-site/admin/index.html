@@ -153,6 +153,7 @@
   <script src="../js/firebase-init.js" defer></script>
   
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
     // Check if user is already logged in
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -189,6 +190,7 @@
           loadingSpinner.style.display = 'none';
           loginButton.disabled = false;
         });
+    });
     });
   </script>
 </body>
