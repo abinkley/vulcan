@@ -124,15 +124,15 @@ async function loadFeaturedRiders() {
       
       // Add each rider to the grid
       featuredRiders.forEach(data => {
-        // Create rider card
         const riderCard = document.createElement('div');
         riderCard.className = 'rider-card';
         
-        // Create rider image
+        const displayName = data.fullName || `${data.firstName || ''} ${data.lastName || ''}`.trim();
+        
         const riderImage = document.createElement('div');
         riderImage.className = 'rider-image';
-        
-        // If there's an image, set it as background, otherwise use placeholder
+        riderImage.setAttribute('role', 'img');
+        riderImage.setAttribute('aria-label', `${displayName || 'Rider'} photo`);
         if (data.imageUrl) {
           debugLog('Using rider image URL:', data.imageUrl);
           riderImage.style.backgroundImage = `url('${data.imageUrl}')`;
@@ -156,9 +156,7 @@ async function loadFeaturedRiders() {
         const riderInfo = document.createElement('div');
         riderInfo.className = 'rider-info';
         
-        // Add rider name
         const riderName = document.createElement('h3');
-        const displayName = data.fullName || `${data.firstName || ''} ${data.lastName || ''}`.trim();
         riderName.textContent = displayName || 'Unknown Rider';
         
         // Add rider bio (with fallback)
@@ -496,6 +494,16 @@ async function loadNewsArticle() {
 }
 
 // Format date for display
+function escapeHtml(text) {
+  if (text == null) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function formatDate(value) {
   if (!value) return 'N/A';
   let d;
@@ -553,10 +561,9 @@ function updateArticleMetaTags(article) {
 function formatContent(content) {
   if (!content) return '';
   
-  // Split content by newlines
-  const paragraphs = content.split('\n\n');
+  const escaped = escapeHtml(content);
+  const paragraphs = escaped.split('\n\n');
   
-  // Convert each paragraph to a <p> tag
   return paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
 }
 
@@ -662,8 +669,8 @@ function loadLatestNews() {
         // Add image section (top of card)
         const imageSection = document.createElement('div');
         imageSection.className = 'news-image';
-        
-        // If there's an image, set it as background with lazy loading
+        imageSection.setAttribute('role', 'img');
+        imageSection.setAttribute('aria-label', `${article.title || 'News article'} image`);
         if (article.imageUrl) {
           // Use lazy loading for images
           const img = new Image();
@@ -698,7 +705,7 @@ function loadLatestNews() {
         
         // Add read more link
         const readMoreLink = document.createElement('a');
-        readMoreLink.href = `news/detail.html?id=${article.id}`;
+        readMoreLink.href = `news/${article.id}.html`;
         readMoreLink.className = 'read-more';
         readMoreLink.textContent = 'Read More';
         
@@ -1431,7 +1438,7 @@ function loadAllNewsNonIndexed() {
             <div class="news-date">${formattedDate}</div>
             <h3 class="news-title">${article.title || 'Untitled'}</h3>
             <p class="news-excerpt">${excerpt}</p>
-            <a href="detail.html?id=${article.id}" class="read-more">Read More</a>
+            <a href="${article.id}.html" class="read-more">Read More</a>
           </div>
         `;
         
@@ -1523,28 +1530,29 @@ function loadNewsDetails() {
       
       updateArticleMetaTags(article);
       
-      // Format content with paragraphs if needed
-      const formattedContent = article.content ? article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : 'No content available';
+      const safeTitle = escapeHtml(article.title || 'Untitled');
+      const safeAuthor = article.author ? escapeHtml(article.author) : '';
+      const safeImageUrl = article.imageUrl ? escapeHtml(article.imageUrl) : '';
+      const formattedContent = formatContent(article.content);
       
-      // Build the article HTML
       newsDetailContainer.innerHTML = `
         <article class="news-article">
           <header class="article-header">
             <div class="article-metadata">
               <span class="article-date">${formattedDate}</span>
-              ${article.author ? `<span class="article-author">By ${article.author}</span>` : ''}
+              ${safeAuthor ? `<span class="article-author">By ${safeAuthor}</span>` : ''}
             </div>
-            <h1 class="article-title">${article.title || 'Untitled'}</h1>
+            <h1 class="article-title">${safeTitle}</h1>
           </header>
           
-          ${article.imageUrl ? `
+          ${safeImageUrl ? `
             <div class="article-featured-image">
-              <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image" loading="lazy">
+              <img src="${safeImageUrl}" alt="${safeTitle}" class="article-image" loading="lazy">
             </div>
           ` : ''}
           
           <div class="article-content">
-            <p>${formattedContent}</p>
+            ${formattedContent || '<p>No content available</p>'}
           </div>
           
           <div class="article-footer">
@@ -1607,28 +1615,29 @@ function displayArticle(article) {
   
   updateArticleMetaTags(article);
   
-  // Format content with paragraphs if needed
-  const formattedContent = article.content ? article.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') : 'No content available';
+  const safeTitle = escapeHtml(article.title || 'Untitled');
+  const safeAuthor = article.author ? escapeHtml(article.author) : '';
+  const safeImageUrl = article.imageUrl ? escapeHtml(article.imageUrl) : '';
+  const formattedContent = formatContent(article.content);
   
-  // Build the article HTML
   newsDetailContainer.innerHTML = `
     <article class="news-article">
       <header class="article-header">
         <div class="article-metadata">
           <span class="article-date">${formattedDate}</span>
-          ${article.author ? `<span class="article-author">By ${article.author}</span>` : ''}
+          ${safeAuthor ? `<span class="article-author">By ${safeAuthor}</span>` : ''}
         </div>
-        <h1 class="article-title">${article.title || 'Untitled'}</h1>
+        <h1 class="article-title">${safeTitle}</h1>
       </header>
       
-      ${article.imageUrl ? `
+      ${safeImageUrl ? `
         <div class="article-featured-image">
-          <img src="${article.imageUrl}" alt="${article.title || 'News image'}" class="article-image" loading="lazy">
+          <img src="${safeImageUrl}" alt="${safeTitle}" class="article-image" loading="lazy">
         </div>
       ` : ''}
       
       <div class="article-content">
-        <p>${formattedContent}</p>
+        ${formattedContent || '<p>No content available</p>'}
       </div>
       
       <div class="article-footer">

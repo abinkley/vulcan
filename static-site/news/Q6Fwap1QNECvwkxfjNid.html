@@ -8,21 +8,19 @@
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="/css/site-assets.css">
-  <meta name="description" content="Race details for Vulcan Cycling — course info, dates, and results.">
-  <meta property="og:title" content="Race Details - Vulcan Cycling">
-  <meta property="og:description" content="Race details for Vulcan Cycling junior team events.">
-  <meta property="og:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
-  <meta property="og:type" content="website">
+    <meta name="description" content="Vulcan riders crush at Pineapple and Whirlybird!">
+  <meta property="og:title" content="A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross">
+  <meta property="og:description" content="Vulcan riders crush at Pineapple and Whirlybird!">
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1757976815598_nkjgfmkzr2f_IMG_1710.jpg?alt=media&amp;token=bdc82a7b-0621-4602-b222-88c36abe077e">
+  <meta property="og:url" content="https://vulcancycling.com/news/Q6Fwap1QNECvwkxfjNid.html">
+  <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <title>Race Details - Vulcan Cycling</title>
+  <meta name="twitter:title" content="A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross">
+  <meta name="twitter:description" content="Vulcan riders crush at Pineapple and Whirlybird!">
+  <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1757976815598_nkjgfmkzr2f_IMG_1710.jpg?alt=media&amp;token=bdc82a7b-0621-4602-b222-88c36abe077e">
+  <title>A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross - Vulcan Cycling</title>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
-  <!-- Responsive Styles -->
-  <link rel="stylesheet" href="../css/responsive.css">
-  <!-- Mobile Navigation Script -->
-  <script src="../js/mobile-nav.js" defer></script>
-  <style>
+      <style>
     :root {
       --primary: #ff3e82;
       --primary-hover: #e62e72;
@@ -149,133 +147,79 @@
       margin-right: 0.5rem;
     }
     
-    /* Race Detail Section */
-    .race-detail-section {
+    /* News Detail Section */
+    .news-detail-section {
       padding: 4rem 0;
       background-color: rgba(0, 0, 0, 0.8);
     }
     
-    .race-detail-container {
-      max-width: 900px;
+    .news-detail-container {
+      max-width: 800px;
       margin: 0 auto;
     }
     
-    .race-header {
-      margin-bottom: 3rem;
+    .news-article {
+      background-color: rgba(34, 34, 34, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
     }
     
-    .race-category {
-      color: var(--primary);
-      font-size: 1.125rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
+    .article-header {
+      padding: 2rem 2rem 1rem;
     }
     
-    .race-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-    
-    .race-metadata {
+    .article-metadata {
       display: flex;
       flex-wrap: wrap;
-      gap: 2rem;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .article-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .article-author {
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-featured-image {
+      width: 100%;
       margin-bottom: 2rem;
     }
     
-    .race-metadata-item {
-      display: flex;
-      flex-direction: column;
+    .article-image {
+      width: 100%;
+      height: auto;
+      display: block;
     }
     
-    .race-metadata-label {
-      font-size: 0.875rem;
-      color: #ccc;
-      margin-bottom: 0.5rem;
-    }
-    
-    .race-metadata-value {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    
-    .race-description {
+    .article-content {
+      padding: 0 2rem 2rem;
       font-size: 1.125rem;
-      line-height: 1.7;
-      margin-bottom: 3rem;
+      line-height: 1.8;
     }
     
-    .race-info-section {
-      margin-bottom: 3rem;
-    }
-    
-    .race-info-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+    .article-content p {
       margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--primary);
     }
     
-    .race-details-list {
-      background-color: rgba(34, 34, 34, 0.5);
-      border-radius: 8px;
-      padding: 1.5rem;
-    }
-    
-    .race-detail-item {
-      display: flex;
-      margin-bottom: 1rem;
-    }
-    
-    .race-detail-item:last-child {
+    .article-content p:last-child {
       margin-bottom: 0;
     }
     
-    .race-detail-label {
-      width: 150px;
-      font-weight: 600;
-      color: #ccc;
-    }
-    
-    .race-detail-value {
-      flex: 1;
-    }
-    
-    /* Race Results Table */
-    .race-results-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1.5rem;
-    }
-    
-    .race-results-table th {
-      text-align: left;
-      padding: 0.75rem 1rem;
-      background-color: rgba(34, 34, 34, 0.8);
-      font-weight: 600;
-      border-bottom: 2px solid #555;
-    }
-    
-    .race-results-table td {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #444;
-    }
-    
-    .race-results-table tr:hover {
-      background-color: rgba(34, 34, 34, 0.5);
-    }
-    
-    .race-results-place {
-      width: 80px;
-      text-align: center;
-    }
-    
-    .race-results-place.podium {
-      color: gold;
-      font-weight: 700;
+    .article-footer {
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* Loading Animation */
@@ -286,6 +230,20 @@
     
     .loading p {
       color: #ccc;
+    }
+    
+    /* Error state */
+    .error-message {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .error-message h3 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
     }
     
     /* Footer */
@@ -345,20 +303,6 @@
       font-size: 0.875rem;
     }
     
-    /* Error state */
-    .error-message {
-      padding: 2rem;
-      text-align: center;
-      background-color: rgba(255, 0, 0, 0.1);
-      border-radius: 8px;
-      margin-bottom: 2rem;
-    }
-    
-    .error-message h3 {
-      color: #ff6b6b;
-      margin-bottom: 1rem;
-    }
-    
     /* Admin Link (Hidden) */
     .admin-link {
       position: fixed;
@@ -378,7 +322,13 @@
       opacity: 1;
     }
   </style>
-</head>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+  </head>
 <body>
   <!-- Background image -->
   <div class="bg-image"></div>
@@ -396,8 +346,8 @@
           <ul>
             <li><a href="../index.html">Home</a></li>
             <li><a href="../results/index.html">Results</a></li>
-            <li><a href="../news/index.html">News</a></li>
-            <li><a href="index.html" class="active">Races</a></li>
+            <li><a href="index.html" class="active">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
             <li><a href="../about/index.html">About</a></li>
             <li><a href="../contact/index.html">Contact</a></li>
           </ul>
@@ -407,24 +357,42 @@
       </div>
     </header>
     
-    <!-- Race Detail Section -->
-    <section class="race-detail-section">
+    <!-- News Detail Section -->
+    <section class="news-detail-section">
       <div class="container">
         <a href="index.html" class="back-button">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back to Races
+          Back to News
         </a>
         
-        <div class="race-detail-container">
-          <!-- Loading spinner -->
-          <div class="loading">
-            <p>Loading race details...</p>
+        <div class="news-detail-container">
+          <article class="news-article">
+          <header class="article-header">
+            <div class="article-metadata">
+              <span class="article-date">September 15, 2025</span>
+              
+            </div>
+            <h1 class="article-title">A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross</h1>
+          </header>
+          <div class="article-featured-image">
+            <img src="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1757976815598_nkjgfmkzr2f_IMG_1710.jpg?alt=media&amp;token=bdc82a7b-0621-4602-b222-88c36abe077e" alt="A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross" class="article-image">
           </div>
-          
-          <!-- Race details will be loaded here dynamically -->
+          <div class="article-content">
+            <p>Cyclocross Week #2: Whirlybird &amp; Pineapple Crush Cross</p><p>Cyclocross season rolled on with back-to-back races this past weekend, featuring Whirlybird Cross on Saturday, September 13, and Pineapple Crush Cross on Sunday, September 14. Riders battled through dry technical courses, ALL the 180s, and fast straights to put down some impressive results.</p><p>Whirlybird Cross – September 13, 2025</p><p>The action kicked off at Whirlybird Cross, where the juniors set the tone for the weekend. Kendall Craven dominated the Junior Women 9–14 category, taking home the win in commanding fashion and showing great form early in the season.</p><p>In the Cat 4/5 Men’s field, Niko Warner pushed hard against a deep older field, finishing 26th. The race provided valuable experience for the young rider, who would bounce back impressively the next day.</p><p>Pineapple Crush Cross – September 14, 2025</p><p>Sunday’s Pineapple Crush Cross brought more strong performances across the board.</p><p>Tamara Warner rode a strong race in the Cat 4/5 Women’s field, finishing 5th after starting strong and getting faster through the course!</p><p>Niko Warner returned to action, this time in Junior Men 9–14, and grabbed a strong 3rd place against a much older field.</p><p>Xenia Binkley stood out with a 2nd-place finish in Junior Women 9–14 against a tough opponent in Eliana Mumaw who was out for blood after her Sunday race!  And Nora Phillips put up an impressive 8th place showing true grit in her 2nd ever cross race!</p><p>Looking Ahead</p><p>Two races in two days brought out the best in the riders, with standout podiums from Kendall Craven, Xenia Binkley, and Niko Warner. As the season continues, it’s clear that the local cyclocross scene is packed with young talent and experienced riders pushing for top results.</p><p>Next weekend promises even more racing action at Carpenter Cross in Horsham, PA —stay tuned for updates, and congratulations to everyone who lined up this past weekend!</p>
+          </div>
+          <div class="article-footer">
+            <a href="index.html" class="back-button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to News
+            </a>
+          </div>
+        </article>
         </div>
       </div>
     </section>
@@ -451,7 +419,7 @@
             <ul>
               <li><a href="../about/index.html">About Us</a></li>
               <li><a href="../contact/index.html">Contact</a></li>
-              <li><a href="../news/index.html">News</a></li>
+              <li><a href="../races/index.html">Races</a></li>
             </ul>
           </div>
         </div>
@@ -466,22 +434,5 @@
     <a href="../admin/index.html" class="admin-link">Admin</a>
   </div>
   
-  <!-- Firebase Loader Script -->
-  <script src="../js/firebase-init.js" defer></script>
-  <script src="../js/firebase-loader.js" defer></script>
-  
-  <!-- Race Details Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof initFirebase === 'function' && (firebase.apps.length === 0 || !db)) {
-        initFirebase();
-      }
-      setTimeout(function() {
-        if (typeof loadRaceDetails === 'function') {
-          loadRaceDetails();
-        }
-      }, 500);
-    });
-  </script>
-</body>
+  </body>
 </html> 

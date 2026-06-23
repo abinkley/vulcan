@@ -8,21 +8,19 @@
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="/css/site-assets.css">
-  <meta name="description" content="Upcoming and past races for Vulcan Cycling — junior cycling events in New Jersey and New York.">
-  <meta property="og:title" content="Races - Vulcan Cycling">
-  <meta property="og:description" content="Upcoming and past races for Vulcan Cycling junior team.">
-  <meta property="og:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
-  <meta property="og:url" content="https://vulcancycling.com/races/">
-  <meta property="og:type" content="website">
+    <meta name="description" content="Niko Warner wins and Xenia Binkley takes 2nd at HPCX!">
+  <meta property="og:title" content="HPCX: Niko Takes the Win and Xenia Grabs Silver at Thompson Park">
+  <meta property="og:description" content="Niko Warner wins and Xenia Binkley takes 2nd at HPCX!">
+  <meta property="og:image" content="https://vulcancycling.com/images/news-placeholder.jpg">
+  <meta property="og:url" content="https://vulcancycling.com/news/qqRciEItcHKmrbdfcSGL.html">
+  <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Races - Vulcan Cycling">
-  <meta name="twitter:description" content="Upcoming and past races for Vulcan Cycling junior team.">
-  <meta name="twitter:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
-  <title>Races - Vulcan Cycling</title>
+  <meta name="twitter:title" content="HPCX: Niko Takes the Win and Xenia Grabs Silver at Thompson Park">
+  <meta name="twitter:description" content="Niko Warner wins and Xenia Binkley takes 2nd at HPCX!">
+  <meta name="twitter:image" content="https://vulcancycling.com/images/news-placeholder.jpg">
+  <title>HPCX: Niko Takes the Win and Xenia Grabs Silver at Thompson Park - Vulcan Cycling</title>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
-  <style>
+      <style>
     :root {
       --primary: #ff3e82;
       --primary-hover: #e62e72;
@@ -131,92 +129,97 @@
       color: white;
     }
     
-    /* Page Header */
-    .page-header {
-      padding: 4rem 0;
-      text-align: center;
-      background-color: rgba(0, 0, 0, 0.7);
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      color: var(--primary);
+      font-weight: 500;
+      transition: color 0.3s ease;
     }
     
-    .page-header h2 {
-      font-size: 3rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
+    .back-button:hover {
+      color: var(--primary-hover);
     }
     
-    .page-header p {
-      font-size: 1.25rem;
-      max-width: 800px;
-      margin: 0 auto;
+    .back-button svg {
+      margin-right: 0.5rem;
     }
     
-    /* Races Section */
-    .races-section {
+    /* News Detail Section */
+    .news-detail-section {
       padding: 4rem 0;
       background-color: rgba(0, 0, 0, 0.8);
     }
     
-    .section-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 3rem;
-      text-transform: uppercase;
-    }
-    
-    .races-container {
-      margin-bottom: 2rem;
-    }
-    
-    .races-list {
+    .news-detail-container {
       max-width: 800px;
-      margin: 0 auto 3rem;
+      margin: 0 auto;
     }
     
-    .race-card {
-      background-color: rgba(34, 34, 34, 0.7);
+    .news-article {
+      background-color: rgba(34, 34, 34, 0.5);
       border-radius: 8px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    
+    .article-header {
+      padding: 2rem 2rem 1rem;
+    }
+    
+    .article-metadata {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
     
-    .race-info {
-      flex: 1;
-    }
-    
-    .race-date {
+    .article-date {
       color: var(--primary);
       font-size: 0.875rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
     }
     
-    .race-title {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .race-location {
+    .article-author {
       color: #ccc;
       font-size: 0.875rem;
     }
     
-    .race-details-button {
-      padding: 0.5rem 1rem;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
     }
     
-    .race-details-button:hover {
-      background-color: var(--primary-hover);
+    .article-featured-image {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    
+    .article-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .article-content {
+      padding: 0 2rem 2rem;
+      font-size: 1.125rem;
+      line-height: 1.8;
+    }
+    
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .article-footer {
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* Loading Animation */
@@ -227,6 +230,20 @@
     
     .loading p {
       color: #ccc;
+    }
+    
+    /* Error state */
+    .error-message {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .error-message h3 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
     }
     
     /* Footer */
@@ -311,7 +328,7 @@
   <!-- Mobile Navigation Script -->
   <script src="../js/mobile-nav.js" defer></script>
 
-</head>
+  </head>
 <body>
   <!-- Background image -->
   <div class="bg-image"></div>
@@ -329,35 +346,54 @@
           <ul>
             <li><a href="../index.html">Home</a></li>
             <li><a href="../results/index.html">Results</a></li>
-              <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
-            <li><a href="../news/index.html">News</a></li>
-            <li><a href="index.html" class="active">Races</a></li>
+            <li><a href="index.html" class="active">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
             <li><a href="../about/index.html">About</a></li>
             <li><a href="../contact/index.html">Contact</a></li>
           </ul>
         </nav>
+        
+        <a href="#" class="cta-button">Join the Team</a>
       </div>
     </header>
     
-    <!-- Page Header -->
-    <section class="page-header">
+    <!-- News Detail Section -->
+    <section class="news-detail-section">
       <div class="container">
-        <h2>Races Calendar</h2>
-        <p>View upcoming and past races for the Vulcan Cycling team</p>
-      </div>
-    </section>
-    
-    <!-- Page Content -->
-    <div class="page-content">
-      <div class="container">
-        <div class="races-container">
-          <!-- Races will be loaded here -->
-          <div style="text-align: center; padding: 2rem;">
-            <p>Loading races...</p>
+        <a href="index.html" class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to News
+        </a>
+        
+        <div class="news-detail-container">
+          <article class="news-article">
+          <header class="article-header">
+            <div class="article-metadata">
+              <span class="article-date">October 12, 2025</span>
+              
+            </div>
+            <h1 class="article-title">HPCX: Niko Takes the Win and Xenia Grabs Silver at Thompson Park</h1>
+          </header>
+          
+          <div class="article-content">
+            <p>The team headed to Thompson Park in Jamesburg, NJ on October 12 for HPCX — New Jersey&#39;s premier cyclocross weekend and a fixture on the calendar since 2000. Presented by Rutgers University Cycling and Highland Park Hermes, the course is famous for the punchy hill riders climb twice each lap, rewarding strength and smart pacing.</p><p>Junior Men 11–12 – Niko Warner<br>Niko Warner delivered the ride of the day, powering to 1st place and the top step of the podium! He attacked the climbs, stayed smooth through the corners, and never looked back — a fantastic win at one of the biggest races in the region.</p><p>Junior Women 11–12 – Xenia Binkley<br>Xenia Binkley kept the good vibes rolling with a strong 2nd-place finish. She raced with confidence and consistency all the way to the line, adding another podium to her growing season tally.</p><p>Looking Ahead<br>A win and a runner-up at HPCX — a perfect day at Thompson Park! Congratulations to Niko and Xenia on two standout rides. The team rolls on with momentum and plenty of fall racing still to come.</p>
           </div>
+          <div class="article-footer">
+            <a href="index.html" class="back-button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to News
+            </a>
+          </div>
+        </article>
         </div>
       </div>
-    </div>
+    </section>
     
     <!-- Footer -->
     <footer>
@@ -373,8 +409,6 @@
               <li><a href="../index.html">Home</a></li>
               <li><a href="../team.html">Our Team</a></li>
               <li><a href="../results/index.html">Results</a></li>
-              <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
-              <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
             </ul>
           </div>
           
@@ -383,7 +417,7 @@
             <ul>
               <li><a href="../about/index.html">About Us</a></li>
               <li><a href="../contact/index.html">Contact</a></li>
-              <li><a href="../news/index.html">News</a></li>
+              <li><a href="../races/index.html">Races</a></li>
             </ul>
           </div>
         </div>
@@ -398,17 +432,5 @@
     <a href="../admin/index.html" class="admin-link">Admin</a>
   </div>
   
-  <!-- Firebase Loader Script -->
-  <script src="../js/firebase-init.js" defer></script>
-  <script src="../js/firebase-loader.js" defer></script>
-  
-  <!-- Force load races for this page -->
-  <script>
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        if (typeof loadAllRaces === 'function') loadAllRaces();
-      }, 500);
-    });
-  </script>
-</body>
+  </body>
 </html> 

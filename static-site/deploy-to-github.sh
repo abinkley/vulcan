@@ -2,6 +2,14 @@
 
 echo "Deploying Vulcan Cycling static site to GitHub Pages..."
 
+# Generate static news pages with OG tags for link crawlers
+if command -v node >/dev/null 2>&1; then
+  echo "Generating static news article pages..."
+  node scripts/generate-news-pages.js || echo "Warning: news page generation failed; continuing deploy"
+else
+  echo "Warning: node not found; skipping news page generation"
+fi
+
 # Create deploy directory if it doesn't exist
 mkdir -p deploy
 
@@ -29,6 +37,12 @@ cp sitemap.xml deploy/
 cp site.webmanifest deploy/
 cp news/index.html deploy/news/
 cp news/detail.html deploy/news/
+for article_page in news/*.html; do
+  base=$(basename "$article_page")
+  if [ "$base" != "index.html" ] && [ "$base" != "detail.html" ]; then
+    cp "$article_page" deploy/news/
+  fi
+done
 cp races/index.html deploy/races/
 cp races/detail.html deploy/races/
 cp results/index.html deploy/results/

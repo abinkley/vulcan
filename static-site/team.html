@@ -500,7 +500,7 @@
               'Unnamed Rider';
             
             riderCard.innerHTML = `
-              <div class="rider-image" style="background-image: url('${imageUrl}')"></div>
+              <div class="rider-image" role="img" aria-label="${displayName.replace(/"/g, '&quot;')} photo" style="background-image: url('${imageUrl.replace(/'/g, '%27')}')"></div>
               <div class="rider-info">
                 <h3>${displayName}</h3>
                 <p>${rider.bio || 'No biography available.'}</p>

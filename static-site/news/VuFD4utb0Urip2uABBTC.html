@@ -8,21 +8,19 @@
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="/css/site-assets.css">
-  <meta name="description" content="Race details for Vulcan Cycling — course info, dates, and results.">
-  <meta property="og:title" content="Race Details - Vulcan Cycling">
-  <meta property="og:description" content="Race details for Vulcan Cycling junior team events.">
-  <meta property="og:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
-  <meta property="og:type" content="website">
+    <meta name="description" content="Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River! The Vulcan squad had an incredible weekend of racing, taking home multiple wins and podium">
+  <meta property="og:title" content="Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River!">
+  <meta property="og:description" content="Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River! The Vulcan squad had an incredible weekend of racing, taking home multiple wins and podium">
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1761190408265_dykfodg8trr_vulcan_cx_weekend_edge_to_edge_brick.jpg?alt=media&amp;token=d0e0d22f-d8e5-4105-b8c5-e9c8230ac54f">
+  <meta property="og:url" content="https://vulcancycling.com/news/VuFD4utb0Urip2uABBTC.html">
+  <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <title>Race Details - Vulcan Cycling</title>
+  <meta name="twitter:title" content="Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River!">
+  <meta name="twitter:description" content="Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River! The Vulcan squad had an incredible weekend of racing, taking home multiple wins and podium">
+  <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1761190408265_dykfodg8trr_vulcan_cx_weekend_edge_to_edge_brick.jpg?alt=media&amp;token=d0e0d22f-d8e5-4105-b8c5-e9c8230ac54f">
+  <title>Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River! - Vulcan Cycling</title>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
-  <!-- Responsive Styles -->
-  <link rel="stylesheet" href="../css/responsive.css">
-  <!-- Mobile Navigation Script -->
-  <script src="../js/mobile-nav.js" defer></script>
-  <style>
+      <style>
     :root {
       --primary: #ff3e82;
       --primary-hover: #e62e72;
@@ -149,133 +147,79 @@
       margin-right: 0.5rem;
     }
     
-    /* Race Detail Section */
-    .race-detail-section {
+    /* News Detail Section */
+    .news-detail-section {
       padding: 4rem 0;
       background-color: rgba(0, 0, 0, 0.8);
     }
     
-    .race-detail-container {
-      max-width: 900px;
+    .news-detail-container {
+      max-width: 800px;
       margin: 0 auto;
     }
     
-    .race-header {
-      margin-bottom: 3rem;
+    .news-article {
+      background-color: rgba(34, 34, 34, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
     }
     
-    .race-category {
-      color: var(--primary);
-      font-size: 1.125rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
+    .article-header {
+      padding: 2rem 2rem 1rem;
     }
     
-    .race-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-    
-    .race-metadata {
+    .article-metadata {
       display: flex;
       flex-wrap: wrap;
-      gap: 2rem;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .article-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .article-author {
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-featured-image {
+      width: 100%;
       margin-bottom: 2rem;
     }
     
-    .race-metadata-item {
-      display: flex;
-      flex-direction: column;
+    .article-image {
+      width: 100%;
+      height: auto;
+      display: block;
     }
     
-    .race-metadata-label {
-      font-size: 0.875rem;
-      color: #ccc;
-      margin-bottom: 0.5rem;
-    }
-    
-    .race-metadata-value {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    
-    .race-description {
+    .article-content {
+      padding: 0 2rem 2rem;
       font-size: 1.125rem;
-      line-height: 1.7;
-      margin-bottom: 3rem;
+      line-height: 1.8;
     }
     
-    .race-info-section {
-      margin-bottom: 3rem;
-    }
-    
-    .race-info-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+    .article-content p {
       margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--primary);
     }
     
-    .race-details-list {
-      background-color: rgba(34, 34, 34, 0.5);
-      border-radius: 8px;
-      padding: 1.5rem;
-    }
-    
-    .race-detail-item {
-      display: flex;
-      margin-bottom: 1rem;
-    }
-    
-    .race-detail-item:last-child {
+    .article-content p:last-child {
       margin-bottom: 0;
     }
     
-    .race-detail-label {
-      width: 150px;
-      font-weight: 600;
-      color: #ccc;
-    }
-    
-    .race-detail-value {
-      flex: 1;
-    }
-    
-    /* Race Results Table */
-    .race-results-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1.5rem;
-    }
-    
-    .race-results-table th {
-      text-align: left;
-      padding: 0.75rem 1rem;
-      background-color: rgba(34, 34, 34, 0.8);
-      font-weight: 600;
-      border-bottom: 2px solid #555;
-    }
-    
-    .race-results-table td {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #444;
-    }
-    
-    .race-results-table tr:hover {
-      background-color: rgba(34, 34, 34, 0.5);
-    }
-    
-    .race-results-place {
-      width: 80px;
-      text-align: center;
-    }
-    
-    .race-results-place.podium {
-      color: gold;
-      font-weight: 700;
+    .article-footer {
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* Loading Animation */
@@ -286,6 +230,20 @@
     
     .loading p {
       color: #ccc;
+    }
+    
+    /* Error state */
+    .error-message {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .error-message h3 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
     }
     
     /* Footer */
@@ -345,20 +303,6 @@
       font-size: 0.875rem;
     }
     
-    /* Error state */
-    .error-message {
-      padding: 2rem;
-      text-align: center;
-      background-color: rgba(255, 0, 0, 0.1);
-      border-radius: 8px;
-      margin-bottom: 2rem;
-    }
-    
-    .error-message h3 {
-      color: #ff6b6b;
-      margin-bottom: 1rem;
-    }
-    
     /* Admin Link (Hidden) */
     .admin-link {
       position: fixed;
@@ -378,7 +322,13 @@
       opacity: 1;
     }
   </style>
-</head>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+  </head>
 <body>
   <!-- Background image -->
   <div class="bg-image"></div>
@@ -396,8 +346,8 @@
           <ul>
             <li><a href="../index.html">Home</a></li>
             <li><a href="../results/index.html">Results</a></li>
-            <li><a href="../news/index.html">News</a></li>
-            <li><a href="index.html" class="active">Races</a></li>
+            <li><a href="index.html" class="active">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
             <li><a href="../about/index.html">About</a></li>
             <li><a href="../contact/index.html">Contact</a></li>
           </ul>
@@ -407,24 +357,42 @@
       </div>
     </header>
     
-    <!-- Race Detail Section -->
-    <section class="race-detail-section">
+    <!-- News Detail Section -->
+    <section class="news-detail-section">
       <div class="container">
         <a href="index.html" class="back-button">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back to Races
+          Back to News
         </a>
         
-        <div class="race-detail-container">
-          <!-- Loading spinner -->
-          <div class="loading">
-            <p>Loading race details...</p>
+        <div class="news-detail-container">
+          <article class="news-article">
+          <header class="article-header">
+            <div class="article-metadata">
+              <span class="article-date">October 23, 2025</span>
+              
+            </div>
+            <h1 class="article-title">Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River!</h1>
+          </header>
+          <div class="article-featured-image">
+            <img src="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1761190408265_dykfodg8trr_vulcan_cx_weekend_edge_to_edge_brick.jpg?alt=media&amp;token=d0e0d22f-d8e5-4105-b8c5-e9c8230ac54f" alt="Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River!" class="article-image">
           </div>
-          
-          <!-- Race details will be loaded here dynamically -->
+          <div class="article-content">
+            <p>Vulcan Cycling: Dominant Weekend at Tree House Cross &amp; Cooper River!</p><p>The Vulcan squad had an incredible weekend of racing, taking home multiple wins and podiums across two days of cyclocross action in New Jersey!</p><p>Tree House Cross – Day 1 (October 18, 2025)</p><p>The weekend kicked off strong at Tree House Cross, where Tamara Warner powered to victory in the Cat 4 Women race, while Niko Warner continued his dominant season, taking 1st place in Junior Men 11–12.</p><p>A perfect start to the weekend for Team Vulcan — two riders, two wins!</p><p>Cooper River CX – (October 19, 2025)</p><p>Sunday’s racing brought even more excitement and hardware for Vulcan riders:</p><p>Tamara Warner – 4th place, Cat 3/4/5 Women</p><p>Nora Phillips – 1st place, Junior Women 9–10</p><p>Juno Miller – 6th place, Junior Men 11–12</p><p>Gunnar Miller – 27th place, Cat 4 Men</p><p>Niko Warner – 1st place, Junior Men 11–12</p><p>Xenia Binkley – 1st place, Junior Women 11–12</p><p>Vulcan riders brought home three wins across six categories, showing the team’s strength across all age groups and divisions. Special shoutout to our youngest riders, who swept both junior women’s categories!</p><p>Weekend Highlights</p><p>🏆 Five 1st-place finishes (Tamara, Nora, Niko, and Xenia)</p><p>💪 Strong performances across multiple categories</p><p>🌟 Continued growth from our youth riders, setting the tone for the rest of the season</p><p>Congrats to all riders and families for another successful weekend!</p>
+          </div>
+          <div class="article-footer">
+            <a href="index.html" class="back-button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to News
+            </a>
+          </div>
+        </article>
         </div>
       </div>
     </section>
@@ -451,7 +419,7 @@
             <ul>
               <li><a href="../about/index.html">About Us</a></li>
               <li><a href="../contact/index.html">Contact</a></li>
-              <li><a href="../news/index.html">News</a></li>
+              <li><a href="../races/index.html">Races</a></li>
             </ul>
           </div>
         </div>
@@ -466,22 +434,5 @@
     <a href="../admin/index.html" class="admin-link">Admin</a>
   </div>
   
-  <!-- Firebase Loader Script -->
-  <script src="../js/firebase-init.js" defer></script>
-  <script src="../js/firebase-loader.js" defer></script>
-  
-  <!-- Race Details Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof initFirebase === 'function' && (firebase.apps.length === 0 || !db)) {
-        initFirebase();
-      }
-      setTimeout(function() {
-        if (typeof loadRaceDetails === 'function') {
-          loadRaceDetails();
-        }
-      }, 500);
-    });
-  </script>
-</body>
+  </body>
 </html> 
