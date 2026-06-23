@@ -1,0 +1,23 @@
+{
+  "name": "Vulcan Cycling",
+  "short_name": "Vulcan",
+  "description": "Junior cycling team in New Jersey and New York",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#ff3e82",
+  "icons": [
+    {
+      "src": "/images/vulcan-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

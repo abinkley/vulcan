@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff3e82">
+  <link rel="icon" href="/images/vulcan-logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/css/site-assets.css">
+    <meta name="description" content="What. A. Weekend. Team Vulcan riders tore up the course at the Really Rad Festival of Cyclocross in Falmouth, MA — two days of smiles, speed, and mud-splattere">
+  <meta property="og:title" content="🌟 Really Rad Weekend — Kids on Fire in Falmouth! 🔥">
+  <meta property="og:description" content="What. A. Weekend. Team Vulcan riders tore up the course at the Really Rad Festival of Cyclocross in Falmouth, MA — two days of smiles, speed, and mud-splattere">
+  <meta property="og:image" content="https://vulcancycling.com/images/news-placeholder.jpg">
+  <meta property="og:url" content="https://vulcancycling.com/news/bOnruIx1aT3McnRaD5HG.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🌟 Really Rad Weekend — Kids on Fire in Falmouth! 🔥">
+  <meta name="twitter:description" content="What. A. Weekend. Team Vulcan riders tore up the course at the Really Rad Festival of Cyclocross in Falmouth, MA — two days of smiles, speed, and mud-splattere">
+  <meta name="twitter:image" content="https://vulcancycling.com/images/news-placeholder.jpg">
+  <title>🌟 Really Rad Weekend — Kids on Fire in Falmouth! 🔥 - Vulcan Cycling</title>
+  <!-- Firebase SDK -->
+      <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #000;
+      line-height: 1.6;
+    }
+
+    /* Full-screen background image */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #000;
+    }
+    
+    /* Content container to appear above background */
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    /* Header */
+    header {
+      padding: 1.5rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo h1 {
+      margin-left: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav li {
+      margin-left: 2rem;
+    }
+    
+    nav a {
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: white;
+      color: black;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      color: var(--primary);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .back-button:hover {
+      color: var(--primary-hover);
+    }
+    
+    .back-button svg {
+      margin-right: 0.5rem;
+    }
+    
+    /* News Detail Section */
+    .news-detail-section {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .news-detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .news-article {
+      background-color: rgba(34, 34, 34, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .article-header {
+      padding: 2rem 2rem 1rem;
+    }
+    
+    .article-metadata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .article-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .article-author {
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-featured-image {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    
+    .article-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .article-content {
+      padding: 0 2rem 2rem;
+      font-size: 1.125rem;
+      line-height: 1.8;
+    }
+    
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .article-footer {
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Loading Animation */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .loading p {
+      color: #ccc;
+    }
+    
+    /* Error state */
+    .error-message {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .error-message h3 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-logo p {
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      margin-top: 4rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.875rem;
+    }
+    
+    /* Admin Link (Hidden) */
+    .admin-link {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .admin-link:hover {
+      opacity: 1;
+    }
+  </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+  </head>
+<body>
+  <!-- Background image -->
+  <div class="bg-image"></div>
+  
+  <!-- Content -->
+  <div class="content">
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <h1>VULCAN CYCLING</h1>
+        </div>
+        
+        <nav>
+          <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../results/index.html">Results</a></li>
+            <li><a href="index.html" class="active">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
+            <li><a href="../about/index.html">About</a></li>
+            <li><a href="../contact/index.html">Contact</a></li>
+          </ul>
+        </nav>
+        
+        <a href="#" class="cta-button">Join the Team</a>
+      </div>
+    </header>
+    
+    <!-- News Detail Section -->
+    <section class="news-detail-section">
+      <div class="container">
+        <a href="index.html" class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to News
+        </a>
+        
+        <div class="news-detail-container">
+          <article class="news-article" data-article-id="bOnruIx1aT3McnRaD5HG">
+          <header class="article-header">
+            <div class="article-metadata">
+              <span class="article-date">October 28, 2025</span>
+              
+            </div>
+            <h1 class="article-title">🌟 Really Rad Weekend — Kids on Fire in Falmouth! 🔥</h1>
+          </header>
+          
+          <div class="article-content">
+            <p>What. A. Weekend.</p><p>Team Vulcan riders tore up the course at the Really Rad Festival of Cyclocross in Falmouth, MA — two days of smiles, speed, and mud-splattered determination! 🚴💨</p><p>💥 Day 1 — Saturday, October 25th</p><p>The crew came ready to roll!</p><p>Kendal Craven put down one of her smoothest, strongest efforts yet in the Women Cat 4/5 race — claiming a 3rd-place podium and holding her own against a seriously tough field! Her lap times were rock-solid and consistent, showing incredible endurance over six laps. Kendal’s pacing was textbook — fast early, steady mid-race, and composed all the way through. 💪</p><p>Juno Miller tackled a deep Junior Men 11–12 field and never gave up — charging through heavy traffic and fighting all the way to 9th place! He showed great race craft and grit on a fast course that rewarded power and precision.</p><p>Gunnar Miller put down consistent laps in Junior Men U19, finishing 5th and showing his technical improvement every circuit — he was right in the mix with the region’s best!</p><p>Nora Phillips was pure focus and flow in Junior Women 9–10, taking the win in dominant fashion! Her two-lap effort was nearly perfectly even, showing both control and late-race acceleration. She crossed the line more than a minute ahead of the field with a smile that said it all. 🏆</p><p>⚡️ Day 2 — Sunday, October 26th</p><p>Sunday brought fresh legs and even more determination — and it showed!</p><p>Juno Miller bounced back big time, cutting more than a minute off his lap times from Saturday and finishing an incredible 5th place! His steady pacing — with his fastest lap coming late in the race — showed true racer maturity.</p><p>Kendal Craven was back on the podium again with another 3rd-place finish in Women Cat 4/5, matching her Saturday result with calm control and confidence.</p><p>Gunnar Miller charged through the Junior Men U19 race with one of his strongest efforts of the season — consistent laps and only seconds separating each split! He locked in 4th place, showing that he’s right on the doorstep of the podium.</p><p>And Nora Phillips? She made it two-for-two, taking another 1st place in Junior Women 9–10! Back-to-back wins — incredible! 🥇🥇</p><p>🎉 What a Team!</p><p>Every rider gave it their all, supported their teammates, and showed what Vulcan Youth Cycling is all about — fun, focus, and fearless racing.</p><p>Big thanks to the families, friends, and coaches who make these weekends possible. Next stop: more mud, more laps, and more Vulcan fire! 🔥</p>
+          </div>
+          <div class="article-footer">
+            <a href="index.html" class="back-button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to News
+            </a>
+          </div>
+        </article>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3>VULCAN CYCLING</h3>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../team.html">Our Team</a></li>
+              <li><a href="../results/index.html">Results</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Contact Us</h3>
+            <ul>
+              <li><a href="../about/index.html">About Us</a></li>
+              <li><a href="../contact/index.html">Contact</a></li>
+              <li><a href="../races/index.html">Races</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="copyright">
+          &copy; 2023 Vulcan Cycling. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    
+    <!-- Hidden Admin Link -->
+    <a href="../admin/index.html" class="admin-link">Admin</a>
+  </div>
+  
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
+  <script src="../js/firebase-init.js" defer></script>
+  <script src="../js/news-hydrate.js" defer></script>
+
+</body>
+</html> 

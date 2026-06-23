@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff3e82">
+  <link rel="icon" href="/images/vulcan-logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/css/site-assets.css">
+    <meta name="description" content="Race results from Vulcan Cycling junior team members — cyclocross, road, and mountain bike competitions.">
+    <meta property="og:title" content="Race Results - Vulcan Cycling">
+    <meta property="og:description" content="Race results from Vulcan Cycling junior team members.">
+    <meta property="og:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
+    <meta property="og:url" content="https://vulcancycling.com/results/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Race Results - Vulcan Cycling">
+    <meta name="twitter:description" content="Race results from Vulcan Cycling junior team members.">
+    <meta name="twitter:image" content="https://vulcancycling.com/images/vulcan-screenshot-bg.jpg">
+    <title>Race Results - Vulcan Cycling</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
+    <link rel="stylesheet" href="../css/styles.css?v=1.0.1">
+    <style>
+        :root {
+            --primary: #ff3e82;
+            --primary-hover: #e62e72;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            background-color: #000;
+            line-height: 1.6;
+        }
+
+        /* Full-screen background image */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #000;
+        }
+        
+        /* Content container to appear above background */
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Header */
+        header {
+            padding: 1.5rem 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            margin-left: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav li {
+            margin-left: 2rem;
+        }
+        
+        nav a {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            color: black;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Page Header */
+        .page-header {
+            padding: 4rem 0;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .page-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .page-header p {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Results Section */
+        .results-section {
+            padding: 4rem 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .results-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Season Navigation */
+        .season-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .season-btn {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .season-btn:hover {
+            background-color: rgba(50, 50, 50, 0.8);
+        }
+        
+        .season-btn.active {
+            background-color: var(--primary);
+        }
+        
+        /* Race Result Cards */
+        .race-result-card {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .race-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .results-table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+        
+        .results-table tbody tr:hover {
+            background-color: rgba(60, 60, 60, 0.5);
+        }
+        
+        .results-table td:nth-child(3) {
+            font-weight: 700;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: rgba(30, 30, 30, 0.5);
+            border-radius: 8px;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 4rem 0;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-logo h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            margin-top: 4rem;
+            text-align: center;
+            color: #999;
+            font-size: 0.875rem;
+        }
+    </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+</head>
+<body>
+    <!-- Background image -->
+    <div class="bg-image"></div>
+    
+    <!-- Content -->
+    <div class="content">
+        <!-- Header -->
+        <header>
+            <div class="container header-container">
+                <div class="logo">
+                    <h1>VULCAN CYCLING</h1>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="index.html" class="active">Results</a></li>
+                        <li><a href="../news/index.html">News</a></li>
+                        <li><a href="../races/index.html">Races</a></li>
+                        <li><a href="../about/index.html">About</a></li>
+                        <li><a href="../contact/index.html">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h2>Race Results</h2>
+                <p>View the latest race results and achievements from Vulcan Cycling team members</p>
+            </div>
+        </section>
+        
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="container">
+                <div class="results-container">
+                    <!-- Loading state (will be replaced by results) -->
+                    <div class="loading">
+                        <p>Loading race results...</p>
+                    </div>
+                    
+                    <!-- Fallback results if Firebase fails -->
+                    <div id="fallback-results" style="display: none;">
+                        <div class="race-result-card">
+                            <div class="race-header">Sample Race Results - Coming Soon</div>
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rider</th>
+                                        <th>Category</th>
+                                        <th>Position</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Alex Johnson</td>
+                                        <td>Junior Men</td>
+                                        <td>1st</td>
+                                        <td>2:34:15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sarah Miller</td>
+                                        <td>Junior Women</td>
+                                        <td>2nd</td>
+                                        <td>2:36:42</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Results will be loaded here dynamically -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <h3>VULCAN CYCLING</h3>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="../index.html">Home</a></li>
+                            <li><a href="../team.html">Our Team</a></li>
+                            <li><a href="../results/index.html">Results</a></li>
+                            <li><a href="../grasshopper.html">Grasshopper Kids Race</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Contact Us</h3>
+                        <ul>
+                            <li><a href="../about/index.html">About Us</a></li>
+                            <li><a href="../contact/index.html">Contact</a></li>
+                            <li><a href="../races/index.html">Races</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="copyright">
+                    &copy; 2023 Vulcan Cycling. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Firebase Loader Script -->
+    <script src="../js/firebase-init.js" defer></script>
+    <script src="../js/firebase-loader.js?v=1.0.1" defer></script>
+    
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (typeof loadAllResults === 'function') {
+                    loadAllResults();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html> 

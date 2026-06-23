@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff3e82">
+  <link rel="icon" href="/images/vulcan-logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/css/site-assets.css">
+    <meta name="description" content="Vulcan riders crush at Pineapple and Whirlybird!">
+  <meta property="og:title" content="A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross">
+  <meta property="og:description" content="Vulcan riders crush at Pineapple and Whirlybird!">
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1757976815598_nkjgfmkzr2f_IMG_1710.jpg?alt=media&amp;token=bdc82a7b-0621-4602-b222-88c36abe077e">
+  <meta property="og:url" content="https://vulcancycling.com/news/Q6Fwap1QNECvwkxfjNid.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross">
+  <meta name="twitter:description" content="Vulcan riders crush at Pineapple and Whirlybird!">
+  <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1757976815598_nkjgfmkzr2f_IMG_1710.jpg?alt=media&amp;token=bdc82a7b-0621-4602-b222-88c36abe077e">
+  <title>A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross - Vulcan Cycling</title>
+  <!-- Firebase SDK -->
+      <style>
+    :root {
+      --primary: #ff3e82;
+      --primary-hover: #e62e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #000;
+      line-height: 1.6;
+    }
+
+    /* Full-screen background image */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #000;
+    }
+    
+    /* Content container to appear above background */
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    /* Header */
+    header {
+      padding: 1.5rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo h1 {
+      margin-left: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav li {
+      margin-left: 2rem;
+    }
+    
+    nav a {
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: white;
+      color: black;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      color: var(--primary);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .back-button:hover {
+      color: var(--primary-hover);
+    }
+    
+    .back-button svg {
+      margin-right: 0.5rem;
+    }
+    
+    /* News Detail Section */
+    .news-detail-section {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .news-detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .news-article {
+      background-color: rgba(34, 34, 34, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .article-header {
+      padding: 2rem 2rem 1rem;
+    }
+    
+    .article-metadata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .article-date {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .article-author {
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+    
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-featured-image {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    
+    .article-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .article-content {
+      padding: 0 2rem 2rem;
+      font-size: 1.125rem;
+      line-height: 1.8;
+    }
+    
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .article-footer {
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Loading Animation */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .loading p {
+      color: #ccc;
+    }
+    
+    /* Error state */
+    .error-message {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .error-message h3 {
+      color: #ff6b6b;
+      margin-bottom: 1rem;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-logo p {
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      margin-top: 4rem;
+      text-align: center;
+      color: #999;
+      font-size: 0.875rem;
+    }
+    
+    /* Admin Link (Hidden) */
+    .admin-link {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .admin-link:hover {
+      opacity: 1;
+    }
+  </style>
+  <!-- Responsive Styles -->
+  <link rel="stylesheet" href="../css/responsive.css">
+
+  <!-- Mobile Navigation Script -->
+  <script src="../js/mobile-nav.js" defer></script>
+
+  </head>
+<body>
+  <!-- Background image -->
+  <div class="bg-image"></div>
+  
+  <!-- Content -->
+  <div class="content">
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <h1>VULCAN CYCLING</h1>
+        </div>
+        
+        <nav>
+          <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../results/index.html">Results</a></li>
+            <li><a href="index.html" class="active">News</a></li>
+            <li><a href="../races/index.html">Races</a></li>
+            <li><a href="../about/index.html">About</a></li>
+            <li><a href="../contact/index.html">Contact</a></li>
+          </ul>
+        </nav>
+        
+        <a href="#" class="cta-button">Join the Team</a>
+      </div>
+    </header>
+    
+    <!-- News Detail Section -->
+    <section class="news-detail-section">
+      <div class="container">
+        <a href="index.html" class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to News
+        </a>
+        
+        <div class="news-detail-container">
+          <article class="news-article" data-article-id="Q6Fwap1QNECvwkxfjNid">
+          <header class="article-header">
+            <div class="article-metadata">
+              <span class="article-date">September 15, 2025</span>
+              
+            </div>
+            <h1 class="article-title">A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross</h1>
+          </header>
+          <img src="https://firebasestorage.googleapis.com/v0/b/vulcan-edfea.firebasestorage.app/o/news%2Fnew_1757976815598_nkjgfmkzr2f_IMG_1710.jpg?alt=media&amp;token=bdc82a7b-0621-4602-b222-88c36abe077e" alt="A Sweet and Spiky Weekend @ Pineapple Crush and Whirlybird Cross" class="article-featured-image" loading="lazy">
+          <div class="article-content">
+            <p>Cyclocross Week #2: Whirlybird &amp; Pineapple Crush Cross</p><p>Cyclocross season rolled on with back-to-back races this past weekend, featuring Whirlybird Cross on Saturday, September 13, and Pineapple Crush Cross on Sunday, September 14. Riders battled through dry technical courses, ALL the 180s, and fast straights to put down some impressive results.</p><p>Whirlybird Cross – September 13, 2025</p><p>The action kicked off at Whirlybird Cross, where the juniors set the tone for the weekend. Kendall Craven dominated the Junior Women 9–14 category, taking home the win in commanding fashion and showing great form early in the season.</p><p>In the Cat 4/5 Men’s field, Niko Warner pushed hard against a deep older field, finishing 26th. The race provided valuable experience for the young rider, who would bounce back impressively the next day.</p><p>Pineapple Crush Cross – September 14, 2025</p><p>Sunday’s Pineapple Crush Cross brought more strong performances across the board.</p><p>Tamara Warner rode a strong race in the Cat 4/5 Women’s field, finishing 5th after starting strong and getting faster through the course!</p><p>Niko Warner returned to action, this time in Junior Men 9–14, and grabbed a strong 3rd place against a much older field.</p><p>Xenia Binkley stood out with a 2nd-place finish in Junior Women 9–14 against a tough opponent in Eliana Mumaw who was out for blood after her Sunday race!  And Nora Phillips put up an impressive 8th place showing true grit in her 2nd ever cross race!</p><p>Looking Ahead</p><p>Two races in two days brought out the best in the riders, with standout podiums from Kendall Craven, Xenia Binkley, and Niko Warner. As the season continues, it’s clear that the local cyclocross scene is packed with young talent and experienced riders pushing for top results.</p><p>Next weekend promises even more racing action at Carpenter Cross in Horsham, PA —stay tuned for updates, and congratulations to everyone who lined up this past weekend!</p>
+          </div>
+          <div class="article-footer">
+            <a href="index.html" class="back-button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 8H1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 15L1 8L8 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to News
+            </a>
+          </div>
+        </article>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3>VULCAN CYCLING</h3>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../team.html">Our Team</a></li>
+              <li><a href="../results/index.html">Results</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-links">
+            <h3>Contact Us</h3>
+            <ul>
+              <li><a href="../about/index.html">About Us</a></li>
+              <li><a href="../contact/index.html">Contact</a></li>
+              <li><a href="../races/index.html">Races</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="copyright">
+          &copy; 2023 Vulcan Cycling. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    
+    <!-- Hidden Admin Link -->
+    <a href="../admin/index.html" class="admin-link">Admin</a>
+  </div>
+  
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js" defer></script>
+  <script src="../js/firebase-init.js" defer></script>
+  <script src="../js/news-hydrate.js" defer></script>
+
+</body>
+</html> 

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <!-- Black background -->
+  <rect width="100%" height="100%" fill="#000" />
+  
+  <!-- Dot pattern -->
+  <pattern id="dotPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+    <circle cx="10" cy="10" r="1.5" fill="#333" />
+  </pattern>
+  <rect width="100%" height="100%" fill="url(#dotPattern)" />
+  
+  <!-- Gray diagonal lines -->
+  <g opacity="0.5">
+    <line x1="0" y1="800" x2="400" y2="0" stroke="#666" stroke-width="40" />
+    <line x1="800" y1="800" x2="1200" y2="0" stroke="#666" stroke-width="40" />
+    <line x1="400" y1="800" x2="800" y2="0" stroke="#666" stroke-width="20" />
+  </g>
+  
+  <!-- Pink diagonal lines -->
+  <g>
+    <line x1="200" y1="800" x2="600" y2="0" stroke="#ff3e82" stroke-width="30" />
+    <line x1="600" y1="800" x2="1000" y2="0" stroke="#ff3e82" stroke-width="30" />
+  </g>
+  
+  <!-- Large V watermark in background (very subtle) -->
+  <path d="M600,200 L900,700 L300,700 Z" fill="none" stroke="#333" stroke-width="5" opacity="0.3" />
+</svg> 

@@ -1,0 +1,8 @@
+/* Shared site assets: optimized hero background with WebP fallback */
+.bg-image {
+  background-image: url('/images/vulcan-screenshot-bg.jpg');
+  background-image: image-set(
+    url('/images/vulcan-screenshot-bg.webp') type('image/webp'),
+    url('/images/vulcan-screenshot-bg.jpg') type('image/jpeg')
+  );
+}
