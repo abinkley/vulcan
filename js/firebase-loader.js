@@ -258,9 +258,9 @@ async function loadNewsArticles() {
       const articleExcerpt = document.createElement('p');
       articleExcerpt.textContent = data.excerpt;
       
-      // Add read more link
+      // Add read more link (clean URL → prerendered OG page)
       const readMoreLink = document.createElement('a');
-      readMoreLink.href = `article.html?id=${doc.id}`;
+      readMoreLink.href = `news/${doc.id}.html`;
       readMoreLink.className = 'read-more';
       readMoreLink.textContent = 'Read More';
       
@@ -1457,11 +1457,33 @@ function loadAllNewsNonIndexed() {
     });
 }
 
+/**
+ * Resolve news article id from ?id= or clean path /news/<id>.html
+ * (used when Hosting/Pages falls back missing prerendered files to detail.html).
+ */
+function getNewsArticleIdFromLocation() {
+  const fromQuery = new URLSearchParams(window.location.search).get('id');
+  if (fromQuery) return fromQuery;
+
+  const match = window.location.pathname.match(/\/news\/([^/]+)\.html$/i);
+  if (!match) return null;
+  const id = match[1];
+  if (!id || id.toLowerCase() === 'index' || id.toLowerCase() === 'detail') return null;
+  return id;
+}
+
 // Function to load and display a single news article with mobile optimization
 function loadNewsDetails() {
   debugLog('Loading news article details');
-  const urlParams = new URLSearchParams(window.location.search);
-  const articleId = urlParams.get('id');
+
+  // Prerendered pages already have article HTML; leave them for news-hydrate.js
+  const prerendered = document.querySelector('.news-article[data-article-id]');
+  if (prerendered) {
+    debugLog('Prerendered article present; skipping loadNewsDetails');
+    return;
+  }
+
+  const articleId = getNewsArticleIdFromLocation();
   
   if (!articleId) {
     document.querySelector('.news-detail-container').innerHTML = `

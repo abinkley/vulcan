@@ -1,0 +1,90 @@
+name: Deploy static site
+
+# Regenerates prerendered /news/<id>.html pages (with per-article OG tags) and
+# publishes the static-site/ tree to the gh-pages branch (vulcancycling.com).
+#
+# Triggers:
+#   - Manual (Actions → Deploy static site → Run workflow)
+#   - Push to main that touches static-site/
+#   - Hourly schedule so newly published articles get OG pages without a local deploy
+#   - repository_dispatch type "news-updated" (optional Cloud Function / webhook)
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [news-updated]
+  schedule:
+    - cron: '0 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'static-site/**'
+      - '.github/workflows/deploy-static-site.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-static-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate news pages + prepare deploy/
+        working-directory: static-site
+        run: |
+          set -euo pipefail
+          echo "Generating static news article pages (full rebuild)..."
+          node scripts/generate-news-pages.js
+
+          rm -rf deploy
+          mkdir -p deploy/{css,js,images,admin,news,races,results,about,contact}
+
+          cp index.html team.html grasshopper.html 404.html robots.txt sitemap.xml site.webmanifest deploy/
+          cp news/index.html news/detail.html deploy/news/
+          for article_page in news/*.html; do
+            base=$(basename "$article_page")
+            if [ "$base" != "index.html" ] && [ "$base" != "detail.html" ]; then
+              cp "$article_page" deploy/news/
+            fi
+          done
+          cp races/index.html races/detail.html deploy/races/
+          cp results/index.html deploy/results/
+          cp about/index.html deploy/about/
+          cp contact/index.html deploy/contact/
+          cp css/*.css deploy/css/ 2>/dev/null || true
+          cp js/*.js deploy/js/ 2>/dev/null || true
+          if [ -d images ]; then cp -r images/* deploy/images/ 2>/dev/null || true; fi
+          cp admin/*.html deploy/admin/ 2>/dev/null || true
+          if [ -d admin/js ]; then mkdir -p deploy/admin/js && cp admin/js/*.js deploy/admin/js/ 2>/dev/null || true; fi
+          if [ -d admin/css ]; then mkdir -p deploy/admin/css && cp admin/css/*.css deploy/admin/css/ 2>/dev/null || true; fi
+
+          touch deploy/.nojekyll
+          echo "vulcancycling.com" > deploy/CNAME
+
+          ARTICLE_COUNT=$(find deploy/news -maxdepth 1 -name '*.html' ! -name 'index.html' ! -name 'detail.html' | wc -l)
+          echo "Prepared deploy/ with ${ARTICLE_COUNT} article pages"
+          if [ "$ARTICLE_COUNT" -lt 1 ]; then
+            echo "Error: no prerendered article pages" >&2
+            exit 1
+          fi
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: static-site/deploy
+          publish_branch: gh-pages
+          force_orphan: true
+          cname: vulcancycling.com
+          enable_jekyll: false

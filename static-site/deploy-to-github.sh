@@ -3,13 +3,14 @@ set -euo pipefail
 
 echo "Deploying Vulcan Cycling static site to GitHub Pages..."
 
-# Generate static news pages with OG tags for link crawlers
-if command -v node >/dev/null 2>&1; then
-  echo "Generating static news article pages..."
-  node scripts/generate-news-pages.js || echo "Warning: news page generation failed; continuing deploy"
-else
-  echo "Warning: node not found; skipping news page generation"
+# Generate static news pages with OG tags for link crawlers (required — do not skip)
+if ! command -v node >/dev/null 2>&1; then
+  echo "Error: node is required to generate news article pages" >&2
+  exit 1
 fi
+
+echo "Generating static news article pages (full rebuild)..."
+node scripts/generate-news-pages.js
 
 # Clean up previous deploy (including hidden .git from prior runs)
 rm -rf deploy
@@ -77,7 +78,13 @@ fi
 touch deploy/.nojekyll
 echo "vulcancycling.com" > deploy/CNAME
 
-echo "Site prepared in deploy/ ($(du -sh deploy | cut -f1))"
+ARTICLE_COUNT=$(find deploy/news -maxdepth 1 -name '*.html' ! -name 'index.html' ! -name 'detail.html' | wc -l | tr -d ' ')
+echo "Site prepared in deploy/ ($(du -sh deploy | cut -f1), ${ARTICLE_COUNT} article pages)"
+
+if [ "$ARTICLE_COUNT" -lt 1 ]; then
+  echo "Error: no prerendered article pages in deploy/news — aborting" >&2
+  exit 1
+fi
 
 # Push deploy/ contents to gh-pages (single push, always includes CNAME)
 cd deploy

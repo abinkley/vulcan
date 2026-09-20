@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 /**
- * Fetches news from Firestore and generates static HTML pages with OG tags
- * baked into <head> so link crawlers (Slack, iMessage, etc.) see article previews.
+ * Fetches published news from Firestore and generates static HTML pages with
+ * per-article Open Graph / Twitter tags baked into <head> so link crawlers
+ * (Slack, iMessage, Facebook, LinkedIn) see correct previews without JS.
  *
- * Run from static-site/: node scripts/generate-news-pages.js
+ * Full rebuild every run: deletes prior /news/<id>.html pages, then regenerates
+ * one page per published article. Run from static-site/:
+ *   node scripts/generate-news-pages.js
  */
 
 const fs = require('fs');
@@ -14,6 +17,7 @@ const SITE_URL = 'https://vulcancycling.com';
 const NEWS_DIR = path.join(__dirname, '..', 'news');
 const DETAIL_TEMPLATE = path.join(NEWS_DIR, 'detail.html');
 const SITEMAP_PATH = path.join(__dirname, '..', 'sitemap.xml');
+const PLACEHOLDER_IMAGE = `${SITE_URL}/images/news-placeholder.jpg`;
 
 const STATIC_PAGES = [
   `${SITE_URL}/`,
@@ -44,6 +48,16 @@ function parseFirestoreValue(value) {
   if ('booleanValue' in value) return value.booleanValue;
   if ('timestampValue' in value) return new Date(value.timestampValue);
   if ('nullValue' in value) return null;
+  if ('mapValue' in value) {
+    const out = {};
+    for (const [k, v] of Object.entries(value.mapValue.fields || {})) {
+      out[k] = parseFirestoreValue(v);
+    }
+    return out;
+  }
+  if ('arrayValue' in value) {
+    return (value.arrayValue.values || []).map(parseFirestoreValue);
+  }
   return null;
 }
 
@@ -88,16 +102,20 @@ function formatContent(content) {
     .join('');
 }
 
+/** Prefer article imageUrl; fall back to placeholder. Always absolute https URL. */
 function absoluteImageUrl(imageUrl) {
-  if (!imageUrl) return `${SITE_URL}/images/news-placeholder.jpg`;
-  if (imageUrl.startsWith('http')) return imageUrl;
-  return `${SITE_URL}/${imageUrl.replace(/^\//, '')}`;
+  if (!imageUrl || typeof imageUrl !== 'string') return PLACEHOLDER_IMAGE;
+  const trimmed = imageUrl.trim();
+  if (!trimmed) return PLACEHOLDER_IMAGE;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `${SITE_URL}/${trimmed.replace(/^\//, '')}`;
 }
 
 function articleDescription(article) {
-  if (article.excerpt) return article.excerpt;
+  const excerpt = typeof article.excerpt === 'string' ? article.excerpt.trim() : '';
+  if (excerpt && excerpt !== '{"stringValue":""}') return excerpt;
   if (article.content) {
-    return article.content.substring(0, 160).replace(/\s+/g, ' ').trim();
+    return String(article.content).substring(0, 160).replace(/\s+/g, ' ').trim();
   }
   return 'News from Vulcan Cycling';
 }
@@ -112,8 +130,10 @@ function buildMetaHead(article, id) {
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:image" content="${escapeHtml(image)}">
+  <meta property="og:image:alt" content="${escapeHtml(title)}">
   <meta property="og:url" content="${escapeHtml(url)}">
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Vulcan Cycling">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
@@ -168,13 +188,14 @@ function buildPage(template, article, id) {
     `<div class="news-detail-container">\n          ${buildArticleBody(article)}\n        </div>\n      </div>\n    </section>`
   );
 
+  // Strip any template bootstrap scripts; prerendered pages only hydrate from Firestore.
   html = html.replace(
     /<!-- Redirect legacy[\s\S]*?<\/script>\s*\n/,
     ''
   );
 
   html = html.replace(
-    /<script src="https:\/\/www\.gstatic\.com\/firebasejs[^"]+" defer><\/script>\n/g,
+    /<script src="https:\/\/www\.gstatic\.com\/firebasejs[^"]+"[^>]*><\/script>\s*/g,
     ''
   );
 
@@ -184,8 +205,9 @@ function buildPage(template, article, id) {
   <script src="../js/news-hydrate.js" defer></script>
 `;
 
+  // Match either the old or current detail.html script block comment.
   html = html.replace(
-    /<!-- Firebase Loader Script[\s\S]*?<\/body>/,
+    /<!-- (?:Firebase Loader Script|Live article loader)[\s\S]*?<\/body>/,
     `${hydrateScripts}\n</body>`
   );
 
@@ -209,10 +231,24 @@ async function fetchNewsArticles() {
         structuredQuery: {
           from: [{ collectionId: 'content' }],
           where: {
-            fieldFilter: {
-              field: { fieldPath: 'type' },
-              op: 'EQUAL',
-              value: { stringValue: 'news' },
+            compositeFilter: {
+              op: 'AND',
+              filters: [
+                {
+                  fieldFilter: {
+                    field: { fieldPath: 'type' },
+                    op: 'EQUAL',
+                    value: { stringValue: 'news' },
+                  },
+                },
+                {
+                  fieldFilter: {
+                    field: { fieldPath: 'status' },
+                    op: 'EQUAL',
+                    value: { stringValue: 'published' },
+                  },
+                },
+              ],
             },
           },
         },
@@ -225,6 +261,10 @@ async function fetchNewsArticles() {
   }
 
   const rows = await response.json();
+  if (!Array.isArray(rows)) {
+    throw new Error(`Unexpected Firestore response: ${JSON.stringify(rows).slice(0, 200)}`);
+  }
+
   return rows
     .filter((row) => row.document)
     .map((row) => parseDocument(row.document))
@@ -232,9 +272,18 @@ async function fetchNewsArticles() {
 }
 
 async function main() {
+  if (!fs.existsSync(DETAIL_TEMPLATE)) {
+    throw new Error(`Missing detail template: ${DETAIL_TEMPLATE}`);
+  }
+
   const template = fs.readFileSync(DETAIL_TEMPLATE, 'utf8');
   const articles = await fetchNewsArticles();
 
+  if (articles.length === 0) {
+    throw new Error('No published news articles returned from Firestore — refusing to wipe pages');
+  }
+
+  // Full rebuild: remove every prior prerendered article page.
   for (const file of fs.readdirSync(NEWS_DIR)) {
     if (file.endsWith('.html') && file !== 'index.html' && file !== 'detail.html') {
       fs.unlinkSync(path.join(NEWS_DIR, file));
@@ -246,6 +295,9 @@ async function main() {
     const html = buildPage(template, article, article.id);
     fs.writeFileSync(path.join(NEWS_DIR, `${article.id}.html`), html);
     ids.push(article.id);
+    const img = absoluteImageUrl(article.imageUrl);
+    const imgKind = img === PLACEHOLDER_IMAGE ? 'placeholder' : 'article';
+    console.log(`  + ${article.id}  [${imgKind}]  ${article.title || '(untitled)'}`);
   }
 
   writeSitemap(ids);

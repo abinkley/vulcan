@@ -330,13 +330,6 @@
   <!-- Mobile Navigation Script -->
   <script src="../js/mobile-nav.js" defer></script>
 
-  <!-- Redirect legacy ?id= URLs to static article pages -->
-  <script>
-    (function () {
-      var id = new URLSearchParams(window.location.search).get('id');
-      if (id) window.location.replace(id + '.html');
-    })();
-  </script>
 </head>
 <body>
   <!-- Background image -->
@@ -425,12 +418,11 @@
     <a href="../admin/index.html" class="admin-link">Admin</a>
   </div>
   
-  <!-- Firebase Loader Script (fallback for legacy URLs without ?id=) -->
+  <!-- Live article loader: works for detail.html?id=<id> and /news/<id>.html fallback -->
   <script src="../js/firebase-init.js" defer></script>
   <script src="../js/firebase-loader.js" defer></script>
   <script>
     window.addEventListener('load', function () {
-      if (new URLSearchParams(window.location.search).get('id')) return;
       setTimeout(function () {
         if (typeof loadNewsDetails === 'function') loadNewsDetails();
       }, 500);
