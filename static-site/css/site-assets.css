@@ -6,3 +6,17 @@
     url('/images/vulcan-screenshot-bg.jpg') type('image/jpeg')
   );
 }
+
+/* External cxJRs blog link — pink brand accent (matches --primary / --primary-hover) */
+.main-nav .cxjrs-link,
+nav .cxjrs-link {
+  color: #ff3e82;
+  font-weight: 700;
+}
+
+.main-nav .cxjrs-link:hover,
+.main-nav .cxjrs-link:focus,
+nav .cxjrs-link:hover,
+nav .cxjrs-link:focus {
+  color: #e62e72;
+}
