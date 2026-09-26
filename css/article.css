@@ -1,0 +1,89 @@
+/* Article Page Styles */
+.article-section {
+    padding: 60px 0;
+}
+
+.article-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 0;
+    color: #666;
+}
+
+.article-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.article-header h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.article-date {
+    color: #666;
+    font-style: italic;
+}
+
+.article-content {
+    line-height: 1.8;
+}
+
+.article-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.article-text p {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    margin-top: 20px;
+}
+
+.back-link a {
+    display: inline-block;
+    color: #ff3366;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.back-link a:hover {
+    color: #d62b54;
+}
+
+.no-content {
+    text-align: center;
+    padding: 40px 0;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .article-section {
+        padding: 40px 0;
+    }
+    
+    .article-container {
+        padding: 20px;
+    }
+    
+    .article-header h2 {
+        font-size: 2rem;
+    }
+} 
