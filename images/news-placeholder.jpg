@@ -1,0 +1,19 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f0f0f0"/>
+  <g transform="translate(200,150)">
+    <circle cx="0" cy="0" r="40" fill="#ffffff" stroke="#cccccc" stroke-width="2"/>
+    <path d="M-15,-10 L-15,10 L15,0 Z" fill="#cccccc"/>
+  </g>
+  <g transform="translate(200,150) rotate(0)">
+    <line x1="0" y1="-60" x2="0" y2="-50" stroke="#cccccc" stroke-width="2"/>
+    <line x1="60" y1="0" x2="50" y2="0" stroke="#cccccc" stroke-width="2"/>
+    <line x1="0" y1="60" x2="0" y2="50" stroke="#cccccc" stroke-width="2"/>
+    <line x1="-60" y1="0" x2="-50" y2="0" stroke="#cccccc" stroke-width="2"/>
+  </g>
+  <g transform="translate(200,150) rotate(45)">
+    <line x1="0" y1="-60" x2="0" y2="-50" stroke="#cccccc" stroke-width="2"/>
+    <line x1="60" y1="0" x2="50" y2="0" stroke="#cccccc" stroke-width="2"/>
+    <line x1="0" y1="60" x2="0" y2="50" stroke="#cccccc" stroke-width="2"/>
+    <line x1="-60" y1="0" x2="-50" y2="0" stroke="#cccccc" stroke-width="2"/>
+  </g>
+</svg> 
